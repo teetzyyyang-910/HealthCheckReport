@@ -3,74 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>數據專家公司 — 遊戲營運報告中心</title>
+<title>GSTPE — 遊戲營運報告中心</title>
 <style>
 :root{
-  --bg:#f8fafc;--bg2:#ffffff;--border:#e2e8f0;
+  --bg:#f8fafc;--bg2:#ffffff;--bg3:#f1f5f9;--border:#e2e8f0;
   --text:#1e293b;--text2:#64748b;
   --accent:#2563eb;--green:#16a34a;--orange:#d97706;
   --radius:14px;--shadow:0 2px 12px rgba(0,0,0,.07);
+  --vng-orange:#E84820;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
+/* ── Header ── */
 .header{
   background:var(--bg2);border-bottom:1px solid var(--border);
-  padding:28px 48px 24px;
-  display:flex;align-items:center;gap:16px;
+  padding:20px 48px 18px;
+  display:flex;align-items:center;gap:20px;
 }
-.header-logo{
-  width:44px;height:44px;border-radius:10px;
-  background:var(--accent);display:flex;align-items:center;justify-content:center;
-  font-size:18px;color:#fff;font-weight:800;flex-shrink:0;
-}
-.header-text h1{font-size:20px;font-weight:700;color:var(--text)}
-.header-text p{font-size:13px;color:var(--text2);margin-top:2px}
+.vng-logo{display:flex;flex-direction:column;line-height:1;flex-shrink:0;user-select:none}
+.vng-logo .vng{font-size:27px;font-weight:900;color:var(--vng-orange);font-family:'Arial Black',Arial,sans-serif;letter-spacing:-1px}
+.vng-logo .games{font-size:10.5px;font-weight:800;color:#3a3a3a;letter-spacing:3.5px;margin-top:2px;font-family:'Arial Black',Arial,sans-serif}
+.header-divider{width:1px;height:38px;background:var(--border);flex-shrink:0;margin:0 4px}
+.header-text h1{font-size:18px;font-weight:700;color:var(--text)}
+.header-text p{font-size:12px;color:var(--text2);margin-top:3px}
 
-.main{max-width:1100px;margin:0 auto;padding:48px 24px}
+/* ── Main ── */
+.main{max-width:1100px;margin:0 auto;padding:48px 24px 80px}
 .section-title{
-  font-size:13px;font-weight:700;letter-spacing:.6px;
+  font-size:12px;font-weight:700;letter-spacing:.8px;
   text-transform:uppercase;color:var(--text2);margin-bottom:20px;
 }
 
+/* ── Game grid ── */
 .game-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:20px;
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:18px;
 }
 .game-card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius);padding:28px 20px 24px;
+  background:var(--bg2);border:2px solid var(--border);
+  border-radius:var(--radius);padding:26px 18px 22px;
   text-decoration:none;color:inherit;
-  display:flex;flex-direction:column;align-items:center;gap:14px;
+  display:flex;flex-direction:column;align-items:center;gap:13px;
   box-shadow:var(--shadow);
   transition:transform .15s,box-shadow .15s,border-color .15s;
   position:relative;overflow:hidden;
 }
-.game-card.active:hover{
-  transform:translateY(-4px);
-  box-shadow:0 8px 28px rgba(37,99,235,.13);
-  border-color:#bfdbfe;cursor:pointer;
-}
-.game-card.inactive{opacity:.65;cursor:default}
 .game-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
   background:var(--accent);opacity:0;transition:opacity .15s;
 }
+.game-card.active{cursor:pointer}
+.game-card.active:hover{
+  transform:translateY(-4px);
+  box-shadow:0 8px 28px rgba(37,99,235,.13);
+  border-color:#bfdbfe;
+}
 .game-card.active:hover::before{opacity:1}
+.game-card.active.selected{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(37,99,235,.1),0 4px 18px rgba(37,99,235,.12);
+}
+.game-card.active.selected::before{opacity:1}
+.game-card.inactive{opacity:.5;cursor:default}
 
 .game-icon{
-  width:80px;height:80px;border-radius:18px;
-  background:var(--bg);border:1px solid var(--border);
+  width:76px;height:76px;border-radius:17px;
+  background:var(--bg3);border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;
-  font-size:22px;font-weight:800;color:var(--text2);
+  font-size:20px;font-weight:800;color:var(--text2);
   overflow:hidden;flex-shrink:0;
 }
 .game-icon img{width:100%;height:100%;object-fit:cover;display:block}
+.game-name{font-size:17px;font-weight:700;color:var(--text);letter-spacing:.5px}
+.game-sub{font-size:11px;color:var(--text2);min-height:15px;text-align:center}
 
-.game-name{font-size:18px;font-weight:700;color:var(--text);letter-spacing:.5px}
-.game-sub{font-size:11px;color:var(--text2);min-height:16px}
-
+/* ── Badges ── */
 .badge{
   display:inline-flex;align-items:center;gap:4px;
   font-size:11px;font-weight:700;padding:3px 10px;
@@ -79,33 +88,100 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 .badge-live{background:rgba(22,163,74,.1);color:#15803d;border:1px solid rgba(22,163,74,.25)}
 .badge-soon{background:rgba(217,119,6,.09);color:#b45309;border:1px solid rgba(217,119,6,.25)}
 
-.footer{
-  text-align:center;padding:32px 24px;
-  font-size:12px;color:var(--text2);border-top:1px solid var(--border);
-  margin-top:64px;
+/* ── Report panel (accordion below grid) ── */
+.report-panel{
+  margin-top:18px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  max-height:0;
+  transition:max-height .32s ease, opacity .25s ease;
+  opacity:0;
+  box-shadow:var(--shadow);
 }
-@media(max-width:560px){
-  .header{padding:20px 20px 16px}
-  .main{padding:32px 16px}
-  .game-grid{grid-template-columns:repeat(2,1fr);gap:14px}
+.report-panel.open{max-height:600px;opacity:1}
+
+.report-panel-inner{padding:22px 26px 24px}
+.report-panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+}
+.rp-title{
+  font-size:14px;font-weight:700;color:var(--text);
+  display:flex;align-items:center;gap:8px;
+}
+.rp-game-tag{
+  font-size:12px;font-weight:700;color:var(--accent);
+  background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);
+  padding:2px 9px;border-radius:6px;
+}
+.rp-close{
+  background:none;border:1px solid var(--border);cursor:pointer;
+  color:var(--text2);font-size:13px;padding:4px 10px;border-radius:7px;
+  transition:background .15s,border-color .15s;font-weight:600;
+}
+.rp-close:hover{background:var(--bg3);border-color:#cbd5e1;color:var(--text)}
+
+/* Report list */
+.report-list{display:flex;flex-direction:column;gap:8px}
+.report-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;border-radius:10px;
+  border:1px solid var(--border);background:var(--bg);
+  transition:border-color .15s,background .15s;
+}
+.report-item:hover{border-color:#bfdbfe;background:rgba(37,99,235,.025)}
+.report-item-left{display:flex;align-items:center;gap:10px}
+.report-item-icon{font-size:15px;line-height:1}
+.report-item-date{font-size:14px;font-weight:600;color:var(--text)}
+.report-item-open{
+  background:var(--accent);color:#fff;
+  border:none;padding:6px 16px;border-radius:8px;
+  font-size:12px;font-weight:700;cursor:pointer;
+  text-decoration:none;display:inline-block;
+  transition:background .15s;white-space:nowrap;
+}
+.report-item-open:hover{background:#1d4ed8}
+
+.no-reports{color:var(--text2);font-size:13px;padding:4px 0}
+
+/* ── Footer ── */
+.footer{
+  text-align:center;padding:28px 24px;
+  font-size:12px;color:var(--text2);border-top:1px solid var(--border);
+}
+
+@media(max-width:600px){
+  .header{padding:16px 18px 14px;gap:14px}
+  .vng-logo .vng{font-size:22px}
+  .vng-logo .games{font-size:9px;letter-spacing:2.5px}
+  .main{padding:28px 14px 60px}
+  .game-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .report-panel-inner{padding:16px 16px 18px}
+  .rp-title{font-size:13px}
 }
 </style>
 </head>
 <body>
 
 <header class="header">
-  <div class="header-logo">數</div>
+  <div class="vng-logo">
+    <span class="vng">VNG</span>
+    <span class="games">GAMES</span>
+  </div>
+  <div class="header-divider"></div>
   <div class="header-text">
-    <h1>數據專家公司 — 遊戲營運報告中心</h1>
+    <h1>GSTPE — 遊戲營運報告中心</h1>
     <p>Game Operations Analytics Dashboard Hub</p>
   </div>
 </header>
 
 <main class="main">
-  <div class="section-title">📊 遊戲報告列表</div>
+  <div class="section-title">📊 選擇遊戲查看報告</div>
+
   <div class="game-grid">
 
-    <a class="game-card active" href="./GNO/dashboard.html">
+    <div class="game-card active" onclick="toggleGame('GNO')" id="card-GNO">
       <div class="game-icon">
         <img src="./assets/gno_icon.png" alt="GNO"
              onerror="this.style.display='none';this.parentNode.innerHTML='GNO'">
@@ -113,7 +189,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
       <div class="game-name">GNO</div>
       <div class="game-sub">DDTank TW</div>
       <span class="badge badge-live">● 已上線</span>
-    </a>
+    </div>
 
     <div class="game-card inactive">
       <div class="game-icon">
@@ -156,11 +232,75 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
     </div>
 
   </div>
+
+  <!-- Accordion report panel -->
+  <div class="report-panel" id="reportPanel">
+    <div class="report-panel-inner">
+      <div class="report-panel-header">
+        <div class="rp-title">
+          <span class="rp-game-tag" id="panelTag">GNO</span>
+          報告列表
+        </div>
+        <button class="rp-close" onclick="closePanel()">✕ 關閉</button>
+      </div>
+      <div class="report-list" id="reportList"></div>
+    </div>
+  </div>
+
 </main>
 
 <footer class="footer">
-  數據專家公司 · 台灣遊戲營運數據分析平台 · 僅供內部使用
+  GSTPE · 台灣遊戲營運數據分析平台 · 僅供內部使用
 </footer>
+
+<script>
+const GAMES = {
+  GNO: {
+    reports: [
+      { date: '2026/06/22', url: './GNO/dashboard.html' }
+    ]
+  }
+  // 其他遊戲上線後在此新增
+};
+
+let activeGame = null;
+
+function toggleGame(id) {
+  if (activeGame === id) { closePanel(); return; }
+  activeGame = id;
+
+  document.querySelectorAll('.game-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('card-' + id).classList.add('selected');
+
+  document.getElementById('panelTag').textContent = id;
+
+  const g = GAMES[id];
+  const list = document.getElementById('reportList');
+  if (!g || !g.reports.length) {
+    list.innerHTML = '<div class="no-reports">尚無可用報告</div>';
+  } else {
+    list.innerHTML = g.reports.map(r =>
+      `<div class="report-item">
+        <div class="report-item-left">
+          <span class="report-item-icon">📊</span>
+          <span class="report-item-date">${r.date}</span>
+        </div>
+        <a class="report-item-open" href="${r.url}">開啟報告 →</a>
+      </div>`
+    ).join('');
+  }
+
+  const panel = document.getElementById('reportPanel');
+  panel.classList.add('open');
+  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+}
+
+function closePanel() {
+  document.getElementById('reportPanel').classList.remove('open');
+  document.querySelectorAll('.game-card').forEach(c => c.classList.remove('selected'));
+  activeGame = null;
+}
+</script>
 
 </body>
 </html>
