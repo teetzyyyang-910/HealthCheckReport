@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>數據專家公司 — 遊戲營運報告中心</title>
+<style>
+:root{
+  --bg:#f8fafc;--bg2:#ffffff;--border:#e2e8f0;
+  --text:#1e293b;--text2:#64748b;
+  --accent:#2563eb;--green:#16a34a;--orange:#d97706;
+  --radius:14px;--shadow:0 2px 12px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+.header{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:28px 48px 24px;
+  display:flex;align-items:center;gap:16px;
+}
+.header-logo{
+  width:44px;height:44px;border-radius:10px;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:#fff;font-weight:800;flex-shrink:0;
+}
+.header-text h1{font-size:20px;font-weight:700;color:var(--text)}
+.header-text p{font-size:13px;color:var(--text2);margin-top:2px}
+
+.main{max-width:1100px;margin:0 auto;padding:48px 24px}
+.section-title{
+  font-size:13px;font-weight:700;letter-spacing:.6px;
+  text-transform:uppercase;color:var(--text2);margin-bottom:20px;
+}
+
+.game-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:20px;
+}
+.game-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px 20px 24px;
+  text-decoration:none;color:inherit;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  box-shadow:var(--shadow);
+  transition:transform .15s,box-shadow .15s,border-color .15s;
+  position:relative;overflow:hidden;
+}
+.game-card.active:hover{
+  transform:translateY(-4px);
+  box-shadow:0 8px 28px rgba(37,99,235,.13);
+  border-color:#bfdbfe;cursor:pointer;
+}
+.game-card.inactive{opacity:.65;cursor:default}
+.game-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--accent);opacity:0;transition:opacity .15s;
+}
+.game-card.active:hover::before{opacity:1}
+
+.game-icon{
+  width:80px;height:80px;border-radius:18px;
+  background:var(--bg);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800;color:var(--text2);
+  overflow:hidden;flex-shrink:0;
+}
+.game-icon img{width:100%;height:100%;object-fit:cover;display:block}
+
+.game-name{font-size:18px;font-weight:700;color:var(--text);letter-spacing:.5px}
+.game-sub{font-size:11px;color:var(--text2);min-height:16px}
+
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:700;padding:3px 10px;
+  border-radius:20px;
+}
+.badge-live{background:rgba(22,163,74,.1);color:#15803d;border:1px solid rgba(22,163,74,.25)}
+.badge-soon{background:rgba(217,119,6,.09);color:#b45309;border:1px solid rgba(217,119,6,.25)}
+
+.footer{
+  text-align:center;padding:32px 24px;
+  font-size:12px;color:var(--text2);border-top:1px solid var(--border);
+  margin-top:64px;
+}
+@media(max-width:560px){
+  .header{padding:20px 20px 16px}
+  .main{padding:32px 16px}
+  .game-grid{grid-template-columns:repeat(2,1fr);gap:14px}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo">數</div>
+  <div class="header-text">
+    <h1>數據專家公司 — 遊戲營運報告中心</h1>
+    <p>Game Operations Analytics Dashboard Hub</p>
+  </div>
+</header>
+
+<main class="main">
+  <div class="section-title">📊 遊戲報告列表</div>
+  <div class="game-grid">
+
+    <a class="game-card active" href="./GNO/dashboard.html">
+      <div class="game-icon">
+        <img src="./assets/gno_icon.png" alt="GNO"
+             onerror="this.style.display='none';this.parentNode.innerHTML='GNO'">
+      </div>
+      <div class="game-name">GNO</div>
+      <div class="game-sub">DDTank TW</div>
+      <span class="badge badge-live">● 已上線</span>
+    </a>
+
+    <div class="game-card inactive">
+      <div class="game-icon">
+        <img src="./assets/mtg_icon.png" alt="MTG"
+             onerror="this.style.display='none';this.parentNode.innerHTML='MTG'">
+      </div>
+      <div class="game-name">MTG</div>
+      <div class="game-sub">&nbsp;</div>
+      <span class="badge badge-soon">⏳ 即將上線</span>
+    </div>
+
+    <div class="game-card inactive">
+      <div class="game-icon">
+        <img src="./assets/csb_icon.png" alt="CSB"
+             onerror="this.style.display='none';this.parentNode.innerHTML='CSB'">
+      </div>
+      <div class="game-name">CSB</div>
+      <div class="game-sub">&nbsp;</div>
+      <span class="badge badge-soon">⏳ 即將上線</span>
+    </div>
+
+    <div class="game-card inactive">
+      <div class="game-icon">
+        <img src="./assets/cos_icon.png" alt="COS"
+             onerror="this.style.display='none';this.parentNode.innerHTML='COS'">
+      </div>
+      <div class="game-name">COS</div>
+      <div class="game-sub">&nbsp;</div>
+      <span class="badge badge-soon">⏳ 即將上線</span>
+    </div>
+
+    <div class="game-card inactive">
+      <div class="game-icon">
+        <img src="./assets/cs2_icon.png" alt="CS2"
+             onerror="this.style.display='none';this.parentNode.innerHTML='CS2'">
+      </div>
+      <div class="game-name">CS2</div>
+      <div class="game-sub">&nbsp;</div>
+      <span class="badge badge-soon">⏳ 即將上線</span>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer">
+  數據專家公司 · 台灣遊戲營運數據分析平台 · 僅供內部使用
+</footer>
+
+</body>
+</html>
