@@ -221,14 +221,14 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
       <span class="badge badge-soon">⏳ 即將上線</span>
     </div>
 
-    <div class="game-card inactive">
+    <div class="game-card active" onclick="toggleGame('CS2')" id="card-CS2">
       <div class="game-icon">
         <img src="./assets/cs2_icon.png" alt="CS2"
              onerror="this.style.display='none';this.parentNode.innerHTML='CS2'">
       </div>
       <div class="game-name">CS2</div>
-      <div class="game-sub">&nbsp;</div>
-      <span class="badge badge-soon">⏳ 即將上線</span>
+      <div class="game-sub">刀劍朝鮮</div>
+      <span class="badge badge-live">● 已上線</span>
     </div>
 
   </div>
@@ -259,6 +259,11 @@ const GAMES = {
     reports: [
       { date: '2026/06/22', url: './GNO/dashboard.html' }
     ]
+  },
+  CS2: {
+    reports: [
+      { date: '2026/06/08～06/14', label: 'CBT2 封測後測報告', url: './CS2/CS2_CBT2_Dashboard_v10.html' }
+    ]
   }
   // 其他遊戲上線後在此新增
 };
@@ -283,9 +288,12 @@ function toggleGame(id) {
       `<div class="report-item">
         <div class="report-item-left">
           <span class="report-item-icon">📊</span>
-          <span class="report-item-date">${r.date}</span>
+          <div>
+            <div class="report-item-date">${r.date}</div>
+            ${r.label ? `<div style="font-size:11px;color:var(--text2);margin-top:2px;">${r.label}</div>` : ''}
+          </div>
         </div>
-        <a class="report-item-open" href="${r.url}">開啟報告 →</a>
+        <a class="report-item-open" href="${r.url}" target="_blank">開啟報告 →</a>
       </div>`
     ).join('');
   }
