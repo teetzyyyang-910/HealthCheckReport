@@ -223,7 +223,7 @@ tr:hover td{background:rgba(37,99,235,.03);}
     <div class="p-card-sub">VIP / 商業化</div>
     <div class="p-card-body">
       <div class="p-bullet">→ 6/9 Cohort 11 位付費者 D7 LTV <span class="hl-p">$661</span>，ARPPU ≈ $60</div>
-      <div class="p-bullet">→ 文物復原人均 <span class="hl-p">38.5次</span>，商業化潛力首位，「付費重置券」切入</div>
+      <div class="p-bullet">→ 文物復原人均 <span class="hl-p">121.7次</span>（最高 1,257 次），商業化潛力首位，「付費重置券」切入</div>
       <div class="p-bullet">→ CVR <span class="hl-r">1.04%</span>，56.9% 首儲即末儲，月卡回購機制待建立</div>
     </div>
   </div>
@@ -556,7 +556,7 @@ tr:hover td{background:rgba(37,99,235,.03);}
   <div class="card-title">🛒 商城 vs NPC 商店消費行為對比 <span class="badge status-warning">P1 策略優化</span></div>
   <div class="grid-2" style="margin-top:14px;">
     <div>
-      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px;">商城 TOP 10 商品（CBT2 全期購買量）</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px;">商城 TOP 10 商品（CBT2 全期收益 USD）<span style="font-size:10px;font-weight:400;margin-left:6px;color:var(--text2);">來源：商品銷售排行</span></div>
       <div class="chart-box"><canvas id="cMallTop"></canvas></div>
     </div>
     <div>
@@ -581,23 +581,23 @@ tr:hover td{background:rgba(37,99,235,.03);}
       <table class="tbl" style="font-size:12px;width:100%;margin-bottom:12px;">
         <thead><tr><th>道具名稱</th><th>製作次數</th><th>成功率</th><th>人均嘗試</th></tr></thead>
         <tbody>
-          <tr><td>初級精煉石</td><td>1,247</td><td>82.3%</td><td>3.4</td></tr>
-          <tr><td>強化護符·乙</td><td>893</td><td>74.1%</td><td>4.1</td></tr>
-          <tr><td>武器精華液</td><td>756</td><td>89.2%</td><td>2.8</td></tr>
-          <tr><td>中級精煉石</td><td>521</td><td>61.4%</td><td style="color:var(--orange);font-weight:700;">5.9</td></tr>
-          <tr><td>高階強化符文</td><td>312</td><td style="color:var(--red);font-weight:700;">48.7%</td><td style="color:var(--red);font-weight:700;">8.3</td></tr>
+          <tr><td>寒鐵</td><td>399</td><td style="color:var(--green);font-weight:700;">100%</td><td>2.4</td></tr>
+          <tr><td>粗布</td><td>357</td><td style="color:var(--green);font-weight:700;">100%</td><td>2.6</td></tr>
+          <tr><td>紅玉</td><td>318</td><td style="color:var(--green);font-weight:700;">100%</td><td>2.0</td></tr>
+          <tr><td>皮革</td><td>299</td><td style="color:var(--green);font-weight:700;">100%</td><td>2.2</td></tr>
+          <tr><td>真玄鐵 <span class="badge status-danger" style="font-size:10px;">低成功率</span></td><td>249</td><td style="color:var(--red);font-weight:700;">11.2%</td><td style="color:var(--red);font-weight:700;">6.2</td></tr>
         </tbody>
       </table>
       <div class="alert-banner success">
         <div class="ab-t">✅ 製作系統黏著度良好</div>
-        道具製作共計 3,729 次，人均 3.8 次嘗試。高階符文成功率 48.7% 偏低但需求強勁，可考慮「成功保底」機制轉化付費。
+        道具製作共計 <b>3,267 次</b>，含 118 種道具。基礎材料（寒鐵/粗布/紅玉等）成功率 100%，需求穩定。高階材料「真玄鐵」成功率僅 <b style="color:var(--red)">11.2%</b>，人均嘗試 6.2 次——OBT 最佳商業化切入點：加入「合成保底券」付費道具。
       </div>
     </div>
     <div>
-      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;">文物復原嘗試次數分布（人均 38.5 次）</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;">文物復原嘗試次數分布（人均 121.7 次）</div>
       <div class="chart-box"><canvas id="cRelic"></canvas></div>
       <div class="insight-4d" style="margin-top:10px;">
-        <div class="i4d-row"><span class="i4d-icon">🔍</span><span class="i4d-label">觀察</span><span class="i4d-text">文物復原人均嘗試 38.5 次，為 CBT2 所有系統中黏著度最高；高段玩家可達 120+ 次。</span></div>
+        <div class="i4d-row"><span class="i4d-icon">🔍</span><span class="i4d-label">觀察</span><span class="i4d-text">文物復原人均嘗試 <b>121.7 次</b>（中位數 70 次，最高紀錄 1,257 次），633 名角色參與，為 CBT2 所有系統黏著度冠軍。</span></div>
         <div class="i4d-row"><span class="i4d-icon">💡</span><span class="i4d-label">假設</span><span class="i4d-text">文物「隨機詞條」機制創造強上癮循環，玩家在追求完美詞條中持續投入時間資源。</span></div>
         <div class="i4d-row"><span class="i4d-icon">🎯</span><span class="i4d-label">建議</span><span class="i4d-text">在文物復原介面加入「付費重置券」（加速刷新次數），此系統高黏著特性最適合作為首個付費道具商業化設計。</span></div>
         <div class="i4d-row"><span class="i4d-icon">📊</span><span class="i4d-label">信心</span><span class="i4d-text"><span class="conf-high">HIGH</span> — 行為數據（嘗試次數）為強信號，直接反映玩家系統沉浸程度。</span></div>
@@ -1345,9 +1345,9 @@ window.addEventListener('load',function(){
 
   /* ─── 8. Mall top items horizontal bar ─── */
   mk('cMallTop',{type:'bar',data:{
-    labels:['初心者禮包','30日簽到卡','道具製作材料x10','強化石x5','精靈召喚券x3','經驗加速劑x3','金幣禮包x5','VIP體驗7日','稀有武器箱x1','公會徽章'],
-    datasets:[{data:[312,287,241,198,176,154,132,118,97,83],backgroundColor:BLUE_A,borderRadius:4}]
-  },options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{stepSize:50}}}}});
+    labels:['蒼天牌','新手階段禮包1','賽季戰令：高級','6650鑽石','新手階段禮包2','新手階段禮包3','限定禮包組合13','限定禮包組合23','1980鑽石','990鑽石'],
+    datasets:[{data:[388.13,199.38,196.57,187.50,140.00,128.76,76.25,69.37,65.63,51.57],backgroundColor:BLUE_A,borderRadius:4}]
+  },options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return '$'+c.parsed.x.toFixed(2)+' USD'}}}},scales:{x:{ticks:{callback:function(v){return '$'+v}}}}}});
 
   /* ─── 9. Mall vs NPC daily line ─── */
   mk('cMallVsNpc',{type:'line',data:{
@@ -1360,8 +1360,8 @@ window.addEventListener('load',function(){
 
   /* ─── 10. Relic attempt distribution ─── */
   mk('cRelic',{type:'bar',data:{
-    labels:['1次','2次','3次','4次','5次','6次','7次以上'],
-    datasets:[{label:'人數',data:[124,198,287,412,318,163,98],backgroundColor:PURPLE_A,borderRadius:6}]
+    labels:['1-10次','11-30次','31-60次','61-100次','101-200次','201次以上'],
+    datasets:[{label:'人數',data:[78,35,150,145,117,108],backgroundColor:PURPLE_A,borderRadius:6}]
   },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
 
   /* ─── 11. Paid vs NonPaid retention D1-D7 ─── */
