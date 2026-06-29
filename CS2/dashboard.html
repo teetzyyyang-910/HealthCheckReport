@@ -47,6 +47,9 @@ td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
 tr:hover td{background:rgba(37,99,235,.03);}
 .td-num{font-variant-numeric:tabular-nums;font-weight:600;}
 .td-dim{color:var(--text2);font-size:12px;}
+.funnel-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);transition:all .15s;}
+.funnel-btn-active{background:var(--accent);color:#fff!important;border-color:var(--accent);}
+.funnel-btn:hover:not(.funnel-btn-active){background:var(--border);}
 .badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;margin-left:5px;vertical-align:middle;white-space:nowrap;}
 .status-danger{background:rgba(220,38,38,.09);color:#b91c1c;border:1px solid rgba(220,38,38,.28);}
 .status-warning{background:rgba(217,119,6,.09);color:#b45309;border:1px solid rgba(217,119,6,.28);}
@@ -202,7 +205,7 @@ tr:hover td{background:rgba(37,99,235,.03);}
     <div class="p-card-body">
       <div class="p-bullet">→ ROAS <span class="hl-r">4.74%</span>：$43k 廣告費換 $2k 收入，留存未修前持續號損</div>
       <div class="p-bullet">→ <span class="hl-r">41.2%</span> 玩家卡在 Lv1～10，早期漏斗嚴重破損</div>
-      <div class="p-bullet">→ 第2次簽到僅 <span class="hl-r">12.4%</span>（vs 第1次 60.4%），D1 回流崩潰</div>
+      <div class="p-bullet">→ 完成新手引導僅 <span class="hl-r">43.7%</span>（Tutorial Step2→4 是最大卡點），第2次簽到 <span class="hl-r">12.0%</span>（729 人）</div>
       <div class="p-bullet">→ Tutorial Phase 3 流失 <span class="hl-r">−34.2pp</span>，CBT1/2 雙輪確認系統性瓶頃</div>
     </div>
   </div>
@@ -318,13 +321,18 @@ tr:hover td{background:rgba(37,99,235,.03);}
 </div></div></div>
 
 <div class="card">
-<div class="card-title">🔬 In-App 事件漏斗（6/9 Cohort，base=3,544）<span class="badge status-danger">🔴 第2次簽到斷崖</span></div>
+<div class="card-title">🔬 In-App 事件漏斗（全期 6/8~6/14，BASE=6,053）<span class="badge status-danger">🔴 新手引導落差</span></div>
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+  <button id="btnFunnelCombined" class="funnel-btn funnel-btn-active" onclick="switchFunnel('combined')">📊 付費＋自然量</button>
+  <button id="btnFunnelPaid" class="funnel-btn" onclick="switchFunnel('paid')">💰 僅付費</button>
+  <span id="funnelSubtitle" style="font-size:11px;color:var(--text2);margin-left:4px;">付費＋自然量合併，BASE=6,053</span>
+</div>
 <div id="funnelContainer"></div>
 <div class="insight-4d" style="margin-top:14px;">
-  <div class="i4d-row"><span class="i4d-icon">🔍</span><span class="i4d-label">OBSERVATION</span><span class="i4d-text">第1次簽到 60.4%（2,139人）→ 第2次僅 12.4%（440人），<b>單步流失率高達 79.4%</b>。CDN 完成率 67.3%，技術門檻佔第一關。</span></div>
-  <div class="i4d-row"><span class="i4d-icon">💡</span><span class="i4d-label">HYPOTHESIS</span><span class="i4d-text">第1次簽到後無強制回流機制，玩家「體驗一次後未建立習慣」就流失。CDN 32.7% 流失是技術優化空間。</span></div>
-  <div class="i4d-row"><span class="i4d-icon">🎯</span><span class="i4d-label">RECOMMENDATION</span><span class="i4d-text">① 第1次簽到後觸發「明日提醒」授權 Push；② 壓縮包體 &lt;150MB 解決 CDN 問題；③ 登入後 5 秒內展示今日任務清單。</span></div>
-  <div class="i4d-row"><span class="i4d-icon">📊</span><span class="i4d-label">CONFIDENCE</span><span class="i4d-text"><span class="conf-high">HIGH</span> — 漏斗資料來自 AppsFlyer SDK，事件記錄精確，N=3,544。</span></div>
+  <div class="i4d-row"><span class="i4d-icon">🔍</span><span class="i4d-label">OBSERVATION</span><span class="i4d-text">安裝→完成新手引導落差達 <b>56.3pp</b>（6,053→2,645人）；Tutorial Step2→Step4 單步掉 628 人（<b>−18.8pp</b>）是全漏斗最大單步流失。CDN 下載完成 74.4%，技術門檻已從 67.3% 改善。</span></div>
+  <div class="i4d-row"><span class="i4d-icon">💡</span><span class="i4d-label">HYPOTHESIS</span><span class="i4d-text">新手引導 Step 4 後（44.8%）仍有大量玩家未完成引導流程（43.7%），顯示結尾步驟設計存在摩擦。達到 Lv30 僅剩 16.3%，與問卷「30~50等卡關」高度互證。</span></div>
+  <div class="i4d-row"><span class="i4d-icon">🎯</span><span class="i4d-label">RECOMMENDATION</span><span class="i4d-text">① 針對 Tutorial Step2→Step4 的指引卡點進行 UX 簡化；② 增設「完成引導直送 Lv15 加速包」降低前 35% 的漏斗斜率；③ 第2次簽到（12.0%）加入 Push 提醒，目標提升至 20%+。</span></div>
+  <div class="i4d-row"><span class="i4d-icon">📊</span><span class="i4d-label">CONFIDENCE</span><span class="i4d-text"><span class="conf-high">HIGH</span> — 漏斗資料來自 AppsFlyer SDK（付費+自然量合併），覆蓋 6/8~6/14 全期，N=6,053，精確度 HIGH。</span></div>
 </div></div>
 
 <div class="card">
@@ -1087,7 +1095,7 @@ CBT2 期間花費 <b>$43,386 USD</b> Facebook 廣告，換得 <b>$2,055 USD</b> 
 
 <div class="action-card p0">
 <div class="ac-header"><span class="badge status-danger">P0</span><span class="ac-title">🆚 新手村引導失效</span></div>
-<div class="ac-metric danger">📊 <span class="hl-r">41.2%</span> 卡 Lv10 ｜ 第2次簽到 <span class="hl-r">12.4%</span>（斷崖）</div>
+<div class="ac-metric danger">📊 <span class="hl-r">41.2%</span> 卡 Lv10 ｜ 第2次簽到 <span class="hl-r">12.0%</span>（729人，斷崖）</div>
 <div class="ac-steps">
   <div>① 引導地圖加主線方向箭頭標記</div>
   <div>② D1 Push 授權（第1次簽到後觸發）</div>
@@ -1188,7 +1196,9 @@ const D_PCU={dates:['6/8','6/9','6/10','6/11','6/12','6/13','6/14'],pcu:[5,245,2
 const D_DAU={dates:['6/8','6/9','6/10','6/11','6/12','6/13','6/14'],AOS:[4,1948,1304,751,587,504,463],IOS:[1,325,272,146,140,111,80],PC:[6,262,144,91,85,44,45]};
 const D_RET={dates:['6/8','6/9','6/10','6/11','6/12','6/13','6/14'],cohort:[4,2371,1195,471,338,265,271],d1:[25,19.9,19.8,23.1,23.1,20.4,5.2],d3:[25,9.3,9.6,10.6,3,0,0]};
 const D_LV={labels:['Lv01~10','Lv11~30','Lv31~50','Lv51~100','Lv101~150','Lv151~200','Lv201~300','Lv301~400','Lv401~500'],counts:[2021,1338,545,471,227,91,142,55,19],pcts:[41.2,27.3,11.1,9.6,4.6,1.9,2.9,1.1,0.4]};
-const D_FUNNEL=[{label:'安裝 App',count:3544,pct:100.0},{label:'初始化',count:3438,pct:97.0},{label:'CDN 開始下載',count:2993,pct:84.5},{label:'CDN 下載完成',count:2384,pct:67.3},{label:'顯示登入頁',count:2619,pct:73.9},{label:'完成註冊',count:2507,pct:70.7},{label:'進入伺服器',count:2246,pct:63.4},{label:'開始新手引導',count:2130,pct:60.1},{label:'完成第1次簽到',count:2139,pct:60.4},{label:'完成第2次簽到',count:440,pct:12.4}];
+const D_FUNNEL_COMBINED=[{label:'安裝 App',count:6053,pct:100.0},{label:'啟動 App',count:5940,pct:98.1},{label:'CDN 下載完成',count:4506,pct:74.4},{label:'顯示登入頁',count:4466,pct:73.8},{label:'進入伺服器',count:3996,pct:66.0},{label:'開始新手引導',count:3813,pct:63.0},{label:'新手引導 Step 1',count:3668,pct:60.6},{label:'新手引導 Step 2',count:3337,pct:55.1},{label:'新手引導 Step 4',count:2709,pct:44.8},{label:'完成新手引導',count:2645,pct:43.7},{label:'達到 Lv10',count:2140,pct:35.4},{label:'達到 Lv30',count:988,pct:16.3},{label:'完成第2次簽到',count:729,pct:12.0}];
+const D_FUNNEL_PAID=[{label:'安裝 App',count:5174,pct:100.0},{label:'啟動 App',count:5056,pct:97.7},{label:'CDN 下載完成',count:4205,pct:81.3},{label:'顯示登入頁',count:4175,pct:80.7},{label:'進入伺服器',count:3763,pct:72.7},{label:'開始新手引導',count:3621,pct:70.0},{label:'新手引導 Step 1',count:3482,pct:67.3},{label:'新手引導 Step 2',count:3154,pct:61.0},{label:'新手引導 Step 4',count:2548,pct:49.2},{label:'完成新手引導',count:2490,pct:48.1},{label:'達到 Lv10',count:1998,pct:38.6},{label:'達到 Lv30',count:890,pct:17.2},{label:'完成第2次簽到',count:668,pct:12.9}];
+let currentFunnelData=D_FUNNEL_COMBINED;
 const D_CCU_H=[0,0,0.4,18.3,32.9,36.8,36.8,34.0,34.2,33.0,30.3,33.6,34.6,38.1,38.8,38.3,41.8,70.9,34.5,31.1,28.6,27.4,25.1,24.7];
 const D_LTV=[{date:'6/9 TW',payers:11,d1:510,d3:614,d7:661},{date:'6/10 TW',payers:6,d1:206,d3:218,d7:240},{date:'6/13 TW',payers:2,d1:57,d3:57,d7:57},{date:'6/14 TW',payers:1,d1:39,d3:39,d7:39}];
 const D_FB={dates:['6/8','6/9','6/10','6/11','6/12','6/13','6/14'],spend:[7053.7,25917.9,8514.0,471.1,575.9,409.0,444.7]};
@@ -1260,13 +1270,21 @@ function renderExchTable(){
     return `<tr><td>#${r.role}</td><td class="td-num"><b>Lv${r.max_lv}</b></td><td class="td-num">${r.days}天</td><td class="td-num">${r.hrs}h</td><td>${badge}</td></tr>`;
   }).join('');
 }
+function switchFunnel(mode){
+  currentFunnelData=mode==='paid'?D_FUNNEL_PAID:D_FUNNEL_COMBINED;
+  document.getElementById('btnFunnelCombined').className='funnel-btn'+(mode==='combined'?' funnel-btn-active':'');
+  document.getElementById('btnFunnelPaid').className='funnel-btn'+(mode==='paid'?' funnel-btn-active':'');
+  const sub=document.getElementById('funnelSubtitle');
+  if(sub) sub.textContent=mode==='paid'?'僅付費用戶（Attributed），BASE=5,174':'付費＋自然量合併，BASE=6,053';
+  renderFunnel();
+}
 function renderFunnel(){
-  const colors=['#2563eb','#3b82f6','#0ea5e9','#06b6d4','#14b8a6','#10b981','#22c55e','#84cc16','#eab308','#ef4444'];
-  document.getElementById('funnelContainer').innerHTML=D_FUNNEL.map((item,i)=>{
-    const prev=i>0?D_FUNNEL[i-1].count:item.count;
+  const colors=['#2563eb','#3b82f6','#0ea5e9','#06b6d4','#14b8a6','#10b981','#22c55e','#84cc16','#eab308','#f97316','#ef4444','#dc2626','#b91c1c'];
+  document.getElementById('funnelContainer').innerHTML=currentFunnelData.map((item,i)=>{
+    const prev=i>0?currentFunnelData[i-1].count:item.count;
     const drop=i>0?((prev-item.count)/prev*100).toFixed(1):'';
     const dropHtml=drop>0?`<span style="color:var(--red);font-size:11px;width:60px;text-align:right;flex-shrink:0;">▼${drop}%</span>`:`<span style="width:60px;flex-shrink:0;"></span>`;
-    return `<div class="funnel-item"><div class="funnel-label">${item.label}</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${item.pct}%;background:${colors[i]};">${item.pct>18?item.count.toLocaleString():''}</div></div><div class="funnel-pct" style="color:${item.pct<30?'var(--red)':'var(--text)'}"><b>${item.pct}%</b></div>${dropHtml}</div>`;
+    return `<div class="funnel-item"><div class="funnel-label">${item.label}</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${item.pct}%;background:${colors[i]};">${item.pct>8?item.count.toLocaleString():''}</div></div><div class="funnel-pct" style="color:${item.pct<30?'var(--red)':'var(--text)'}"><b>${item.pct}%</b></div>${dropHtml}</div>`;
   }).join('');
 }
 function renderProductTable(){
