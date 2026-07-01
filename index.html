@@ -191,14 +191,14 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
       <span class="badge badge-live">● 已上線</span>
     </div>
 
-    <div class="game-card inactive">
+    <div class="game-card active" onclick="toggleGame('MTG')" id="card-MTG">
       <div class="game-icon">
         <img src="./assets/mtg_icon.png" alt="MTG"
              onerror="this.style.display='none';this.parentNode.innerHTML='MTG'">
       </div>
       <div class="game-name">MTG</div>
-      <div class="game-sub">&nbsp;</div>
-      <span class="badge badge-soon">⏳ 即將上線</span>
+      <div class="game-sub">MS 合金彈頭</div>
+      <span class="badge badge-live">● 已上線</span>
     </div>
 
     <div class="game-card inactive">
@@ -262,7 +262,12 @@ const GAMES = {
   },
   CS2: {
     reports: [
-      { date: '2026/06/08～06/14', label: 'CBT2 封測後測報告', url: './CS2/dashboard.html' }
+      { date: '2026/06/08～06/14', label: 'CBT2 封測後測報告', url: './CS2_CBT2_Dashboard_v17.html' }
+    ]
+  },
+  MTG: {
+    reports: [
+      { date: '2026/07/01', label: '台港澳星馬精英市場戰情室 v4', url: './MS/MS_Dashboard_v4.html' }
     ]
   }
   // 其他遊戲上線後在此新增
@@ -312,3 +317,4 @@ function closePanel() {
 
 </body>
 </html>
+         
