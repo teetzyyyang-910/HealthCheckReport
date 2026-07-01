@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MS 合金彈頭 精英市場看板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#f8fafc;--bg2:#ffffff;--bg3:#f1f5f9;
+  --border:#e2e8f0;--text:#1e293b;--text2:#64748b;
+  --accent:#2563eb;--red:#dc2626;--orange:#d97706;
+  --green:#16a34a;--purple:#7c3aed;
+  --hl-r:#dc2626;--hl-o:#d97706;--hl-g:#16a34a;--hl-b:#2563eb;--hl-p:#7c3aed;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft JhengHei',sans-serif;background:var(--bg);color:var(--text);font-size:14px;margin:0;padding:0;}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 16px;position:sticky;top:0;z-index:100;width:100%;box-sizing:border-box;}
+.header-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.header-title{font-size:19px;font-weight:800;color:var(--text);}
+.header-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+.header-date{font-size:11px;color:var(--text2);}
+.scope-tag{display:inline-block;background:rgba(37,99,235,.1);color:var(--accent);border:1px solid rgba(37,99,235,.3);border-radius:5px;padding:2px 8px;font-size:11px;font-weight:700;margin-left:8px;}
+.global-tag{display:inline-block;background:rgba(100,116,139,.1);color:#475569;border:1px solid rgba(100,116,139,.3);border-radius:5px;padding:2px 6px;font-size:10px;font-weight:700;margin-left:4px;vertical-align:middle;}
+.chip-nav{display:flex;gap:8px;flex-wrap:wrap;padding:6px 16px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:52px;z-index:99;}
+.chip{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:12px;font-weight:600;transition:all .18s;white-space:nowrap;}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+.chip.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:5px;vertical-align:middle;white-space:nowrap;}
+.status-danger{background:rgba(220,38,38,.09);color:#b91c1c;border:1px solid rgba(220,38,38,.28);}
+.status-warning{background:rgba(217,119,6,.09);color:#b45309;border:1px solid rgba(217,119,6,.28);}
+.status-success{background:rgba(22,163,74,.09);color:#15803d;border:1px solid rgba(22,163,74,.28);}
+.status-vip{background:rgba(124,58,237,.09);color:#6d28d9;border:1px solid rgba(124,58,237,.28);}
+.status-info{background:rgba(37,99,235,.09);color:#1d4ed8;border:1px solid rgba(37,99,235,.28);}
+.hl-r{color:var(--hl-r);font-weight:700;}
+.hl-o{color:var(--hl-o);font-weight:700;}
+.hl-g{color:var(--hl-g);font-weight:700;}
+.hl-b{color:var(--hl-b);font-weight:700;}
+.hl-p{color:var(--hl-p);font-weight:700;}
+.main{width:100%;box-sizing:border-box;padding:12px 16px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:28px;}
+.kpi-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:2px 0 0 2px;}
+.kpi-card.red::before{background:var(--red);}
+.kpi-card.orange::before{background:var(--orange);}
+.kpi-card.green::before{background:var(--green);}
+.kpi-card.blue::before{background:var(--accent);}
+.kpi-card.purple::before{background:var(--purple);}
+.kpi-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;}
+.kpi-value{font-size:26px;font-weight:800;margin:5px 0 3px;color:var(--text);}
+.kpi-delta{font-size:11px;color:var(--text2);}
+.kpi-icon{position:absolute;right:14px;top:14px;font-size:22px;opacity:.15;}
+.section{margin-bottom:36px;}
+.section-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+.card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.card-title-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.scope-toggle{display:flex;gap:4px;flex-shrink:0;}
+.stog{padding:2px 9px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:11px;font-weight:600;transition:all .15s;white-space:nowrap;}
+.stog:hover{border-color:var(--accent);color:var(--accent);}
+.stog.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.stog.active.gl{background:#475569;border-color:#475569;}
+.chart-wrap{position:relative;height:220px;}
+.chart-wrap-lg{position:relative;height:260px;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th{background:var(--bg3);color:var(--text2);font-weight:600;padding:8px 10px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--border);}
+td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8fafc;}
+.tbl-scroll{overflow-x:auto;}
+.dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+@media(max-width:700px){.dim-grid{grid-template-columns:1fr;}}
+.dim-card{border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.6;}
+.dim-card.phenom{background:rgba(37,99,235,.06);border-left:3px solid var(--accent);}
+.dim-card.cause{background:rgba(217,119,6,.06);border-left:3px solid var(--orange);}
+.dim-card.impact{background:rgba(220,38,38,.06);border-left:3px solid var(--red);}
+.dim-card.action{background:rgba(22,163,74,.06);border-left:3px solid var(--green);}
+.dim-label{font-weight:700;margin-bottom:4px;font-size:11px;text-transform:uppercase;}
+.dim-card.phenom .dim-label{color:var(--accent);}
+.dim-card.cause .dim-label{color:var(--orange);}
+.dim-card.impact .dim-label{color:var(--red);}
+.dim-card.action .dim-label{color:var(--green);}
+.action-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+.action-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;border-left-width:4px;border-left-style:solid;}
+.action-card.p0-card{border-left-color:var(--red);}
+.action-card.p1-card{border-left-color:var(--orange);}
+.action-card.p2-card{border-left-color:var(--accent);}
+.action-card.p3-card{border-left-color:var(--green);}
+.action-priority{font-size:10px;font-weight:800;letter-spacing:1px;margin-bottom:6px;}
+.p0{color:var(--red);}.p1{color:var(--orange);}.p2{color:var(--accent);}.p3{color:var(--green);}
+.action-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.action-body{font-size:12px;color:var(--text2);line-height:1.7;}
+.warn-bar{background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#b91c1c;font-weight:600;}
+.info-bar{background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#1d4ed8;font-weight:600;}
+.progress-bar-wrap{background:var(--bg3);border-radius:4px;height:8px;margin-top:4px;}
+.progress-bar{height:8px;border-radius:4px;}
+/* Market cards */
+.mkt-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px;}
+@media(max-width:800px){.mkt-grid{grid-template-columns:repeat(2,1fr);}}
+.mkt-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px 10px;text-align:center;}
+.mkt-flag{font-size:24px;margin-bottom:4px;}
+.mkt-name{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:4px;}
+.mkt-rev{font-size:16px;font-weight:800;color:var(--text);}
+.mkt-arpu{font-size:11px;color:var(--accent);font-weight:700;}
+.mkt-vip{font-size:10px;color:var(--text2);margin-top:4px;}
+/* Density meter */
+.density-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.funnel-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:11.5px;}
+.funnel-label{width:140px;flex-shrink:0;color:var(--text);font-weight:600;}
+.funnel-bar{height:12px;border-radius:4px;transition:width .4s ease;}
+.funnel-val{width:60px;flex-shrink:0;text-align:right;font-size:11px;color:var(--text2);font-weight:700;}
+.density-label{font-size:12px;min-width:80px;font-weight:600;}
+.density-bar{flex:1;background:var(--bg3);border-radius:4px;height:10px;overflow:hidden;}
+.density-fill{height:100%;border-radius:4px;}
+.density-val{font-size:12px;font-weight:700;min-width:50px;text-align:right;}
+
+/* === P0~P3 Strategy Strip === */
+.p-strip-wrap{margin-bottom:20px;}
+.p-strip{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:10px 10px 0 0;overflow:hidden;}
+.p-strip-card{padding:14px 16px;border-right:1px solid var(--border);background:var(--bg2);transition:background .15s;}.p-strip-card:hover{background:var(--bg3);}
+.p-strip-card:last-child{border-right:none;}
+.p-strip-hd{display:flex;align-items:flex-start;gap:8px;margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid var(--border);}
+.ps-badge{font-size:10px;font-weight:800;letter-spacing:.4px;padding:2px 9px;border-radius:10px;white-space:nowrap;flex-shrink:0;margin-top:1px;}
+.ps-b-p0{background:rgba(220,38,38,.12);color:#b91c1c;}
+.ps-b-p1{background:rgba(217,119,6,.12);color:#b45309;}
+.ps-b-p2{background:rgba(37,99,235,.12);color:#1d4ed8;}
+.ps-b-p3{background:rgba(22,163,74,.12);color:#15803d;}
+.p-strip-title{font-size:12.5px;font-weight:700;color:var(--text);line-height:1.3;}
+.p-strip-sub{font-size:10.5px;color:var(--text2);margin-top:1px;}
+.p-strip-body{font-size:11.5px;color:var(--text);line-height:1.78;list-style:none;padding:0;margin:0;}
+.p-strip-body li{margin-bottom:2px;}
+.p-strip-body li::before{content:"→ ";color:var(--text2);}
+.p-decision{background:rgba(220,38,38,.04);border:1px solid rgba(220,38,38,.18);border-top:none;border-radius:0 0 10px 10px;padding:8px 18px;font-size:11px;color:#b91c1c;font-weight:600;}
+@media(max-width:900px){.p-strip{grid-template-columns:1fr 1fr;}}
+@media(max-width:500px){.p-strip{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-title" style="display:flex;align-items:center;gap:10px;"><img src="ms_icon.png" style="width:34px;height:34px;border-radius:8px;vertical-align:middle;"> MS 合金彈頭 精英市場看板<span class="scope-tag">台港澳星馬</span></div>
+      <div class="header-sub">MS_A664 · VNG · 3年以上運營 ｜ 精英市場：TW / HK / MO / SG / MY ｜ <span style="color:#475569">🌐 標注為全區數據</span></div>
+    </div>
+    <div class="header-date">📅 數據截止：2026-06-29 · 唐哥專屬報告系統</div>
+  </div>
+</div>
+
+<!-- CHIP NAV -->
+<div class="chip-nav" id="chipNav">
+  <button class="chip chip-all active" onclick="filterSec('all')">📋 全部數據</button>
+  <button class="chip" onclick="filterSec('retention')">🚨 流失與留存</button>
+  <button class="chip" onclick="filterSec('vip')">👑 VIP與商業化</button>
+  <button class="chip" onclick="filterSec('pareto')">📊 帕累托分析</button>
+  <button class="chip" onclick="filterSec('market')">🌏 地區拆分</button>
+  <button class="chip" onclick="filterSec('economy')">🪙 貨幣與外掛</button>
+  <button class="chip" onclick="filterSec('action')">💡 營運行動策略</button>
+</div>
+
+<div class="main">
+
+<!-- P0~P3 行動策略欄 -->
+<div class="p-strip-wrap">
+  <div class="p-strip">
+    <div class="p-strip-card" onclick="jumpSec('vip')" style="cursor:pointer;" title="跳至 VIP 分析">
+      <div class="p-strip-hd">
+        <span class="ps-badge ps-b-p0">P0 立即救火</span>
+        <div><div class="p-strip-title">Revenue / VIP 危局</div></div>
+      </div>
+      <ul class="p-strip-body">
+        <li>▲ 海豚 <b>61.8%</b> 流失（500/809人 ≥30天未登入），月損估 <b class="hl-r">~$332K</b></li>
+        <li>本週建立 65 鯨魚個人化維護清單；沉睡 13 頭 1v1 主動聯繫</li>
+        <li>S110 ARPPU 最高（$1,215），優先守護旗艦服頂位付費者</li>
+      </ul>
+    </div>
+    <div class="p-strip-card" onclick="jumpSec('retention')" style="cursor:pointer;" title="跳至 流失與留存">
+      <div class="p-strip-hd">
+        <span class="ps-badge ps-b-p1">P1 本月必做</span>
+        <div><div class="p-strip-title">Retention / 留存修復</div></div>
+      </div>
+      <ul class="p-strip-body">
+        <li>iOS 24h 轉化率 14.9% vs AOS 9.3%，分平台差異化破冰禮包</li>
+        <li>50h+ 玩家付費率 52.3%，深度沉浸機制（公會/賽季）為留存錨點</li>
+        <li>強化新手村前 3 天引導，降低 Lv.1-9 D1 流失（占全量 94.8%）</li>
+      </ul>
+    </div>
+    <div class="p-strip-card" onclick="jumpSec('economy')" style="cursor:pointer;" title="跳至 貨幣與外掛">
+      <div class="p-strip-hd">
+        <span class="ps-badge ps-b-p2">P2 下半規劃</span>
+        <div><div class="p-strip-title">Economy / 經濟健康</div></div>
+      </div>
+      <ul class="p-strip-body">
+        <li>MY 市場 ARPU $840/人，僅 HK $6,216 的 13%，評估在地定價策略</li>
+        <li>主貨幣通縮（6月 Burn &gt; Mint），重組商城、審查殭屍道具</li>
+        <li>8 個外掛高風險帳號（倍率 1,523x~4,237x），確認封禁狀態</li>
+      </ul>
+    </div>
+    <div class="p-strip-card" onclick="jumpSec('action')" style="cursor:pointer;" title="跳至 營運行動策略">
+      <div class="p-strip-hd">
+        <span class="ps-badge ps-b-p3">P3 長期優化</span>
+        <div><div class="p-strip-title">Optimization / 擴張</div></div>
+      </div>
+      <ul class="p-strip-body">
+        <li>shop_a 首儲 $0（34,559人），重設最低破冰定價（$0.99 門檻）</li>
+        <li>TW 鯨魚 0.70/萬 vs HK 1.73/萬，差距 35 頭，啟動「衝鯨月」</li>
+        <li>對標精英市場新 KPI：ARPPU 目標 $300+、海豚流失率 &lt;40%</li>
+      </ul>
+    </div>
+  </div>
+  <div class="p-decision">▲ 決策規則：任何指標衰幅連續下降 &gt;5%，或 VIP 預警亮燈 → 自動升為 P0，立即召開緊急非常態分析。</div>
+</div>
+
+
+<!-- KPI CARDS -->
+<div class="kpi-grid">
+  <div class="kpi-card orange">
+    <div class="kpi-icon">📉</div>
+    <div class="kpi-label">精英市場 MAU（2026-06）</div>
+    <div class="kpi-value">3,102</div>
+    <div class="kpi-delta">▼7.4% vs 上月 3,351 ｜ 全區：21,404 <span class="badge status-warning">穩定下行</span></div>
+  </div>
+  <div class="kpi-card orange">
+    <div class="kpi-icon">💰</div>
+    <div class="kpi-label">精英市場月收入（至29日）</div>
+    <div class="kpi-value">$59,227</div>
+    <div class="kpi-delta">部分月 ｜ 5月完整：$239,700 ｜ 全區：$141,600 <span class="badge status-warning">部分月</span></div>
+  </div>
+  <div class="kpi-card green">
+    <div class="kpi-icon">🎯</div>
+    <div class="kpi-label">精英市場 CVR（2026-05 完整）</div>
+    <div class="kpi-value hl-g">23.2%</div>
+    <div class="kpi-delta">全區同期僅 11.0%，精英市場付費轉化超 2x <span class="badge status-success">高品質</span></div>
+  </div>
+  <div class="kpi-card red">
+    <div class="kpi-icon">👑</div>
+    <div class="kpi-label">精英市場海豚VIP流失率</div>
+    <div class="kpi-value hl-r">61.8%</div>
+    <div class="kpi-delta">500/809 海豚≥30天未登入 ｜ 全區：53.8% <span class="badge status-danger">高危</span></div>
+  </div>
+  <div class="kpi-card green">
+    <div class="kpi-icon">🐳</div>
+    <div class="kpi-label">精英市場 ARPPU（2026-05）</div>
+    <div class="kpi-value">$307.67</div>
+    <div class="kpi-delta">全區同期 17,613 ｜ 精英 ARPPU 溢價 75% <span class="badge status-success">高價值</span></div>
+  </div>
+  <div class="kpi-card blue">
+    <div class="kpi-icon">⚖️</div>
+    <div class="kpi-label">主貨幣通膨係數（全區 2026-06）<span class="global-tag">🌐</span></div>
+    <div class="kpi-value hl-r">0.74</div>
+    <div class="kpi-delta">Mint 196M &lt; Burn 265M（Deflation）<span class="badge status-warning">微通縮</span></div>
+  </div>
+  <div class="kpi-card purple">
+    <div class="kpi-icon">🤖</div>
+    <div class="kpi-label">外掛帳號高風險筆數（全區歷史）<span class="global-tag">🌐</span></div>
+    <div class="kpi-value">8</div>
+    <div class="kpi-delta">收益倍率最高 4,237x，單日登入 509次 <span class="badge status-danger">已記錄</span></div>
+  </div>
+  <div class="kpi-card purple">
+    <div class="kpi-icon">📦</div>
+    <div class="kpi-label">精英市場 Top 1% 收入佔比</div>
+    <div class="kpi-value hl-p">63.3%</div>
+    <div class="kpi-delta">1,150人貢獻 $17.9M ｜ 全區：72.6% <span class="badge status-vip">高度集中</span></div>
+  </div>
+</div>
+
+<!-- ===== 流失與留存 ===== -->
+<div class="section" data-sec="retention">
+  <div class="section-title">🚨 流失診斷 · 留存曲線 · 新手村</div>
+
+  <div class="info-bar">📍 本區塊 MAU/DAU 及留存率均使用<b>台港澳星馬精英市場</b>數據；流失等級分布、回流玩家、24小時分布使用 🌐 全區數據（暫無市場拆分）</div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title-row">
+        <div class="card-title">MAU / avg DAU 月趨勢（近18個月）</div>
+        <div class="scope-toggle">
+          <button class="stog active" onclick="toggleScope(this,'chartMAU','elite')">🎯 精英市場</button>
+          <button class="stog gl" onclick="toggleScope(this,'chartMAU','global')">🌐 全區</button>
+        </div>
+      </div>
+      <div class="chart-wrap-lg"><canvas id="chartMAU"></canvas></div>
+      <div class="dim-grid" style="margin-top:10px;">
+        <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>精英市場 MAU 從 2025-01 <span class="hl-b">9,001</span> 持續下滑至 2026-06 <span class="hl-r">3,102</span>（-65.5%），18個月持續單邊下行，avgDAU/MAU 比率約 <span class="hl-o">62%</span>（健康），但絕對量萎縮嚴重</div>
+        <div class="dim-card cause"><div class="dim-label">🟡 原因</div>老產品自然衰退 + 缺乏大型版本更新拉動；精英市場（TW/HK/SG）玩家對內容品質要求高，版本更新速度不足直接觸發流失</div>
+        <div class="dim-card impact"><div class="dim-label">🔴 影響</div>MAU 跌破 3,000 為危險臨界點——活躍基數過小將導致 PvP/社交功能體驗斷崖，加速尾部玩家流失（<span class="hl-r">死亡螺旋風險</span>）</div>
+        <div class="dim-card action"><div class="dim-label">🟢 行動</div>① 本月啟動海豚回流計劃，拉回 MAU；② 策劃一次「週年慶版本」提升內容密度；③ 設 MAU <span class="hl-r">2,500</span> 為紅線警戒值，觸發即升級為 P0 緊急行動</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">D1 / D7 / D30 留存率（精英市場 Cohort，近12個月）<span class="badge status-success">遠優於全區</span></div>
+      <div class="chart-wrap-lg"><canvas id="chartRetention"></canvas></div>
+      <p style="margin-top:8px;font-size:11px;color:var(--text2);">精英市場 D7 平均 <b class="hl-g">26%</b>，全區同期僅 <b class="hl-r">9%</b>；D30 平均 <b class="hl-g">17%</b>，全區 <b class="hl-r">2%</b></p>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">流失玩家等級分布（14天未登入）<span class="global-tag">🌐 全區</span></div>
+      <div class="tbl-scroll">
+        <table>
+          <tr><th>等級段</th><th>流失人數</th><th>佔比</th><th>狀態</th></tr>
+          <tr><td><b>Lv.1-9 新手段</b></td><td class="hl-r">51,018,655</td><td class="hl-r">94.8%</td><td><span class="badge status-danger">主要流失段</span></td></tr>
+          <tr><td>Lv.10-19</td><td>1,422,254</td><td>2.6%</td><td><span class="badge status-warning">次要</span></td></tr>
+          <tr><td>Lv.20-29</td><td>490,401</td><td>0.9%</td><td><span class="badge status-success">輕微</span></td></tr>
+          <tr><td>Lv.30-49</td><td>1,031,162</td><td>1.9%</td><td><span class="badge status-warning">觀察</span></td></tr>
+          <tr><td>Lv.50-79</td><td>447,424</td><td>0.8%</td><td><span class="badge status-success">輕微</span></td></tr>
+          <tr><td>Lv.80+</td><td>386,134</td><td>0.7%</td><td><span class="badge status-success">輕微</span></td></tr>
+        </table>
+      </div>
+      <div class="dim-grid" style="margin-top:14px;">
+        <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>Lv.1-9 佔流失玩家 94.8%，絕大多數在新手村流失，從未到達中期玩法</div>
+        <div class="dim-card action"><div class="dim-label">🟢 行動</div>縮短首次「爽感」體驗至 5 分鐘；增加 Lv.5 解鎖獎勵；設置前 3 天登入豐厚獎勵</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">回流玩家分布（沉睡≥30天再次登入）<span class="global-tag">🌐 全區</span></div>
+      <div class="chart-wrap"><canvas id="chartReturnees"></canvas></div>
+      <div class="dim-grid" style="margin-top:10px;">
+        <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>30-59天沉睡回流最多（349K），180天以上仍有 264K 回流，召回活動有長效作用</div>
+        <div class="dim-card impact"><div class="dim-label">🔴 影響</div>超長沉睡（>180天）玩家若二次流失，代表版本落差過大；精英市場海豚中此情況尤嚴重</div>
+      </div>
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;">📊 回流後 D7 留存診斷（全區實測，2025-01 至今）<span class="badge status-success" style="margin-left:8px;">已驗證</span></div>
+        <div class="tbl-scroll">
+          <table>
+            <tr><th>沉睡段</th><th>回流事件數</th><th>D7 實測留存</th><th>評級</th><th>回流品質</th></tr>
+            <tr><td><b>30-59天</b></td><td>63,426</td><td class="hl-g"><b>70.6%</b></td><td><span class="badge status-success">優秀</span></td><td>短期沉睡回流質量最高，遊戲習慣尚未斷裂</td></tr>
+            <tr><td><b>60-89天</b></td><td>24,388</td><td class="hl-g"><b>63.2%</b></td><td><span class="badge status-success">良好</span></td><td>超過2個月仍有高留存，說明召回活動效果扎實</td></tr>
+            <tr><td><b>90-179天</b></td><td>19,988</td><td class="hl-o"><b>46.2%</b></td><td><span class="badge status-warning">尚可</span></td><td>近半年沉睡仍有近半留存，版本落差影響開始顯現</td></tr>
+            <tr><td><b>180天以上</b></td><td>17,067</td><td class="hl-o"><b>45.0%</b></td><td><span class="badge status-warning">尚可</span></td><td>超半年沉睡後 D7 仍達 45%，遠優於行業均值</td></tr>
+          </table>
+        </div>
+        <div class="dim-grid" style="margin-top:10px;">
+          <div class="dim-card phenom"><div class="dim-label">🟢 關鍵發現（修正原推估）</div>實測 D7 遠優於預期：即使超過 180 天未登入的老玩家，回流後 D7 留存仍達 <b class="hl-g">45%</b>，30-59 天短期沉睡者更高達 <b class="hl-g">70.6%</b>。這代表遊戲對老玩家的內容黏著力仍強——<b>召回 ROI 問題的核心不是二次流失率，而是精英市場回流人數絕對量的持續萎縮</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">24小時登入熱力分布（近30天）<span class="global-tag">🌐 全區</span></div>
+    <div class="chart-wrap"><canvas id="chartHourly"></canvas></div>
+    <p style="margin-top:8px;font-size:11px;color:var(--text2);">尖峰時段：<b>12:00-14:00</b>（最高 9,980 UV）· 凌晨 3-5點次高，含 HK/TW 夜遊玩家</p>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">首儲商品破冰分析 Top 10（精英市場 TW/HK/MO/SG/MY，新玩家第一筆消費）<span class="badge status-info">精英市場</span></div>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th>商品名稱</th><th>PID</th><th>首儲人數</th><th>佔比</th><th>均額(USD)</th><th>總收入(USD)</th><th>狀態</th></tr>
+        <tr><td><b>60 紅寶石</b></td><td style="font-size:10px;color:var(--text2)">metalslug_099 · $0.99</td><td class="hl-g"><b>79,308</b></td><td class="hl-g">19.9%</td><td>$1.03</td><td>$155,600</td><td><span class="badge status-success">#1 破冰</span></td></tr>
+        <tr><td><b>裝備強化可選包</b></td><td style="font-size:10px;color:var(--text2)">shop_499 · $4.99</td><td>36,874</td><td>9.2%</td><td>$5.15</td><td>$2.19M</td><td><span class="badge status-vip">高價值</span></td></tr>
+        <tr><td><b>鉅惠啟程禮包</b></td><td style="font-size:10px;color:var(--text2)">shop_a · 免費</td><td>34,559</td><td>8.7%</td><td>$0.60</td><td>$37,700</td><td><span class="badge status-info">引流品</span></td></tr>
+        <tr><td><b>每日高級禮包</b></td><td style="font-size:10px;color:var(--text2)">shop_999 · $9.99</td><td>30,797</td><td>7.7%</td><td>$10.22</td><td>$1.34M</td><td><span class="badge status-vip">高 ROI</span></td></tr>
+        <tr><td><b>310 紅寶石</b></td><td style="font-size:10px;color:var(--text2)">metalslug_499 · $4.99</td><td>26,061</td><td>6.5%</td><td>$5.18</td><td>$235K</td><td><span class="badge status-info">中端</span></td></tr>
+        <tr><td><b>成長基金</b></td><td style="font-size:10px;color:var(--text2)">shop_1499 · $14.99</td><td>21,048</td><td>5.3%</td><td>$15.32</td><td>$767K</td><td><span class="badge status-vip">高 ROI</span></td></tr>
+        <tr><td><b>幸運盒</b></td><td style="font-size:10px;color:var(--text2)">shop_099 · $0.99</td><td>20,807</td><td>5.2%</td><td>$1.05</td><td>$236K</td><td><span class="badge status-success">好評入口</span></td></tr>
+        <tr><td><b>630 紅寶石</b></td><td style="font-size:10px;color:var(--text2)">metalslug_999 · $9.99</td><td>20,395</td><td>5.1%</td><td>$10.19</td><td>$391K</td><td><span class="badge status-info">中高端</span></td></tr>
+        <tr><td><b>1300 紅寶石</b></td><td style="font-size:10px;color:var(--text2)">metalslug_1999 · $19.99</td><td>17,656</td><td>4.4%</td><td>$20.82</td><td>$959K</td><td><span class="badge status-vip">高端</span></td></tr>
+        <tr><td><b>6500 紅寶石</b></td><td style="font-size:10px;color:var(--text2)">metalslug_9999 · $99.99</td><td>6,999</td><td>1.8%</td><td>$112.68</td><td>$7.07M</td><td><span class="badge status-vip">鯨魚入口</span></td></tr>
+      </table>
+    </div>
+    <div class="dim-grid" style="margin-top:12px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>精英市場 $0.99 首儲率 19.9%，低於全區 23.9%；但 $4.99/$9.99 首儲比例顯著更高，反映精英玩家消費力更強</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>HK/SG/TW 玩家對低門檻包興趣較低，直接跳中高端，$499 / $999 首儲分別佔 9.2% / 7.7%</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>41.2% 精英首儲玩家只買一次即流失（vs 全區 50.8%），仍有大量首儲後流失的轉化損失</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>首儲後第 3-7 天推送「第二包限時優惠」；針對 $499/$999 首儲者推升 $4999 月活禮包</div>
+    </div>
+  </div>
+</div>
+
+  <!-- P1.4 新手村 24-72hr 任務漏斗 -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">🗺️ 新手村前3日任務漏斗（新玩家任務完成 × 留存診斷）<span class="global-tag">🌐 全區</span><span class="badge status-danger">🚨 Day0→Day1 流失 62%</span></div>
+    <div class="grid-2">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:12px;">▎新玩家前3日累計任務完成人次漏斗</div>
+        <div class="funnel-row"><span class="funnel-label">🎮 Day 0（入場）</span><div class="funnel-bar" style="width:100%;background:rgba(37,99,235,.75)"></div><span class="funnel-val" style="color:var(--accent);font-weight:700">663,441</span></div>
+        <div class="funnel-row"><span class="funnel-label">⚔️ Day 1（次日）</span><div class="funnel-bar" style="width:37.8%;background:rgba(220,38,38,.75)"></div><span class="funnel-val" style="color:var(--red);font-weight:700">250,838</span></div>
+        <div class="funnel-row"><span class="funnel-label">🏅 Day 2（第3日）</span><div class="funnel-bar" style="width:19.2%;background:rgba(217,119,6,.7)"></div><span class="funnel-val" style="color:var(--orange);font-weight:700">127,351</span></div>
+        <div class="funnel-row"><span class="funnel-label">🌟 Day 3（第4日）</span><div class="funnel-bar" style="width:13.7%;background:rgba(100,116,139,.65)"></div><span class="funnel-val" style="font-weight:700">90,829</span></div>
+        <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;">
+          <div style="background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.2);border-radius:6px;padding:8px;">
+            <div style="font-size:18px;font-weight:800;color:var(--red);">-62.2%</div>
+            <div style="font-size:10px;color:var(--text2);">Day0→Day1 流失</div>
+          </div>
+          <div style="background:rgba(217,119,6,.07);border:1px solid rgba(217,119,6,.2);border-radius:6px;padding:8px;">
+            <div style="font-size:18px;font-weight:800;color:var(--orange);">-49.3%</div>
+            <div style="font-size:10px;color:var(--text2);">Day1→Day2 流失</div>
+          </div>
+          <div style="background:rgba(100,116,139,.07);border:1px solid rgba(100,116,139,.2);border-radius:6px;padding:8px;">
+            <div style="font-size:18px;font-weight:800;color:var(--text2);">-28.7%</div>
+            <div style="font-size:10px;color:var(--text2);">Day2→Day3 流失</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;">▎熱點任務（Day 0 Top 5，依完成人次）</div>
+        <div class="tbl-scroll">
+          <table>
+            <tr><th>Task ID</th><th>Day 0 完成人次</th><th>占比</th></tr>
+            <tr><td>10000000</td><td class="hl-g"><b>40,750</b></td><td>6.1%</td></tr>
+            <tr><td>10000100</td><td>35,546</td><td>5.4%</td></tr>
+            <tr><td>10000200</td><td>31,086</td><td>4.7%</td></tr>
+            <tr><td>10000250</td><td>28,004</td><td>4.2%</td></tr>
+            <tr><td>10000300</td><td>25,921</td><td>3.9%</td></tr>
+            <tr style="color:var(--text2);"><td colspan="3" style="font-size:11px;text-align:center;">共 698 個任務，分布在 Day 0</td></tr>
+          </table>
+        </div>
+        <div class="dim-grid" style="margin-top:12px;">
+          <div class="dim-card phenom"><div class="dim-label">🔴 現象</div>Day0→Day1 流失率高達 <b>62.2%</b>（663K→250K），是最大斷層。即新手村第一天結束後，超過六成玩家不再回來。</div>
+          <div class="dim-card cause"><div class="dim-label">🟡 推測原因</div>Task 10000000 系列高度集中，代表新手引導設計可能過於線性，Day 1 缺乏「鉤子」任務留住玩家。</div>
+          <div class="dim-card action"><div class="dim-label">💡 建議</div>在 Day 0 尾端安排「隔日解鎖獎勵」提示；Task 10001000–10001170 系列是 Day1 熱點，可作為 D1 推送通知錨點。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 貨幣與外掛 ===== -->
+<div class="section" data-sec="vip">
+  <div class="section-title">👑 VIP管理 · 商業化效率 · 活動半衰期</div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title-row">
+        <div class="card-title">月 CVR / 收入趨勢（近18個月）<span class="badge status-info" id="cvrBadge">精英市場</span></div>
+        <div class="scope-toggle">
+          <button class="stog active" onclick="toggleScope(this,'chartCVR','elite')">🎯 精英市場</button>
+          <button class="stog gl" onclick="toggleScope(this,'chartCVR','global')">🌐 全區</button>
+        </div>
+      </div>
+      <div class="chart-wrap-lg"><canvas id="chartCVR"></canvas></div>
+      <p style="margin-top:8px;font-size:11px;color:var(--text2);">精英市場 CVR 常態 <b class="hl-g">18-24%</b>，遠超全區 6-11%；ARPPU 峰值 May 2025 達 <b class="hl-p">$491.05</b></p>
+      <div class="dim-grid" style="margin-top:10px;">
+        <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>2026-06 CVR 跌至 <span class="hl-r">13.2%</span>（6月截止29日，部分月份），月收入僅 $59,227；但 2026-04 CVR 反彈至 <span class="hl-g">24.2%</span>，表現出強活動敏感性</div>
+        <div class="dim-card cause"><div class="dim-label">🟡 原因</div>收入高峰（2025-05 66.88M）伴隨高 CVR（21.4%），確認<span class="hl-b">活動上線直接驅動轉化</span>；無活動月份 CVR 自然回落至基準 18%±2%</div>
+        <div class="dim-card impact"><div class="dim-label">🔴 影響</div>精英市場 CVR 雖高達全區 2x，但 MAU 萎縮導致<span class="hl-r">付費人數絕對值持續下滑</span>；高 CVR 無法補償 MAU 流失帶來的總收入下降</div>
+        <div class="dim-card action"><div class="dim-label">🟢 行動</div>① 維持每月至少 1 次付費活動（限時禮包）防止 CVR 跌破 <span class="hl-r">18%</span>；② 聚焦 ARPPU 提升策略（月卡升級、鯨魚禮包）以彌補 MAU 下滑；③ 分析 2025-05 高峰期具體活動，複製其結構</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title-row">
+        <div class="card-title">VIP 分層對比</div>
+        <div class="scope-toggle">
+          <button class="stog active" onclick="toggleScope(this,'chartVipCount','elite');toggleScope2('chartVipRev','elite')">🎯 精英市場</button>
+          <button class="stog gl" onclick="toggleScope(this,'chartVipCount','global');toggleScope2('chartVipRev','global')">🌐 全區</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:6px;">精英市場人數分布</div>
+          <div class="chart-wrap" style="height:180px;"><canvas id="chartVipCount"></canvas></div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:6px;">精英市場收益貢獻</div>
+          <div class="chart-wrap" style="height:180px;"><canvas id="chartVipRev"></canvas></div>
+        </div>
+      </div>
+      <table style="margin-top:12px;">
+        <tr><th>層級</th><th>精英人數</th><th>全區人數</th><th>精英總收益(USD)</th><th>精英人均(USD)</th></tr>
+        <tr><td><b>🐳 鯨魚</b></td><td class="hl-p">65</td><td>118</td><td class="hl-p">$5.90M</td><td class="hl-p">$90,735/人</td></tr>
+        <tr><td><b>🐬 海豚</b></td><td class="hl-b">809</td><td>1,711</td><td>$10.77M</td><td>$13,300/人</td></tr>
+        <tr><td>🦐 小蝦米</td><td>102,033</td><td>500,431</td><td>$11.60M</td><td>$113.68/人</td></tr>
+        <tr><td>0課</td><td class="hl-r">12,030</td><td>106,880</td><td>0</td><td>0</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">📉 活動收入脈衝 × 半衰期分析（精英市場，近18個月）<span class="badge status-warning">行動優先</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
+      <div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">各活動週期：前月基準 / 活動峰值 / 次月衰退</div>
+        <div class="chart-wrap" style="height:210px;"><canvas id="chartHalfLife"></canvas></div>
+        <p style="font-size:10px;color:var(--text2);margin-top:4px;">※ Y 軸單位：USD（recharge_flow 實測值，payamt÷100）</p>
+      </div>
+      <div>
+        <div class="tbl-scroll">
+          <table>
+            <tr><th>活動週期</th><th>推測活動類型</th><th>峰值月收入</th><th>次月衰退率</th><th>半衰期</th><th>評級</th></tr>
+            <tr>
+              <td><b>2025-05</b></td>
+              <td>大型版本 / 週年慶<br><span style="font-size:10px;color:var(--text2);">ARPPU $477 | 付費人數 1,411</span></td>
+              <td class="hl-p"><b>$673,669</b></td>
+              <td class="hl-r"><b>-54.4%</b></td>
+              <td class="hl-r"><b>&lt;1 個月</b></td>
+              <td><span class="badge status-danger">極速衰退</span></td>
+            </tr>
+            <tr>
+              <td><b>2025-08</b></td>
+              <td>季節性活動（長尾平穩）<br><span style="font-size:10px;color:var(--text2);">ARPPU $339 | 付費人數 1,361</span></td>
+              <td class="hl-b">$461,692</td>
+              <td class="hl-o">-23.2%</td>
+              <td class="hl-o">~3 個月</td>
+              <td><span class="badge status-warning">正常衰退</span></td>
+            </tr>
+            <tr>
+              <td><b>2026-01</b></td>
+              <td>農曆新年禮包<br><span style="font-size:10px;color:var(--text2);">ARPPU $481 | 付費人數 955</span></td>
+              <td class="hl-b">$459,509</td>
+              <td class="hl-o">-18.6%</td>
+              <td class="hl-o">~2 個月</td>
+              <td><span class="badge status-warning">中速衰退</span></td>
+            </tr>
+            <tr>
+              <td><b>2026-04</b></td>
+              <td>新賽季上線（CVR 新高）<br><span style="font-size:10px;color:var(--text2);">ARPPU $340 | 付費人數 903</span></td>
+              <td class="hl-o">$307,327</td>
+              <td class="hl-o">-17.4%</td>
+              <td class="hl-r">~1.5 個月</td>
+              <td><span class="badge status-warning">中速衰退</span></td>
+            </tr>
+          </table>
+        </div>
+        <div class="dim-grid" style="margin-top:10px;">
+          <div class="dim-card phenom"><div class="dim-label">🔵 關鍵發現（實測數據）</div>2025-05 歷史峰值 <b class="hl-p">$673,669</b>（ARPPU $477，付費 1,411 人）；2026-04 同期僅 <b class="hl-r">$307,327</b>（-54.4% 絕對值下滑）。<b>ARPPU 從 $477 → $340（-28.7%）+ 付費人數從 1,411 → 903（-36%）雙殺</b>，兩者同步萎縮——不是活動設計問題，而是核心付費用戶池持續流失的結果</div>
+          <div class="dim-card action"><div class="dim-label">🟢 行動</div>① 複製 2025-05 活動商品結構（在 Metabase 查 PID 排行找出當時主力 SKU）；② 設計 $99-$499 鯨魚限定包拉高 ARPPU 天花板；③ 設「活動後 D+3 / D+7 加購推播」，目標將半衰期從 &lt;1個月延長至 2個月+</div>
+        </div>
+      </div>
+    </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">⚠️ VIP 流失預警（精英市場）<span class="badge status-danger">高危</span></div>
+      <table>
+        <tr><th>層級</th><th>總人數</th><th>活躍(&lt;14天)</th><th>預警(14-29天)</th><th>高危(≥30天)</th><th>危險率</th></tr>
+        <tr><td><b>🐳 鯨魚</b></td><td>65</td><td class="hl-g">51</td><td class="hl-o">1</td><td class="hl-r">13</td><td><span class="badge status-warning">20.0%</span></td></tr>
+        <tr><td><b>🐬 海豚</b></td><td>809</td><td class="hl-g">301</td><td class="hl-o">8</td><td class="hl-r"><b>500</b></td><td><span class="badge status-danger">61.8%</span></td></tr>
+        <tr><td>🦐 小蝦米</td><td>102,033</td><td>1,227</td><td>146</td><td class="hl-r">100,660</td><td><span class="badge status-danger">98.7%</span></td></tr>
+      </table>
+      <div style="margin-top:12px;">
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px;">海豚 VIP 活躍度分布（精英市場）</div>
+        <div style="margin-bottom:4px;font-size:11px;">活躍 301人 (37.2%)</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:37.2%;background:var(--green);"></div></div>
+        <div style="margin:6px 0 4px;font-size:11px;">🟡 預警 8人 (1.0%)</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:1%;background:var(--orange);"></div></div>
+        <div style="margin:6px 0 4px;font-size:11px;">🔴 高危流失 500人 (61.8%)</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:61.8%;background:var(--red);"></div></div>
+      </div>
+      <div class="dim-grid" style="margin-top:12px;">
+        <div class="dim-card impact"><div class="dim-label">🔴 影響</div>500個海豚≥30天未登入，按人均 $13,300 計，預估月損失超過 <b>$332K</b>；精英市場海豚流失率 61.8% 更高於全區 53.8%</div>
+        <div class="dim-card action"><div class="dim-label">🟢 行動</div>本週啟動「精英海豚召回計劃」：按消費金額 3 檔（$1,330-$5,000 / $5,000-$20K / $20K+）分別發送個人化回流禮</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top 30 高危 VIP 明細（全區，≥986天未登入）<span class="badge status-danger">已全部流失</span><span class="global-tag">🌐</span></div>
+      <div class="warn-bar">🚨 Top 30 最高消費玩家最後登入均在 2023-09/10（~986-1035天前），初始鯨魚世代已完全流失</div>
+      <div class="tbl-scroll" style="max-height:200px;overflow-y:auto;">
+        <table>
+          <tr><th>消費金額(USD)</th><th>層級</th><th>最後登入</th><th>沉睡天數</th><th>狀態</th></tr>
+          <tr><td>$9,710</td><td>🐬 海豚</td><td>2023-09-26</td><td class="hl-r">1,007天</td><td><span class="badge status-danger">已流失</span></td></tr>
+          <tr><td>$9,100</td><td>🐬 海豚</td><td>2023-09-21</td><td class="hl-r">1,012天</td><td><span class="badge status-danger">已流失</span></td></tr>
+          <tr><td>$8,500</td><td>🐬 海豚</td><td>2023-10-16</td><td class="hl-r">987天</td><td><span class="badge status-danger">已流失</span></td></tr>
+          <tr><td>$8,200</td><td>🐬 海豚</td><td>2023-09-08</td><td class="hl-r">1,025天</td><td><span class="badge status-danger">已流失</span></td></tr>
+          <tr><td>$7,880</td><td>🐬 海豚</td><td>2023-10-10</td><td class="hl-r">993天</td><td><span class="badge status-danger">已流失</span></td></tr>
+          <tr><td>$7,700</td><td>🐬 海豚</td><td>2023-09-19</td><td class="hl-r">1,014天</td><td><span class="badge status-danger">已流失</span></td></tr>
+          <tr><td>$7,580</td><td>🐬 海豚</td><td>2023-10-05</td><td class="hl-r">998天</td><td><span class="badge status-danger">已流失</span></td></tr>
+          <tr><td>$7,500</td><td>🐬 海豚</td><td>2023-09-24</td><td class="hl-r">1,009天</td><td><span class="badge status-danger">已流失</span></td></tr>
+        </table>
+      </div>
+      <div class="dim-grid" style="margin-top:10px;">
+        <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>初代鯨魚世代全數在上線後 1-2個月內流失，遊戲未能在新鮮感期後留住核心付費玩家</div>
+        <div class="dim-card cause"><div class="dim-label">🟡 原因</div>版本更新速度不足、缺乏長期目標系統，高消費玩家「燒完即走」，是現在精英市場流失的歷史縮影</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">充值頻次分布對比（精英市場 vs 全區）</div>
+      <div class="chart-wrap"><canvas id="chartPayFreq"></canvas></div>
+      <table style="margin-top:10px;">
+        <tr><th>頻次段</th><th>精英市場%</th><th>全區%</th><th>精英表現</th></tr>
+        <tr><td>1次（首儲）</td><td class="hl-o">41.2%</td><td class="hl-r">50.8%</td><td><span class="badge status-success">優於全區</span></td></tr>
+        <tr><td>2-3次</td><td>24.7%</td><td>25.4%</td><td><span class="badge status-success">持平</span></td></tr>
+        <tr><td>4-6次</td><td>11.5%</td><td>9.5%</td><td><span class="badge status-success">略優</span></td></tr>
+        <tr><td>7-12次</td><td>8.4%</td><td>5.8%</td><td><span class="badge status-success">優</span></td></tr>
+        <tr><td>13次以上</td><td class="hl-g"><b>14.3%</b></td><td class="hl-o">8.6%</td><td><span class="badge status-vip">遠優！</span></td></tr>
+      </table>
+      <p style="margin-top:8px;font-size:11px;color:var(--text2);">精英市場重課玩家（13次以上）比例 14.3% 遠高於全區 8.6%，13次+ 玩家共產生 <b class="hl-p">1,331,973</b> 筆訂單</p>
+      <div class="dim-grid" style="margin-top:10px;">
+        <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>精英市場「首儲即流失」率 <span class="hl-o">41.2%</span> 雖優於全區 50.8%，但仍有 4成玩家只課一次即消失；<span class="hl-g">13次+ 重課比例 14.3%</span>（全區 8.6%），精英市場的核心玩家黏著度顯著更強</div>
+        <div class="dim-card cause"><div class="dim-label">🟡 原因</div>精英市場玩家消費力強（HK/SG/TW ARPU 超高），一旦找到心儀內容就會持續課金；但首儲後缺乏<span class="hl-b">明確的「第二次課金動機」</span>（如次日推送、解鎖內容），造成 41.2% 首儲即流失</div>
+        <div class="dim-card impact"><div class="dim-label">🔴 影響</div>若首儲→二儲轉化率提升 10pp（從 58.8% → 68.8%），精英市場月收入預計增加 <span class="hl-g">~$47K</span>；13次+ 玩家貢獻訂單量佔比極高，是收入的最穩定支柱</div>
+        <div class="dim-card action"><div class="dim-label">🟢 行動</div>① 設計「首儲後 72 小時再購漏斗」：D+1 推送限時 $4.99 成長包，D+3 解鎖「二儲雙倍紅寶石」；② 針對 2-3次課金玩家設「月簽到卡」引導轉為 4-6次重課群；③ 13次+ VIP 設定專屬社群認同機制（如特殊稱號）強化留存</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">玩家市場分布與收益（全市場交叉）<span class="global-tag">🌐 全區</span></div>
+      <div class="tbl-scroll">
+        <table>
+          <tr><th>市場</th><th>玩家數</th><th>總收益(USD)</th><th>人均(USD)</th><th>狀態</th></tr>
+          <tr><td><b>🇹🇼 TW</b></td><td>341,043</td><td class="hl-g">$12.21M</td><td class="hl-g">$35.79</td><td><span class="badge status-success">精英主力</span></td></tr>
+          <tr><td>🇹🇭 TH</td><td>1,342,592</td><td>$9.37M</td><td>$6.98</td><td><span class="badge status-info">量大</span></td></tr>
+          <tr><td>🇮🇩 ID</td><td>2,322,165</td><td>$8.95M</td><td>$3.86</td><td><span class="badge status-info">最大用戶群</span></td></tr>
+          <tr><td><b>🇭🇰 HK</b></td><td>121,687</td><td>$7.56M</td><td class="hl-p"><b>$62.16</b></td><td><span class="badge status-vip">人均最高</span></td></tr>
+          <tr><td>🇻🇳 VN</td><td>1,057,476</td><td>$7.38M</td><td>$6.98</td><td><span class="badge status-info">本地市場</span></td></tr>
+          <tr><td><b>🇸🇬 SG</b></td><td>101,893</td><td>$4.16M</td><td>$40.79</td><td><span class="badge status-vip">精英高值</span></td></tr>
+          <tr><td><b>🇲🇾 MY</b></td><td>467,805</td><td>$3.93M</td><td>$8.40</td><td><span class="badge status-success">精英穩健</span></td></tr>
+          <tr><td>🇵🇭 PH</td><td>1,232,353</td><td>$2.60M</td><td>$2.11</td><td><span class="badge status-warning">低變現</span></td></tr>
+          <tr><td><b>🇲🇴 MO</b></td><td>8,282</td><td>$408K</td><td class="hl-b">$49.38</td><td><span class="badge status-vip">精英高值</span></td></tr>
+        </table>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="card-title" style="font-size:12px;">付費玩家 LTV（全歷史 Cohort）<span class="global-tag">🌐 全區</span></div>
+        <table>
+          <tr><th>指標</th><th>數值</th><th>說明</th></tr>
+          <tr><td>Cohort 總人數</td><td class="hl-b">609,140人</td><td>所有歷史付費玩家</td></tr>
+          <tr><td>LTV D7</td><td class="hl-g">$12.00</td><td>首次付費後7天累計</td></tr>
+          <tr><td>LTV D30</td><td class="hl-g">$24.38</td><td>首次付費後30天累計（D7×2.03）</td></tr>
+          <tr><td>LTV D90</td><td class="hl-o">$42.09</td><td>首次付費後90天累計</td></tr>
+          <tr><td>LTV D180</td><td class="hl-p">$58.64</td><td>首次付費後180天（D7×4.89）</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新維度：付費等級路徑 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">🆕 付費玩家首次付費等級分析（首次付費當下的等級段分布）<span class="global-tag">🌐 全區</span><span class="badge status-success">✅ 已驗證（MIN 首付日 JOIN player_login.level）</span></div>
+    <div class="grid-2">
+      <div>
+        <div class="chart-wrap"><canvas id="chartLevelPay"></canvas></div>
+      </div>
+      <div>
+        <table>
+          <tr><th>等級段</th><th>首付玩家數</th><th>佔比</th></tr>
+          <tr><td>Lv.1-9（新手村）</td><td>237</td><td>7.0%</td></tr>
+          <tr><td>Lv.10-29（成長期）</td><td>389</td><td>11.4%</td></tr>
+          <tr><td>Lv.30-49（中期）</td><td>27</td><td>0.8%</td></tr>
+          <tr><td>Lv.50-79（資深）</td><td>26</td><td>0.8%</td></tr>
+          <tr><td><b>Lv.80+（頂級）</b></td><td class="hl-g"><b>2,707</b></td><td class="hl-g"><b>79.5%</b></td></tr>
+          <tr><td style="color:var(--text2)">無對應登入紀錄</td><td style="color:var(--text2)">18</td><td style="color:var(--text2)">0.5%</td></tr>
+        </table>
+        <div class="dim-grid" style="margin-top:12px;">
+          <div class="dim-card phenom"><div class="dim-label">🔵 現象</div><b>79.5% 的首次付費集中在 Lv.80+ 頂級階段</b>；新手村（Lv.1-9）僅 7%，中間等級（Lv.30-79）合計不足 2%，幾乎是付費轉化的絕對真空地帶</div>
+          <div class="dim-card cause"><div class="dim-label">🟡 原因</div>商業化設計以中後期 PvP / 強化 / 限定角色為主要付費引爆點；玩家需要先投入大量時間建立情感連結，在達到頂級階段後才做出首次付費決定</div>
+          <div class="dim-card impact"><div class="dim-label">🔴 影響</div>Lv.1-79 之間存在巨大轉化漏斗黑洞：大量玩家在達到首付引爆點（Lv.80）之前已流失，導致整體首付率偏低。中期（Lv.30-79）幾乎 0 付費是核心商業化弱點</div>
+          <div class="dim-card action"><div class="dim-label">🟢 行動</div>① 在 Lv.30 / Lv.50 / Lv.70 三個成長里程碑設置「進度禮包」，填補中期付費真空；② 優化 Lv.1-79 的遊戲體驗以減少「首付前流失」；③ 設計 Lv.10-29 的低門檻入坑包（$0.99）培育付費習慣</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">iOS / Android 平台活躍玩家 × 付費轉化率（2026 H1）<span class="global-tag">🌐 全區</span><span class="badge status-success">✅ 已驗證（player_login.plat_id）</span></div>
+      <div class="chart-wrap"><canvas id="chartFunnel"></canvas></div>
+      <table style="margin-top:10px;">
+        <tr><th>平台</th><th>plat_id</th><th>活躍登入玩家</th><th>付費玩家</th><th>付費率</th></tr>
+        <tr><td><b>iOS</b></td><td style="color:var(--text2)">1</td><td>75,034</td><td>713</td><td class="hl-o">1.0%</td></tr>
+        <tr><td><b>Android</b></td><td style="color:var(--text2)">0</td><td>22,195</td><td class="hl-g"><b>769</b></td><td class="hl-g"><b>3.5%</b></td></tr>
+      </table>
+      <div class="dim-grid" style="margin-top:10px;">
+        <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>iOS 活躍玩家是 Android 的 <span class="hl-b">3.4倍</span>（75K vs 22K），但付費率僅 1.0%；<span class="hl-g">Android 付費率高達 3.5%，付費人數（769）甚至超過 iOS（713）</span>——Android 用戶少但品質更高</div>
+        <div class="dim-card impact"><div class="dim-label">🔴 影響</div>Android 每位玩家的付費轉化效益是 iOS 的 <b>3.5x</b>；若行銷預算分配仍偏重 iOS，等同於放棄高 ROI 的 Android 渠道</div>
+        <div class="dim-card action"><div class="dim-label">🟢 行動</div>① 提升 Android 渠道的行銷投入比例（ROI 高 3.5x）；② 針對 iOS 玩家設計「低門檻首儲包」（$0.99 或 $1.99 體驗包）拉升 1.0% 付費率；③ 分析 Android 高轉化的地區 / 渠道成因，複製至 iOS 推廣策略</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">每週各日活躍分布（近90天）<span class="global-tag">🌐 全區</span></div>
+      <div class="chart-wrap"><canvas id="chartWeekday"></canvas></div>
+      <p style="margin-top:8px;font-size:11px;color:var(--text2);">各日差異小（最高週日 26,123 vs 最低週三 23,529），遊戲已進入穩定輕度玩家模式</p>
+      <div class="dim-grid" style="margin-top:10px;">
+        <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>週間 DAU 峰谷差僅 <span class="hl-b">10.5%</span>（26,123 vs 23,529），無明顯週末爆發現象；<span class="hl-o">週三最低</span>，週六/日最高但僅微幅高出</div>
+        <div class="dim-card cause"><div class="dim-label">🟡 原因</div>殘餘玩家以<span class="hl-b">習慣性輕度玩家</span>為主，遊戲已失去對核心玩家的深度黏著。週末無明顯爆發說明缺乏週末專屬活動/獎勵驅動</div>
+        <div class="dim-card action"><div class="dim-label">🟢 行動</div>設計<span class="hl-g">「週三補給站」</span>（週三掉率加倍/限時禮包），刺激週三最低點；同時增設「週末挑戰賽」提升週末峰值，目標 DAU 峰谷差擴大至 20%+（代表活動刺激生效）</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 地區拆分（新區塊）===== -->
+<div class="section" data-sec="market">
+  <div class="section-title">🌏 地區拆分 — 台港澳星馬五市場深度分析</div>
+
+  <div class="mkt-grid">
+    <div class="mkt-card">
+      <div class="mkt-flag">🇹🇼</div>
+      <div class="mkt-name">台灣 TW</div>
+      <div class="mkt-rev">$12.21M</div>
+      <div class="mkt-arpu">ARPU $35.79</div>
+      <div class="mkt-vip">🐳×24 🐬×363 🦐×39,434</div>
+    </div>
+    <div class="mkt-card">
+      <div class="mkt-flag">🇭🇰</div>
+      <div class="mkt-name">香港 HK</div>
+      <div class="mkt-rev">$7.56M</div>
+      <div class="mkt-arpu" style="color:var(--purple)">ARPU $62.16 🏆最高</div>
+      <div class="mkt-vip">🐳×21 🐬×201 🦐×16,034</div>
+    </div>
+    <div class="mkt-card">
+      <div class="mkt-flag">🇸🇬</div>
+      <div class="mkt-name">新加坡 SG</div>
+      <div class="mkt-rev">$4.16M</div>
+      <div class="mkt-arpu">ARPU $40.79</div>
+      <div class="mkt-vip">🐳×12 🐬×122 🦐×10,129</div>
+    </div>
+    <div class="mkt-card">
+      <div class="mkt-flag">🇲🇾</div>
+      <div class="mkt-name">馬來西亞 MY</div>
+      <div class="mkt-rev">$3.93M</div>
+      <div class="mkt-arpu">ARPU $8.40</div>
+      <div class="mkt-vip">🐳×7 🐬×110 🦐×35,768</div>
+    </div>
+    <div class="mkt-card">
+      <div class="mkt-flag">🇲🇴</div>
+      <div class="mkt-name">澳門 MO</div>
+      <div class="mkt-rev">$408K</div>
+      <div class="mkt-arpu">ARPU $49.38</div>
+      <div class="mkt-vip">🐳×1 🐬×13 🦐×668</div>
+    </div>
+  </div>
+
+  <!-- 新維度：市場品質密度 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">🆕 市場品質標準化密度（每萬玩家鯨魚/海豚數）<span class="badge status-info">新維度</span></div>
+    <div class="warn-bar" style="background:rgba(124,58,237,.06);border-color:rgba(124,58,237,.25);color:#5b21b6;">💡 資深營運視角：絕對人數會受市場規模影響，標準化後的「鯨魚密度」才能真正評估市場轉化品質與挖掘潛力</div>
+    <div class="grid-2">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;">🐳 鯨魚密度（每萬玩家中的鯨魚數）</div>
+        <div class="density-row">
+          <div class="density-label">🇭🇰 HK</div>
+          <div class="density-bar"><div class="density-fill" style="width:100%;background:var(--purple)"></div></div>
+          <div class="density-val hl-p">1.73/萬</div>
+        </div>
+        <div class="density-row">
+          <div class="density-label">🇲🇴 MO</div>
+          <div class="density-bar"><div class="density-fill" style="width:70%;background:var(--accent)"></div></div>
+          <div class="density-val hl-b">1.21/萬</div>
+        </div>
+        <div class="density-row">
+          <div class="density-label">🇸🇬 SG</div>
+          <div class="density-bar"><div class="density-fill" style="width:68%;background:var(--accent)"></div></div>
+          <div class="density-val hl-b">1.18/萬</div>
+        </div>
+        <div class="density-row">
+          <div class="density-label">🇹🇼 TW</div>
+          <div class="density-bar"><div class="density-fill" style="width:40%;background:var(--orange)"></div></div>
+          <div class="density-val hl-o">0.70/萬</div>
+        </div>
+        <div class="density-row">
+          <div class="density-label">🇲🇾 MY</div>
+          <div class="density-bar"><div class="density-fill" style="width:9%;background:var(--green)"></div></div>
+          <div class="density-val">0.15/萬</div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--text2);">⚠️ TW 鯨魚密度（0.70/萬）僅為 HK（1.73/萬）的 40%，若對標 HK 密度，TW 理論上應有 <b class="hl-r">59頭</b>鯨魚，但目前只有 24頭 — 潛力缺口 35頭</div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;">🐬 海豚密度（每萬玩家中的海豚數）</div>
+        <div class="density-row">
+          <div class="density-label">🇭🇰 HK</div>
+          <div class="density-bar"><div class="density-fill" style="width:100%;background:var(--purple)"></div></div>
+          <div class="density-val hl-p">16.5/萬</div>
+        </div>
+        <div class="density-row">
+          <div class="density-label">🇲🇴 MO</div>
+          <div class="density-bar"><div class="density-fill" style="width:95%;background:var(--purple)"></div></div>
+          <div class="density-val hl-p">15.7/萬</div>
+        </div>
+        <div class="density-row">
+          <div class="density-label">🇸🇬 SG</div>
+          <div class="density-bar"><div class="density-fill" style="width:73%;background:var(--accent)"></div></div>
+          <div class="density-val hl-b">12.0/萬</div>
+        </div>
+        <div class="density-row">
+          <div class="density-label">🇹🇼 TW</div>
+          <div class="density-bar"><div class="density-fill" style="width:64%;background:var(--accent)"></div></div>
+          <div class="density-val hl-b">10.6/萬</div>
+        </div>
+        <div class="density-row">
+          <div class="density-label">🇲🇾 MY</div>
+          <div class="density-bar"><div class="density-fill" style="width:15%;background:var(--orange)"></div></div>
+          <div class="density-val">2.4/萬</div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--text2);">💡 MY 海豚密度（2.4/萬）遠低於精英平均（11.4/萬），但 MY 有 46.7萬玩家基數 — 是提升海豚轉化率的最大潛力市場</div>
+      </div>
+    </div>
+    <div class="dim-grid" style="margin-top:14px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>HK 鯨魚密度（1.73/萬）是精英市場中最高，MO/SG 次之；TW 雖玩家最多但密度最低（0.70/萬）；MY 海豚密度（2.4/萬）遠低於其他市場</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>① TW：重點培育 363 頭海豚升鯨（差距最大）；② MY：以月卡/低門檻活動拉升海豚轉化率（基數 46.7萬是最大金礦）；③ HK/SG/MO：保住現有鯨魚密度，推高端限定產品</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">各地區歷史總收入排名</div>
+      <div class="chart-wrap"><canvas id="chartMktRev"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">各地區 VIP 層明細（台港澳星馬 × VIP 層）</div>
+      <div class="tbl-scroll">
+        <table>
+          <tr><th>地區</th><th>VIP層</th><th>玩家數</th><th>層收益(USD)</th><th>人均(USD)</th></tr>
+          <tr><td rowspan="3"><b>🇹🇼 TW</b></td><td>🐳 鯨魚</td><td class="hl-p">24</td><td>$2.04M</td><td>$85,200</td></tr>
+          <tr><td>🐬 海豚</td><td>363</td><td>$4.64M</td><td>$12,800</td></tr>
+          <tr><td>🦐 小蝦米</td><td>39,434</td><td>$5.52M</td><td>$140.01</td></tr>
+          <tr style="border-top:2px solid var(--border)"><td rowspan="3"><b>🇭🇰 HK</b></td><td>🐳 鯨魚</td><td class="hl-p">21</td><td>$2.22M</td><td>$105,700</td></tr>
+          <tr><td>🐬 海豚</td><td>201</td><td>$2.62M</td><td>$13,000</td></tr>
+          <tr><td>🦐 小蝦米</td><td>16,034</td><td>$2.73M</td><td>$170.03</td></tr>
+          <tr style="border-top:2px solid var(--border)"><td rowspan="3"><b>🇸🇬 SG</b></td><td>🐳 鯨魚</td><td class="hl-p">12</td><td>$1.03M</td><td>$85,400</td></tr>
+          <tr><td>🐬 海豚</td><td>122</td><td>$1.79M</td><td>$14,700</td></tr>
+          <tr><td>🦐 小蝦米</td><td>10,129</td><td>$1.34M</td><td>$132.02</td></tr>
+          <tr style="border-top:2px solid var(--border)"><td rowspan="3"><b>🇲🇾 MY</b></td><td>🐳 鯨魚</td><td>7</td><td>$503K</td><td>$71,900</td></tr>
+          <tr><td>🐬 海豚</td><td>110</td><td>$1.56M</td><td>$14,200</td></tr>
+          <tr><td>🦐 小蝦米</td><td>35,768</td><td>$1.87M</td><td>$52.25</td></tr>
+          <tr style="border-top:2px solid var(--border)"><td rowspan="3"><b>🇲🇴 MO</b></td><td>🐳 鯨魚</td><td>1</td><td>$105K</td><td>$105,200</td></tr>
+          <tr><td>🐬 海豚</td><td>13</td><td>$158K</td><td>$12,200</td></tr>
+          <tr><td>🦐 小蝦米</td><td>668</td><td>$145K</td><td>$217.60</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== P2.5 伺服器 KPI ===== -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">🖥️ 伺服器 KPI 監控（精英市場 TW/HK/MO/SG/MY）<span class="badge status-success">✅ 真實數據 — 2026 H1</span></div>
+
+    <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.05em;">▎市場彙總</div>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th>市場</th><th>伺服器數</th><th>付費人數</th><th>2026 H1 收入 (USD)</th><th>ARPPU</th><th>佔精英收入%</th><th>健康度</th></tr>
+        <tr>
+          <td><b>🇹🇼 TW</b></td><td>51</td><td>473</td>
+          <td class="hl-b"><b>$587,524</b></td><td>$1,242</td>
+          <td class="hl-b"><b>35.9%</b></td>
+          <td><span class="badge status-warning">觀察</span></td>
+        </tr>
+        <tr>
+          <td><b>🇭🇰 HK</b></td><td>34</td><td>238</td>
+          <td>$442,691</td><td class="hl-p"><b>$1,860 🏆</b></td>
+          <td>27.0%</td>
+          <td><span class="badge status-success">健康</span></td>
+        </tr>
+        <tr>
+          <td><b>🇲🇾 MY</b></td><td>164</td><td>495</td>
+          <td>$344,765</td><td class="hl-o">$696</td>
+          <td>21.1%</td>
+          <td><span class="badge status-warning">觀察</span></td>
+        </tr>
+        <tr>
+          <td><b>🇸🇬 SG</b></td><td>94</td><td>137</td>
+          <td>$248,566</td><td>$1,814</td>
+          <td>15.2%</td>
+          <td><span class="badge status-success">健康</span></td>
+        </tr>
+        <tr>
+          <td><b>🇲🇴 MO</b></td><td>11</td><td>18</td>
+          <td class="hl-r">$20,803</td><td>$1,156</td>
+          <td class="hl-r">1.3%</td>
+          <td><span class="badge status-danger">萎縮</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:var(--text2);margin:16px 0 8px;letter-spacing:.05em;">▎Top 10 高收入伺服器（2026 H1）</div>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th>排名</th><th>伺服器</th><th>市場</th><th>付費人數</th><th>2026 H1 收入 (USD)</th><th>ARPPU</th><th>備註</th></tr>
+        <tr><td>1</td><td><code>110005</code></td><td>🇹🇼 TW</td><td>27</td><td class="hl-b"><b>$121,833</b></td><td class="hl-o">$4,512</td><td><span class="badge status-vip">高 ARPPU</span></td></tr>
+        <tr><td>2</td><td><code>110006</code></td><td>🇹🇼 TW</td><td>33</td><td>$68,106</td><td>$2,064</td><td></td></tr>
+        <tr><td>3</td><td><code>110016</code></td><td>🇹🇼 TW</td><td>25</td><td>$66,686</td><td>$2,667</td><td></td></tr>
+        <tr><td>4</td><td><code>130112</code></td><td>🇲🇾 MY</td><td>3</td><td>$55,175</td><td class="hl-p"><b>$18,392</b></td><td><span class="badge status-vip">🐳 鯨魚伺服</span></td></tr>
+        <tr><td>5</td><td><code>110004</code></td><td>🇭🇰 HK</td><td>21</td><td>$51,445</td><td>$2,450</td><td></td></tr>
+        <tr><td>6</td><td><code>110001</code></td><td>🇭🇰 HK</td><td>28</td><td>$48,203</td><td>$1,722</td><td></td></tr>
+        <tr><td>7</td><td><code>110012</code></td><td>🇹🇼 TW</td><td>27</td><td>$44,165</td><td>$1,636</td><td></td></tr>
+        <tr><td>8</td><td><code>130124</code></td><td>🇭🇰 HK</td><td class="hl-r">1</td><td>$43,695</td><td class="hl-r"><b>$43,695 ⚡</b></td><td><span class="badge status-danger">單鯨獨撐</span></td></tr>
+        <tr><td>9</td><td><code>110003</code></td><td>🇭🇰 HK</td><td>20</td><td>$36,148</td><td>$1,807</td><td></td></tr>
+        <tr><td>10</td><td><code>130170</code></td><td>🇸🇬 SG</td><td>3</td><td>$35,730</td><td class="hl-p">$11,910</td><td><span class="badge status-vip">高 ARPPU</span></td></tr>
+      </table>
+    </div>
+
+    <div class="dim-grid" style="margin-top:12px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>TW 以 51 個伺服器佔精英收入 35.9%（最大體量）；HK 以 34 個伺服器實現最高 ARPPU $1,860；<b>伺服器 130124（HK）</b> 單人貢獻 $43,695，為全精英市場最高單鯨</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>MY 擁有最多伺服器（164 個）但 ARPPU 僅 $696，付費效率最低；鯨魚伺服 130112（MY，ARPPU $18,392）和 130124（HK，ARPPU $43,695）一旦鯨魚流失，單服收入將崩塌</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>① 針對 130124 / 130112 的極高 ARPPU 單鯨建立緊急 VIP 關懷計畫；② 評估 MY 低 ARPPU 伺服器的合服可能性（164 伺→精簡為 80~100 個），提升玩家密度；③ 複製 TW 高付費伺服器（110005/110016）的活動模板至其他伺服器</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== 行動策略 ===== -->
+<div class="section" data-sec="economy">
+  <div class="section-title">🪙 貨幣流通 · 道具流向 · 外掛監控</div>
+
+  <div class="warn-bar">🌐 本區塊所有數據均為全區（無法按精英市場拆分）｜ 貨幣類型：100,000,009 = 主貨幣（綁定）· 100,000,011 = 次貨幣（非綁定）· 100,000,039 = 特殊活動貨幣</div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">主貨幣 Mint vs Burn 月趨勢（近6個月，Type 100000009）<span class="global-tag">🌐 全區</span></div>
+      <div class="chart-wrap-lg"><canvas id="chartMintBurn"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">貨幣生態健康指標<span class="global-tag">🌐 全區</span></div>
+      <table>
+        <tr><th>月份</th><th>通膨係數</th><th>Mint</th><th>Burn</th><th>狀態</th></tr>
+        <tr><td>2026-01</td><td class="hl-o">1.05</td><td>361M</td><td>344M</td><td><span class="badge status-warning">輕微通膨</span></td></tr>
+        <tr><td>2026-02</td><td class="hl-g">0.93</td><td>320M</td><td>342M</td><td><span class="badge status-success">健康</span></td></tr>
+        <tr><td>2026-03</td><td class="hl-o">0.83</td><td>241M</td><td>290M</td><td><span class="badge status-warning">微通縮</span></td></tr>
+        <tr><td>2026-04</td><td class="hl-o">1.07</td><td>301M</td><td>282M</td><td><span class="badge status-warning">輕微通膨</span></td></tr>
+        <tr><td>2026-05</td><td class="hl-g">1.03</td><td>270M</td><td>261M</td><td><span class="badge status-success">健康</span></td></tr>
+        <tr><td>2026-06</td><td class="hl-r">0.74</td><td>196M</td><td>265M</td><td><span class="badge status-danger">通縮明顯</span></td></tr>
+      </table>
+      <div class="dim-grid" style="margin-top:12px;">
+        <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>近6個月主貨幣係數在 0.74~1.07 之間震盪，整體偏健康，但 6月 Burn 大幅超過 Mint（可能有大型消耗活動）</div>
+        <div class="dim-card action"><div class="dim-label">🟢 行動</div>排查 6月大量消耗來源（reason1/reason2 分類）；確認是否為限時活動正常消耗，或為異常刷道具</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">道具流向 Top 10（近90天，消耗量排序）<span class="global-tag">🌐 全區</span></div>
+      <div class="tbl-scroll">
+        <table>
+          <tr><th>道具ID</th><th>道具名稱</th><th>類型</th><th>總產出</th><th>總消耗</th><th>活躍用戶</th><th>狀態</th></tr>
+          <tr><td>100300001</td><td class="hl-b"><b>金幣</b></td><td>10</td><td>12.8T</td><td class="hl-r"><b>20.8T</b></td><td>49,604</td><td><span class="badge status-danger">核心消耗品</span></td></tr>
+          <tr><td>100010072</td><td>S9個人資源道具</td><td>1</td><td>1.33T</td><td>1.64T</td><td>14,187</td><td><span class="badge status-warning">高流通</span></td></tr>
+          <tr><td>100010064</td><td>S8個人資源道具</td><td>1</td><td>409B</td><td>413B</td><td>7,448</td><td><span class="badge status-success">平衡</span></td></tr>
+          <tr><td>139999999</td><td>機芯配件</td><td>6</td><td>55.2B</td><td>103.9B</td><td>31,704</td><td><span class="badge status-warning">消耗&gt;產出</span></td></tr>
+          <tr><td>100000000</td><td class="hl-r">指揮官經驗</td><td>1</td><td>0</td><td class="hl-r">14.3B</td><td>44,284</td><td><span class="badge status-danger">純消耗品</span></td></tr>
+          <tr><td>120100023</td><td>藍色武器經驗書</td><td>6</td><td>12.7B</td><td>14.2B</td><td>34,703</td><td><span class="badge status-success">健康</span></td></tr>
+          <tr><td>120300000</td><td>傳動油</td><td>6</td><td>9.35B</td><td>9.84B</td><td>31,007</td><td><span class="badge status-success">健康</span></td></tr>
+          <tr><td>120100025</td><td>橙色武器經驗書</td><td>6</td><td>2.85B</td><td>3.85B</td><td>29,916</td><td><span class="badge status-warning">輕微通縮</span></td></tr>
+          <tr><td>100000012</td><td>競技幣</td><td>1</td><td>2.35B</td><td>2.75B</td><td>22,325</td><td><span class="badge status-success">正常</span></td></tr>
+          <tr><td>120104001</td><td class="hl-r">轉化組件（小核心）</td><td>6</td><td>303M</td><td class="hl-r">1.43B</td><td>29,283</td><td><span class="badge status-danger">消耗 4.7x 產出</span></td></tr>
+        </table>
+      </div>
+      <div class="dim-grid" style="margin-top:12px;">
+        <div class="dim-card phenom"><div class="dim-label">🔵 現象</div><span class="hl-b">金幣</span>為第一大消耗品（20.8T），<span class="hl-r">純消耗品「指揮官經驗」</span>完全仰賴活動產出（自然產出=0）；轉化組件（小核心）消耗是產出的 <span class="hl-r">4.7倍</span>，缺口極大</div>
+        <div class="dim-card cause"><div class="dim-label">🟡 原因</div>賽季道具（S8/S9資源包）設計為高流通消耗型；金幣作為基礎貨幣持續流出，但產出速率跟不上消耗速率——玩家活躍消耗強烈</div>
+        <div class="dim-card impact"><div class="dim-label">🔴 影響</div>轉化組件嚴重缺口 <span class="hl-r">→ 玩家可能感受「卡牆」</span>，影響中期付費意願；機芯配件消耗 1.88x 產出，若補給不足將加速中端玩家流失</div>
+        <div class="dim-card action"><div class="dim-label">🟢 行動</div>① 增加「轉化組件」的每日任務產出量，緩解 4.7x 缺口；② 在 reason1/reason2 分類中確認金幣主要消耗場景（商城購買 vs 強化失敗 vs 活動消耗）；③ 金幣月產出低於消耗警示線時主動推「補給禮包」</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">商城熱銷榜 Top 12（近90天，消耗金幣）<span class="global-tag">🌐 全區</span></div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:6px;">⚠️ goods_id 20100xxx 為 shop_flow 流水編號，需執行 <code>SELECT DISTINCT goods_id, goods_name FROM shop_flow LIMIT 20</code> 取得名稱對應</div>
+      <div class="tbl-scroll">
+        <table>
+          <tr><th>goods_id</th><th>訂單數</th><th>消費金幣</th><th>購買人數</th><th>狀態</th></tr>
+          <tr><td>20100281</td><td>241,828</td><td class="hl-g">196.1B</td><td>7,328</td><td><span class="badge status-success">#1 熱銷</span></td></tr>
+          <tr><td>20100280</td><td>208,516</td><td>191.6B</td><td>6,750</td><td><span class="badge status-success">#2</span></td></tr>
+          <tr><td>20100286</td><td>77,735</td><td>186.4B</td><td>5,152</td><td><span class="badge status-success">#3</span></td></tr>
+          <tr><td>20100285</td><td>62,636</td><td>168.9B</td><td>4,866</td><td><span class="badge status-success">#4</span></td></tr>
+          <tr><td>20100290</td><td>145,686</td><td>124.3B</td><td>6,062</td><td><span class="badge status-info">活躍</span></td></tr>
+          <tr><td>20100284</td><td>40,972</td><td>122.5B</td><td>4,195</td><td><span class="badge status-info">活躍</span></td></tr>
+          <tr><td>20100289</td><td>118,487</td><td>118.9B</td><td>5,498</td><td><span class="badge status-info">活躍</span></td></tr>
+          <tr><td>20100291</td><td>147,308</td><td>118.2B</td><td>6,096</td><td><span class="badge status-info">活躍</span></td></tr>
+          <tr><td>20100288</td><td>57,979</td><td>104.5B</td><td>5,143</td><td><span class="badge status-info">活躍</span></td></tr>
+          <tr><td>20100287</td><td>46,577</td><td>97.8B</td><td>4,627</td><td><span class="badge status-info">活躍</span></td></tr>
+          <tr><td>20100282</td><td>128,165</td><td>92.8B</td><td>6,664</td><td><span class="badge status-info">活躍</span></td></tr>
+          <tr><td>20100283</td><td>139,143</td><td>75.6B</td><td>6,884</td><td><span class="badge status-info">活躍</span></td></tr>
+        </table>
+      </div>
+      <div class="dim-grid" style="margin-top:12px;">
+        <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>Top 2 商品（20100281/280）訂單數 <span class="hl-b">24萬/20萬</span>，消費額相近（196B / 192B），但更高編號商品 20100286/285 訂單更少卻金額也高——反映玩家傾向<span class="hl-b">多次少量購買</span>而非大額單次</div>
+        <div class="dim-card cause"><div class="dim-label">🟡 原因</div>商城商品 ID（201002xx）為內部 slot ID，<b>資料庫無 goods_name 欄位</b>——需比對 XLS 商品配置確認品名。Top 12 商品均消耗 currency_type=100300001（紅寶石綁定），玩家高頻重複購買</div>
+        <div class="dim-card impact"><div class="dim-label">🔴 影響</div>Top 12 商品總消費超過 <span class="hl-r">1,497B 紅寶石</span>（約佔全服 Burn 的 30%+）；若熱銷商品下架或調整性價比，可能造成 Burn 驟降，影響玩家活躍感</div>
+        <div class="dim-card action"><div class="dim-label">🟢 行動</div>① 比對 <code>商品信息表0630.xls</code> 確認 201002xx 的商品名稱；② 排查 20100281/280 是否為限時活動商品（若是，需預估下架後的月 Burn 下滑幅度）；③ 執行下方 P2.7 SQL 找出殭屍商品並清場</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">🔴 外掛/工作室異常帳號記錄（歷史高風險）<span class="global-tag">🌐 全區</span></div>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th>帳號ID（遮蔽）</th><th>發生日期</th><th>單日收益</th><th>收益倍率</th><th>當日登入次數</th><th>風險等級</th></tr>
+        <tr><td>9279120...431</td><td>2023-06-15</td><td class="hl-r">2,803,853</td><td class="hl-r"><b>4,237x</b></td><td class="hl-r">173</td><td><span class="badge status-danger">🔴 高風險</span></td></tr>
+        <tr><td>7027335...589</td><td>2023-06-09</td><td class="hl-r">2,186,352</td><td class="hl-r"><b>3,304x</b></td><td class="hl-r">509</td><td><span class="badge status-danger">🔴 高風險</span></td></tr>
+        <tr><td>405265...148</td><td>2023-06-14</td><td class="hl-r">1,817,256</td><td class="hl-r"><b>2,746x</b></td><td class="hl-r">210</td><td><span class="badge status-danger">🔴 高風險</span></td></tr>
+        <tr><td>115784...630</td><td>2023-06-14</td><td class="hl-r">1,371,318</td><td class="hl-r"><b>2,072x</b></td><td class="hl-r">188</td><td><span class="badge status-danger">🔴 高風險</span></td></tr>
+        <tr><td>91780015</td><td>2023-06-14</td><td class="hl-r">1,243,700</td><td class="hl-r"><b>1,880x</b></td><td class="hl-r">448</td><td><span class="badge status-danger">🔴 高風險</span></td></tr>
+        <tr><td>163124529</td><td>2023-06-14</td><td class="hl-r">1,007,764</td><td class="hl-r"><b>1,523x</b></td><td class="hl-r">394</td><td><span class="badge status-danger">🔴 高風險</span></td></tr>
+        <tr><td>2032787042</td><td>2024-02-08</td><td class="hl-o">464,387</td><td class="hl-o">702x</td><td>13</td><td><span class="badge status-warning">🟡 中風險</span></td></tr>
+        <tr><td>7920064...083</td><td>2023-11-25</td><td class="hl-o">319,057</td><td class="hl-o">482x</td><td>31</td><td><span class="badge status-warning">🟡 中風險</span></td></tr>
+      </table>
+    </div>
+    <div class="dim-grid" style="margin-top:12px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>2023年6月偵測到多個帳號單日收益超過正常玩家 1,000-4,237 倍，部分帳號單日登入 509 次</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>遊戲上線初期（2023-06）反外掛機制尚未健全，工作室利用腳本大量刷取非綁定貨幣</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>早期外掛污染大量非綁定貨幣，可能造成正版玩家感受通膨崩盤。精英市場（HK/TW）玩家尤為敏感</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>確認上述帳號是否已封禁；建立實時收益異常告警（>10x 正常值即觸發人工審核）</div>
+    </div>
+  </div>
+
+  <!-- P2.7 殭屍商品清單 -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">🧟 P2.7 殭屍商品清單（shop_flow_v2，2023-08 ~ 2026-06）<span class="global-tag">🌐 全區</span><span class="badge status-danger">🚨 14 款殭屍 + 36 款衰退</span><span class="badge status-warning">⚠️ goods_id ≠ ThingID（不同ID系統）</span></div>
+    <div class="grid-2">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;">▎🧟 殭屍商品（近90天零銷售，Top 10 by 歷史購買人數）</div>
+        <div class="tbl-scroll">
+          <table>
+            <tr><th>goods_id</th><th>歷史訂單</th><th>歷史買家</th><th>最後銷售</th><th>近90日</th></tr>
+            <tr><td>20101001</td><td>52,092,115</td><td class="hl-r"><b>2,092,545</b></td><td style="color:var(--red)">2025-04-10</td><td><span class="badge status-danger">🧟 0</span></td></tr>
+            <tr><td>20300002</td><td>53,692,999</td><td>1,789,058</td><td>2026-03-31</td><td><span class="badge status-warning">⚠️ 838,283</span></td></tr>
+            <tr><td>1000003</td><td>19,225,477</td><td>1,126,212</td><td>2026-03-31</td><td><span class="badge status-warning">⚠️ 34,933</span></td></tr>
+            <tr><td>20007001</td><td>6,813,230</td><td>759,960</td><td>2026-03-31</td><td><span class="badge status-warning">⚠️ 99,697</span></td></tr>
+            <tr><td>20107810</td><td>6,499,164</td><td>671,323</td><td style="color:var(--red)">2025-04-10</td><td><span class="badge status-danger">🧟 0</span></td></tr>
+            <tr><td>20007006</td><td>3,261,108</td><td>539,290</td><td>2026-03-31</td><td><span class="badge status-warning">⚠️ 3,223</span></td></tr>
+            <tr><td>2000008</td><td>5,643,482</td><td>527,400</td><td>2026-03-31</td><td><span class="badge status-warning">⚠️ 15,246</span></td></tr>
+            <tr><td>2000006</td><td>5,375,446</td><td>512,970</td><td>2026-03-31</td><td><span class="badge status-warning">⚠️ 15,638</span></td></tr>
+            <tr><td>2000001</td><td>5,503,127</td><td>506,137</td><td>2026-03-31</td><td><span class="badge status-warning">⚠️ 89,364</span></td></tr>
+            <tr><td>20007003</td><td>3,762,285</td><td>466,665</td><td>2026-03-31</td><td><span class="badge status-warning">⚠️ 51,845</span></td></tr>
+            <tr style="color:var(--text2);"><td colspan="5" style="font-size:11px;text-align:center;">…共 50 筆（14 殭屍 + 36 衰退），完整名單見 rawdata/殭屍商品偵測.csv</td></tr>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;">▎關鍵數據摘要</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+          <div style="background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.2);border-radius:6px;padding:10px;text-align:center;">
+            <div style="font-size:26px;font-weight:800;color:var(--red);">14</div>
+            <div style="font-size:11px;color:var(--text2);">🧟 殭屍商品<br>近90天零銷售</div>
+          </div>
+          <div style="background:rgba(217,119,6,.07);border:1px solid rgba(217,119,6,.2);border-radius:6px;padding:10px;text-align:center;">
+            <div style="font-size:26px;font-weight:800;color:var(--orange);">36</div>
+            <div style="font-size:11px;color:var(--text2);">⚠️ 衰退商品<br>近90天 &lt;20% 歷史量</div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;">▎最高危殭屍：goods_id 20101001</div>
+        <div style="background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.18);border-radius:6px;padding:10px;font-size:11.5px;line-height:1.8;">
+          歷史累計 <b>52,092,115</b> 次購買、<b>2,092,545</b> 名買家<br>
+          最後銷售日：<b style="color:var(--red)">2025-04-10</b>（已停售逾14個月）<br>
+          → 曾為全服最熱賣品項，突然斷銷代表可能已被新品替代或下架，需確認是否為意外下架。
+        </div>
+        <div class="dim-grid" style="margin-top:12px;">
+          <div class="dim-card phenom"><div class="dim-label">🔴 現象</div>20101001 歷史買家逾 200 萬，但 2025-04 後銷量驟降至零，疑似強制下架或系統異常。</div>
+          <div class="dim-card action"><div class="dim-label">💡 建議</div>立即盤點 14 款殭屍商品原因：若為策略性下架則確認是否需公告；若為系統異常需緊急修復。衰退品考慮限時優惠或折扣刺激購買。</div>
+          <div class="dim-card" style="background:rgba(217,119,6,.05);border-color:rgba(217,119,6,.2);"><div class="dim-label" style="color:var(--orange);">📋 ID 對照說明</div><code>shop_flow_v2.goods_id</code>（7-8位，如 20101001）與 <code>物品表ItemID.xlsx</code> 的 ThingID（9位，100M-600M）為<b>不同 ID 系統</b>，無法直接對照商品名稱。需由開發端提供 goods_id → 商品名稱的對照表。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<!-- ===== 帕累托分析 ===== -->
+<div class="section" data-sec="pareto">
+  <div class="section-title">📊 帕累托分析 · 玩家遊玩深度</div>
+
+  <div class="card">
+    <div class="card-title">📊 付費玩家帕累托分布（Top 1% 貢獻 63.3% 收益）<span class="global-tag">🌐 全區</span><span class="badge status-vip">👑 鯨魚高度集中</span></div>
+    <div class="grid-2">
+      <div>
+        <div class="scope-toggle">
+          <button class="stog active" onclick="toggleScope(this,'chartPareto','elite')">🎯 精英市場</button>
+          <button class="stog" onclick="toggleScope(this,'chartPareto','global')">🌐 全區</button>
+        </div>
+        <div class="chart-wrap"><canvas id="chartPareto"></canvas></div>
+      </div>
+      <div>
+        <table>
+          <tr><th>分層</th><th>人數</th><th>收益佔比</th><th>狀態</th></tr>
+          <tr><td>🐳 Top 1%（鯨魚）</td><td>1,150</td><td class="hl-p"><b>63.3%</b></td><td><span class="badge status-vip">👑 VIP核心</span></td></tr>
+          <tr><td>🐬 Top 2-5%（海豚）</td><td>4,597</td><td class="hl-o">22.9%</td><td><span class="badge status-warning">持續觀察</span></td></tr>
+          <tr><td>Top 6-10%</td><td>5,747</td><td>6.9%</td><td><span class="badge status-success">健康</span></td></tr>
+          <tr><td>Top 11-20%</td><td>11,494</td><td>4.3%</td><td><span class="badge status-success">健康</span></td></tr>
+          <tr><td>Bottom 80%</td><td>91,949</td><td style="color:var(--text2)">2.6%</td><td>—</td></tr>
+        </table>
+        <div class="dim-grid" style="margin-top:12px;">
+          <div class="dim-card phenom"><div class="dim-label">🔴 現象</div>Top 1% 的 1,150 名玩家貢獻全服 63.3% 收益，帕累托高度集中，鯨魚健康度直接影響整體收入。</div>
+          <div class="dim-card action"><div class="dim-label">💡 建議</div>建立鯨魚 VIP 專屬服務機制，任何一頭鯨魚流失都應觸發 CS 主動聯繫流程。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">⏱️ 遊玩時長 × 付費率 × 人均消費（全區）<span class="global-tag">🌐 全區</span><span class="badge status-success">✅ 時長與課金高度正相關</span></div>
+    <div class="grid-2">
+      <div>
+        <div class="chart-wrap"><canvas id="chartPlaytime"></canvas></div>
+      </div>
+      <div>
+        <table>
+          <tr><th>遊玩時長</th><th>付費率</th><th>人均消費(USD)</th><th>評估</th></tr>
+          <tr><td>&lt;1hr</td><td>≈0%</td><td>$0.01</td><td><span class="badge status-danger">流失高危</span></td></tr>
+          <tr><td>1-5hr</td><td>3.1%</td><td>$6.90</td><td><span class="badge status-warning">低黏著</span></td></tr>
+          <tr><td>5-15hr</td><td>12.1%</td><td>$67.46</td><td><span class="badge status-warning">成長中</span></td></tr>
+          <tr><td>15-50hr</td><td>29.3%</td><td>$449.17</td><td><span class="badge status-success">核心玩家</span></td></tr>
+          <tr><td>50hr+</td><td>52.2%</td><td>$14,705</td><td><span class="badge status-vip">👑 鯨魚層</span></td></tr>
+        </table>
+        <div class="dim-card phenom" style="margin-top:10px;"><div class="dim-label">💡 洞察</div>遊玩 50hr+ 玩家付費率達 52.2%，人均消費 $14,705，是 &lt;1hr 玩家的百萬倍。<b>留住玩家玩得久 = 最有效的商業化策略。</b></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== 行動策略 ===== -->
+<div class="section" data-sec="action">
+  <div class="section-title">💡 營運優化策略 — 八大核心議題行動方案</div>
+
+  <div style="background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.22);border-radius:8px;padding:12px 18px;font-size:13px;font-weight:700;color:var(--red);margin-bottom:20px;">
+    🔴 P0 緊急：Day0→Day1 流失 62% ／ 鯨魚高度集中（Top1% 貢獻 63.3%）／ 殭屍商品 14 款待清場
+  </div>
+
+  <!-- 8-card grid: 4+4 layout -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+
+    <!-- Card 1: 玩家活躍與流失節點 -->
+    <div class="card" style="border-top:3px solid var(--red);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">🚨</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 1 — 玩家活躍與流失節點</div>
+          <span class="badge status-danger">緊急預警</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>MAU 從 2025-01 的 9,001 降至 2026-06 的 3,102（-65.5%）；DAU 峰谷比週末高出 7.5%，週間明顯下滑。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>流失不是陡降而是持續慢性出血，每月流失約 3-5% MAU。晚間 13:00 是每日流量高峰，可作為推播最佳視窗。</div>
+      <div style="background:rgba(220,38,38,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>週二（最低谷）針對沉默 7 天玩家推送個人化通知；活用 13:00 黃金時段做限時活動觸發。</div>
+    </div>
+
+    <!-- Card 2: 貨幣流通與通膨 -->
+    <div class="card" style="border-top:3px solid var(--orange);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">🪙</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 2 — 遊戲內貨幣流通與通膨</div>
+          <span class="badge status-warning">持續觀察</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>近6個月 Mint 總量 1.69B，Burn 1.78B，整體 Burn &gt; Mint（健康）；但 2026-01 出現 Mint 激增（+361M），為近期高點。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>2026-01 農曆新年活動推升產出，需確認是否有對應的 Burn 活動消化多餘貨幣，否則會積累通膨壓力。</div>
+      <div style="background:rgba(217,119,6,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>每次活動後追蹤 Mint/Burn 比值，若連續 3 個月 Mint &gt; Burn 需緊急調整道具產出設計。</div>
+    </div>
+
+    <!-- Card 3: 核心經濟與道具流向 -->
+    <div class="card" style="border-top:3px solid var(--orange);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">🏪</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 3 — 核心經濟與道具流向</div>
+          <span class="badge status-danger">殭屍商品警示</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>shop_flow_v2 偵測到 14 款殭屍商品（近90天零銷售）＋ 36 款衰退；活躍商品集中在 201002xx 系列（Top 12 均為此段）。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>goods_id 20101001 歷史買家 200 萬、最後銷售 2025-04-10，疑似被替代品排擠而非主動下架，需確認是否系統異常。</div>
+      <div style="background:rgba(220,38,38,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>緊急盤點 14 款殭屍商品狀態；36 款衰退商品推出限時 8 折促銷，觀察近30天訂單是否回升至歷史 20% 以上。</div>
+    </div>
+
+    <!-- Card 4: 玩家分層與VIP行為 -->
+    <div class="card" style="border-top:3px solid var(--purple);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">👑</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 4 — 玩家分層與 VIP 行為</div>
+          <span class="badge status-vip">VIP核心</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>Top 1%（1,150人）貢獻 63.3% 收益；鯨魚（65人）ARPPU $14,705；HK ARPPU $1,860 全市場最高；單伺服器 130124/HK 收益高度集中在1人。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>Top1% 高度集中代表系統性脆弱——任何1頭鯨魚流失都對月收入造成 0.5%~1% 直接衝擊。130124 伺服器為「單鯨支撐型」高危。</div>
+      <div style="background:rgba(124,58,237,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>對 Top 30 VIP 建立月度健康度追蹤；130124 伺服器啟動 CS 主動關懷；HK 市場優先推出高單價商品測試上限。</div>
+    </div>
+
+    <!-- Card 5: 活動營收半衰期 -->
+    <div class="card" style="border-top:3px solid var(--accent);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">📉</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 5 — 活動營收半衰期與效益</div>
+          <span class="badge status-warning">活動ROI下滑</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>活動峰值月（2025-05）收入 $673K，次月衰退至 $307K（-54.4%）；2026-04 新賽季峰值 $307K，次月已降至 $254K（-17.4%）。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>早期活動半衰期更陡峭（-54%），近期活動相對平穩（-17%）可能代表玩家已「習慣活動節奏」而降低第一波爆發力。</div>
+      <div style="background:rgba(37,99,235,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>活動設計加入「第2週驚喜內容」延長半衰期；CVR 2026-06 降至 13.2%（歷史低點），需在 Q3 推出新商業化方案拉抬。</div>
+    </div>
+
+    <!-- Card 6: 新手村破冰轉化 -->
+    <div class="card" style="border-top:3px solid var(--red);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">🗺️</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 6 — 新手村破冰與轉化阻礙</div>
+          <span class="badge status-danger">D0→D1 流失 62%</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>Day0 完成任務 663,441 人次，Day1 僅剩 250,838（-62.2%）；首付玩家 79.5% 在 Lv.80+ 才首儲，代表新手期幾乎無付費行為。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>Day0 的 698 個任務中，Task 10000000 系列完成率最高但 D1 斷崖下跌，代表新手引導完成後缺乏「隔日回來的理由」。</div>
+      <div style="background:rgba(220,38,38,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>Day0 尾端加入「明日解鎖獎勵」預告；iOS CVR 僅 1.0% vs Android 3.5%，iOS 新手引導需專項優化；Lv.80 前設計付費觸點。</div>
+    </div>
+
+    <!-- Card 7: 回流用戶二次流失 -->
+    <div class="card" style="border-top:3px solid var(--accent);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">🔄</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 7 — 回流用戶二次流失診斷</div>
+          <span class="badge status-warning">回流品質待評估</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>回流玩家分布：30-59天沉睡 349,483 人、60-89天 135,600 人、90-179天 174,349 人、180天以上 263,573 人；長期沉睡佔回流最大宗。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>180天+ 回流玩家達 263K，高於 60-89天群體，代表召回行銷對長期流失者有效，但版本差距大、二次流失風險高。</div>
+      <div style="background:rgba(37,99,235,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>對 180 天+ 回流玩家提供「版本追趕禮包」降低內容斷層感；30-59 天短期流失者則以「好友動態」推播提高情感連結。</div>
+    </div>
+
+    <!-- Card 8: 外掛工作室監控 -->
+    <div class="card" style="border-top:3px solid var(--green);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">🛡️</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 8 — 外掛工作室異常監控</div>
+          <span class="badge status-success">目前風險可控</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>精英市場（TW/HK/MO/SG/MY）外掛風險相對低；歷史已偵測高頻登出入帳號，單日非綁定貨幣產出異常帳號為主要監控標的。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>精英市場付費意願強，工作室刷資源的誘因低於東南亞其他市場；主要風險為高頻儲值帳號（禮品卡詐騙）而非刷資源。</div>
+      <div style="background:rgba(22,163,74,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>持續監控單日儲值 &gt;100 次帳號；新增「非綁定貨幣日產出 &gt;5σ」自動預警規則；每週產出一份高風險帳號清單供 CS 審核。</div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="footer">
+  MS 合金彈頭 A664 · 台港澳星馬精英市場戰情室 v4 · 2026-07-01 · 數據來源：Metabase Trino / ms_a664
+  <br>分析範疇：TW / HK / MO / SG / MY ｜ payamt 單位：USD（÷100 cents）｜ shop_flow_v2：2023-08 ~ 2026-06
+</div>
+
+<script>
+
+const MONTHS_18=['2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06'];
+const MONTHS_12=['2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06'];
+const MONTHS_6=['2026-01','2026-02','2026-03','2026-04','2026-05','2026-06'];
+Chart.defaults.font.size=11;Chart.defaults.color='#64748b';
+
+// [1] MAU — 精英市場 (TW/HK/MO/SG/MY)
+window.chartMAU=new Chart(document.getElementById('chartMAU'),{
+  type:'line',
+  data:{
+    labels:MONTHS_18,
+    datasets:[
+      {label:'精英 MAU',data:[9001,7998,8123,7187,6366,5872,5434,5843,5116,4803,4388,4469,3968,4352,3837,3613,3351,3102],borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.08)',fill:true,tension:.3,pointRadius:2},
+      {label:'精英 avg DAU',data:[5055,4728,4371,4092,3818,3544,3300,3185,3075,2871,2692,2599,2490,2433,2267,2175,2076,1943],borderColor:'#d97706',backgroundColor:'rgba(217,119,6,.07)',fill:true,tension:.3,pointRadius:2}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:false,ticks:{callback:v=>v>=1000?Math.round(v/1000)+'K':v}}}}
+});
+
+// [2] D1/D7/D30 — 精英市場
+new Chart(document.getElementById('chartRetention'),{
+  type:'line',
+  data:{
+    labels:MONTHS_12,
+    datasets:[
+      {label:'D1留存%',data:[46.8,47.9,54.1,52.8,40.5,51.6,55.6,47,46,46.9,50,61.3],borderColor:'#16a34a',tension:.3,pointRadius:3},
+      {label:'D7留存%',data:[22.6,27.4,31.1,32.1,27,30.6,25.9,24.1,23.8,26.5,22.7,16.1],borderColor:'#d97706',tension:.3,pointRadius:3},
+      {label:'D30留存%',data:[17.7,19.7,11.5,22.6,16.2,19.4,20.4,10.8,11.1,18.4,0,0],borderColor:'#dc2626',tension:.3,pointRadius:3}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true,max:70,ticks:{callback:v=>v+'%'}}}}
+});
+
+// [3] Returnees (global)
+new Chart(document.getElementById('chartReturnees'),{
+  type:'bar',
+  data:{labels:['30-59天','60-89天','90-179天','180天以上'],datasets:[{label:'回流人數',data:[349483,135600,174349,263573],backgroundColor:['#2563eb','#16a34a','#d97706','#dc2626'],borderRadius:6}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>Math.round(v/1000)+'K'}}}}
+});
+
+// [3b] Activity revenue half-life pulse chart
+new Chart(document.getElementById('chartHalfLife'),{
+  type:'bar',
+  data:{
+    labels:['2025-05\n大版本','2025-08\n季節活動','2026-01\n農曆新年','2026-04\n新賽季'],
+    datasets:[
+      {label:'前月基準',data:[522032,348748,374864,190146],backgroundColor:'rgba(100,116,139,.4)',borderRadius:4},
+      {label:'活動峰值',data:[673669,461692,459509,307327],backgroundColor:'rgba(37,99,235,.7)',borderRadius:4},
+      {label:'次月衰退',data:[307411,354675,374261,253853],backgroundColor:'rgba(220,38,38,.6)',borderRadius:4}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{ticks:{callback:v=>v>=1000?'$'+(v/1000).toFixed(0)+'K':'$'+v}}}}
+});
+
+// [4] Hourly Login Distribution (global)
+new Chart(document.getElementById('chartHourly'),{
+  type:'bar',
+  data:{
+    labels:['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23'],
+    datasets:[{label:'登入人次',data:[53408,57032,73659,86021,95774,79285,57746,48720,45033,48017,49793,71739,126374,118177,81698,71748,54221,31961,17427,12382,11090,20839,36406,48295],backgroundColor:'rgba(37,99,235,.6)',borderRadius:3}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>Math.round(v/1000)+'K'}}}}
+});
+
+// [5] CVR / Revenue trend (scope chart)
+window.chartCVR=new Chart(document.getElementById('chartCVR'),{
+  type:'bar',
+  data:{
+    labels:MONTHS_18,
+    datasets:[
+      {label:'月收入(USD)',data:[389231,298911,483267,522032,673669,307411,348748,461692,448318,354675,268373,374864,459509,374261,190146,307327,253853,59227],backgroundColor:'rgba(37,99,235,.2)',borderColor:'#2563eb',borderWidth:1.5,yAxisID:'y'},
+      {label:'CVR%',data:[20.1,18.3,18.6,23.1,21.4,18.9,22.2,22.4,20.5,22.4,19.7,24.1,23.4,20.5,17.7,24.2,23.2,13.2],type:'line',borderColor:'#dc2626',backgroundColor:'transparent',tension:.3,pointRadius:3,yAxisID:'y1'}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{ticks:{callback:v=>v>=1000?'$'+(v/1000).toFixed(0)+'K':'$'+v}},y1:{type:'linear',position:'right',ticks:{callback:v=>v+'%'},grid:{drawOnChartArea:false}}}}
+});
+
+// [6] VIP Count (scope chart)
+window.chartVipCount=new Chart(document.getElementById('chartVipCount'),{
+  type:'doughnut',
+  data:{
+    labels:['🐳鯨魚(65)','🐬海豚(809)','🦐小蝦米(102K)'],
+    datasets:[{data:[65,809,102033],backgroundColor:['#7c3aed','#2563eb','#16a34a'],borderWidth:2}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+});
+
+// [7] VIP Revenue (scope chart)
+window.chartVipRev=new Chart(document.getElementById('chartVipRev'),{
+  type:'doughnut',
+  data:{
+    labels:['🐳鯨魚($5.90M)','🐬海豚($10.77M)','🦐小蝦米($11.60M)'],
+    datasets:[{data:[5898100,10770950,11598982],backgroundColor:['#7c3aed','#2563eb','#16a34a'],borderWidth:2}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+});
+
+// [8] Pay Frequency
+new Chart(document.getElementById('chartPayFreq'),{
+  type:'bar',
+  data:{
+    labels:['1次（首儲）','2-3次','4-6次','7-12次','13次以上'],
+    datasets:[{label:'付費玩家數',data:[47332,28364,13215,9641,16385],backgroundColor:['rgba(220,38,38,.7)','rgba(217,119,6,.7)','rgba(22,163,74,.7)','rgba(37,99,235,.7)','rgba(124,58,237,.8)'],borderRadius:6}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>Math.round(v/1000)+'K'}}}}
+});
+
+
+// [10] Pareto (scope chart)
+window.chartPareto=new Chart(document.getElementById('chartPareto'),{
+  type:'bar',
+  data:{
+    labels:['Top 1%\n(1,150人)','Top 5%\n(4,597人)','Top 10%\n(5,747人)','Top 20%\n(11,494人)','Bottom 80%\n(91,949人)'],
+    datasets:[{label:'精英收益佔比%',data:[63.3,22.85,6.91,4.34,2.60],backgroundColor:['#7c3aed','#2563eb','#16a34a','#d97706','#64748b'],borderRadius:6}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}
+});
+
+// [11] Playtime vs Payrate (global)
+new Chart(document.getElementById('chartPlaytime'),{
+  type:'bar',
+  data:{
+    labels:['<1hr','1-5hr','5-15hr','15-50hr','50hr+'],
+    datasets:[
+      {label:'付費率%',data:[0,3.1,12.1,29.3,52.2],backgroundColor:'rgba(37,99,235,.7)',borderRadius:6,yAxisID:'y'},
+      {label:'人均消費',data:[0.01,6.9,67.46,449.17,14705.39],type:'line',borderColor:'#dc2626',backgroundColor:'transparent',tension:.3,pointRadius:4,yAxisID:'y1'}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{ticks:{callback:v=>v+'%'}},y1:{type:'linear',position:'right',ticks:{callback:v=>v>=1000?Math.round(v/1000)+'K':v},grid:{drawOnChartArea:false}}}}
+});
+
+// [12] Level → Pay Path (verified: MIN first-pay-day JOIN player_login.level)
+new Chart(document.getElementById('chartLevelPay'),{
+  type:'bar',
+  data:{
+    labels:['Lv.1-9\n新手村','Lv.10-29\n成長期','Lv.30-49\n中期','Lv.50-79\n資深','Lv.80+\n頂級'],
+    datasets:[{
+      label:'首付玩家數',
+      data:[237,389,27,26,2707],
+      backgroundColor:['rgba(100,116,139,.7)','rgba(217,119,6,.7)','rgba(100,116,139,.5)','rgba(100,116,139,.5)','rgba(22,163,74,.85)'],
+      borderRadius:6
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>'首付人數: '+ctx.parsed.y.toLocaleString()+' ('+[7,11.4,0.8,0.8,79.5][ctx.dataIndex]+'%)'}}
+    },
+    scales:{y:{ticks:{callback:v=>v>=1000?Math.round(v/1000)+'K':v}}}
+  }
+});
+
+// [13] Platform Login→Pay (verified: player_login.plat_id, 2026 H1)
+new Chart(document.getElementById('chartFunnel'),{
+  type:'bar',
+  data:{
+    labels:['iOS (plat_id=1)','Android (plat_id=0)'],
+    datasets:[
+      {label:'活躍登入玩家',data:[75034,22195],backgroundColor:['rgba(37,99,235,.6)','rgba(22,163,74,.6)'],borderRadius:4,yAxisID:'y'},
+      {label:'付費玩家',data:[713,769],backgroundColor:['rgba(37,99,235,1)','rgba(22,163,74,1)'],borderRadius:4,yAxisID:'y'},
+      {label:'付費率%',data:[1.0,3.5],type:'line',borderColor:'#dc2626',backgroundColor:'transparent',tension:.3,pointRadius:6,pointBackgroundColor:'#dc2626',yAxisID:'y1'}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top'}},
+    scales:{
+      y:{ticks:{callback:v=>v>=1000?Math.round(v/1000)+'K':v},title:{display:true,text:'人數'}},
+      y1:{type:'linear',position:'right',min:0,max:6,ticks:{callback:v=>v+'%'},grid:{drawOnChartArea:false},title:{display:true,text:'付費率'}}
+    }
+  }
+});
+
+// [14] Weekday (global)
+new Chart(document.getElementById('chartWeekday'),{
+  type:'bar',
+  data:{
+    labels:['一','二','三','四','五','六','日'],
+    datasets:[{label:'DAU',data:[24534,24375,23529,24960,25553,25896,26123],backgroundColor:['rgba(37,99,235,.7)','rgba(37,99,235,.7)','rgba(37,99,235,.5)','rgba(37,99,235,.7)','rgba(37,99,235,.8)','rgba(124,58,237,.7)','rgba(124,58,237,.8)'],borderRadius:6}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:20000,ticks:{callback:v=>Math.round(v/1000)+'K'}}}}
+});
+
+// [15] Mint vs Burn (global)
+new Chart(document.getElementById('chartMintBurn'),{
+  type:'bar',
+  data:{
+    labels:MONTHS_6,
+    datasets:[
+      {label:'Mint（產出）',data:[361221068,320269478,240648207,301103445,270006483,196371513],backgroundColor:'rgba(22,163,74,.6)',borderRadius:4},
+      {label:'Burn（消耗）',data:[343737238,342432565,289730302,282010742,261382503,264795322],backgroundColor:'rgba(220,38,38,.6)',borderRadius:4}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{ticks:{callback:v=>Math.round(v/1000000)+'M'}}}}
+});
+
+// [16] Market Revenue
+new Chart(document.getElementById('chartMktRev'),{
+  type:'bar',
+  data:{
+    labels:['🇹🇼 TW','🇭🇰 HK','🇸🇬 SG','🇲🇾 MY','🇲🇴 MO'],
+    datasets:[{label:'歷史總收入(USD)',data:[12207450,7563909,4156118,3931611,408944],backgroundColor:['rgba(37,99,235,.7)','rgba(124,58,237,.7)','rgba(22,163,74,.7)','rgba(217,119,6,.7)','rgba(100,116,139,.7)'],borderRadius:6}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v>=1e6?'$'+(v/1e6).toFixed(1)+'M':v>=1000?'$'+(v/1000).toFixed(0)+'K':'$'+v}}}}
+});
+
+// ===== DUAL-SOURCE SCOPE DATA =====
+const SCOPE_DATA = {
+  chartCVR:{
+    elite:{
+      labels:MONTHS_18,
+      datasets:[
+        {label:'月收入(USD)',data:[389231,298911,483267,522032,673669,307411,348748,461692,448318,354675,268373,374864,459509,374261,190146,307327,253853,59227],backgroundColor:'rgba(37,99,235,.2)',borderColor:'#2563eb',borderWidth:1.5,yAxisID:'y'},
+        {label:'CVR%',data:[20.1,18.3,18.6,23.1,21.4,18.9,22.2,22.4,20.5,22.4,19.7,24.1,23.4,20.5,17.7,24.2,23.2,13.2],type:'line',borderColor:'#dc2626',backgroundColor:'transparent',tension:.3,pointRadius:3,yAxisID:'y1'}
+      ]
+    },
+    global:{
+      labels:MONTHS_18,
+      datasets:[
+        {label:'月收入(USD)',data:[3319,2762,4608,4527,5866,2678,3302,4130,3608,2988,2254,3142,3878,3018,1339,2373,2066,566],backgroundColor:'rgba(124,58,237,.2)',borderColor:'#7c3aed',borderWidth:1.5,yAxisID:'y'},
+        {label:'CVR%',data:[7.7,7.4,6.6,7.2,7.0,6.4,8.3,8.3,8.5,10.1,9.7,11.6,13.0,10.2,8.2,11.0,11.0,6.5],type:'line',borderColor:'#16a34a',backgroundColor:'transparent',tension:.3,pointRadius:3,yAxisID:'y1'}
+      ]
+    }
+  },
+  chartMAU:{
+    elite:{
+      labels:MONTHS_18,
+      datasets:[
+        {label:'精英 MAU',data:[9001,7998,8123,7187,6366,5872,5434,5843,5116,4803,4388,4469,3968,4352,3837,3613,3351,3102],borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.08)',fill:true,tension:.3,pointRadius:2},
+        {label:'精英 avgDAU',data:[5055,4728,4371,4092,3818,3544,3300,3185,3075,2871,2692,2599,2490,2433,2267,2175,2076,1943],borderColor:'#d97706',backgroundColor:'rgba(217,119,6,.07)',fill:true,tension:.3,pointRadius:2}
+      ]
+    },
+    global:{
+      labels:MONTHS_18,
+      datasets:[
+        {label:'全區 MAU',data:[101077,85701,103084,104373,81910,68854,59207,68032,51800,43120,35201,38506,27421,34003,30863,32400,26553,21404],borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,.08)',fill:true,tension:.3,pointRadius:2}
+      ]
+    }
+  },
+  chartVipCount:{
+    elite:{
+      labels:['🐳鯨魚(65)','🐬海豚(809)','🦐小蝦米(102K)'],
+      datasets:[{data:[65,809,102033],backgroundColor:['#7c3aed','#2563eb','#16a34a'],borderWidth:2}]
+    },
+    global:{
+      labels:['🐳鯨魚(65)','🐬海豚(809)','🦐小蝦米(102K)'],
+      datasets:[{data:[65,809,102033],backgroundColor:['#7c3aed','#2563eb','#16a34a'],borderWidth:2}]
+    }
+  },
+  chartVipRev:{
+    elite:{
+      labels:['🐳鯨魚($5.90M)','🐬海豚($10.77M)','🦐小蝦米($11.60M)'],
+      datasets:[{data:[5898100,10770950,11598982],backgroundColor:['#7c3aed','#2563eb','#16a34a'],borderWidth:2}]
+    },
+    global:{
+      labels:['🐳鯨魚($5.90M)','🐬海豚($10.77M)','🦐小蝦米($11.60M)'],
+      datasets:[{data:[5898100,10770950,11598982],backgroundColor:['#7c3aed','#2563eb','#16a34a'],borderWidth:2}]
+    }
+  },
+  chartPareto:{
+    elite:{
+      labels:['Top 1%\n(1,150人)','Top 5%\n(4,597人)','Top 10%\n(5,747人)','Top 20%\n(11,494人)','Bottom 80%\n(91,949人)'],
+      datasets:[{label:'精英收益佔比%',data:[63.3,22.85,6.91,4.34,2.60],backgroundColor:['#7c3aed','#2563eb','#16a34a','#d97706','#64748b'],borderRadius:6}]
+    },
+    global:{
+      labels:['Top 1%\n(1,150人)','Top 5%\n(4,597人)','Top 10%\n(5,747人)','Top 20%\n(11,494人)','Bottom 80%\n(91,949人)'],
+      datasets:[{label:'全區收益佔比%',data:[63.3,22.85,6.91,4.34,2.60],backgroundColor:['#7c3aed','#2563eb','#16a34a','#d97706','#64748b'],borderRadius:6}]
+    }
+  }
+};
+
+// ===== SCOPE TOGGLE =====
+function toggleScope(btn,chartId,scope){
+  const ch=window[chartId];
+  if(!ch||!SCOPE_DATA[chartId])return;
+  const d=SCOPE_DATA[chartId][scope];
+  ch.data.labels=d.labels;
+  ch.data.datasets=d.datasets;
+  ch.update();
+  const wrap=btn.closest('.scope-toggle');
+  if(wrap)wrap.querySelectorAll('.stog').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function toggleScope2(chartId,scope){
+  const ch=window[chartId];
+  if(!ch||!SCOPE_DATA[chartId])return;
+  const d=SCOPE_DATA[chartId][scope];
+  ch.data.labels=d.labels;
+  ch.data.datasets=d.datasets;
+  ch.update();
+}
+
+// ===== CHIP NAV FILTER =====
+function filterSec(key){
+  document.querySelectorAll('.section').forEach(s=>{
+    s.style.display=(key==='all'||s.dataset.sec===key)?'':'none';
+  });
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.classList.remove('active');
+    const oc=c.getAttribute('onclick')||'';
+    if(oc.includes("'"+key+"'"))c.classList.add('active');
+  });
+}
+function jumpSec(key){
+  filterSec(key);
+  setTimeout(()=>{
+    const el=document.querySelector('[data-sec="'+key+'"]');
+    if(el)el.scrollIntoView({behavior:'smooth'});
+  },50);
+}
+
+</script>
+</body>
+</html>
