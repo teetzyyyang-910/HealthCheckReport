@@ -211,14 +211,14 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
       <span class="badge badge-soon">⏳ 即將上線</span>
     </div>
 
-    <div class="game-card inactive">
+    <div class="game-card active" onclick="toggleGame('COS')" id="card-COS">
       <div class="game-icon">
         <img src="./assets/cos_icon.png" alt="COS"
              onerror="this.style.display='none';this.parentNode.innerHTML='COS'">
       </div>
       <div class="game-name">COS</div>
       <div class="game-sub">&nbsp;</div>
-      <span class="badge badge-soon">⏳ 即將上線</span>
+      <span class="badge badge-live">● 已上線</span>
     </div>
 
     <div class="game-card active" onclick="toggleGame('CS2')" id="card-CS2">
@@ -269,6 +269,11 @@ const GAMES = {
     reports: [
       { date: '2026/07/01', label: '台港澳星馬精英市場戰情室 v4', url: './MS/dashboard.html' }
     ]
+  },
+  COS: {
+    reports: [
+      { date: '2026/07/08', label: 'COS 數據健檢報告 v20', url: './COS/dashboard.html' }
+    ]
   }
   // 其他遊戲上線後在此新增
 };
@@ -317,4 +322,3 @@ function closePanel() {
 
 </body>
 </html>
-         
