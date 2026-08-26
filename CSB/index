@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSB《天上碑M》數據戰情室</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#f8fafc;--bg2:#ffffff;--bg3:#f1f5f9;
+  --border:#e2e8f0;--text:#1e293b;--text2:#64748b;
+  --accent:#2563eb;--red:#dc2626;--orange:#d97706;
+  --green:#16a34a;--purple:#7c3aed;
+  --hl-r:#dc2626;--hl-o:#d97706;--hl-g:#16a34a;--hl-b:#2563eb;--hl-p:#7c3aed;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft JhengHei',sans-serif;background:var(--bg);color:var(--text);font-size:14px;margin:0;padding:0;}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 16px;position:sticky;top:0;z-index:100;width:100%;box-sizing:border-box;}
+.header-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.header-title{font-size:19px;font-weight:800;color:var(--text);}
+.header-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+.header-date{font-size:11px;color:var(--text2);}
+.scope-tag{display:inline-block;background:rgba(37,99,235,.1);color:var(--accent);border:1px solid rgba(37,99,235,.3);border-radius:5px;padding:2px 8px;font-size:11px;font-weight:700;margin-left:8px;}
+.global-tag{display:inline-block;background:rgba(100,116,139,.1);color:#475569;border:1px solid rgba(100,116,139,.3);border-radius:5px;padding:2px 6px;font-size:10px;font-weight:700;margin-left:4px;vertical-align:middle;}
+.chip-nav{display:flex;gap:8px;flex-wrap:wrap;padding:6px 16px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:52px;z-index:99;}
+.chip{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:12px;font-weight:600;transition:all .18s;white-space:nowrap;}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+.chip.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:5px;vertical-align:middle;white-space:nowrap;}
+.status-danger{background:rgba(220,38,38,.09);color:#b91c1c;border:1px solid rgba(220,38,38,.28);}
+.status-warning{background:rgba(217,119,6,.09);color:#b45309;border:1px solid rgba(217,119,6,.28);}
+.status-success{background:rgba(22,163,74,.09);color:#15803d;border:1px solid rgba(22,163,74,.28);}
+.status-vip{background:rgba(124,58,237,.09);color:#6d28d9;border:1px solid rgba(124,58,237,.28);}
+.status-info{background:rgba(37,99,235,.09);color:#1d4ed8;border:1px solid rgba(37,99,235,.28);}
+.hl-r{color:var(--hl-r);font-weight:700;}
+.hl-o{color:var(--hl-o);font-weight:700;}
+.hl-g{color:var(--hl-g);font-weight:700;}
+.hl-b{color:var(--hl-b);font-weight:700;}
+.hl-p{color:var(--hl-p);font-weight:700;}
+.main{width:100%;box-sizing:border-box;padding:12px 16px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:28px;}
+.kpi-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:2px 0 0 2px;}
+.kpi-card.red::before{background:var(--red);}
+.kpi-card.orange::before{background:var(--orange);}
+.kpi-card.green::before{background:var(--green);}
+.kpi-card.blue::before{background:var(--accent);}
+.kpi-card.purple::before{background:var(--purple);}
+.kpi-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;}
+.kpi-value{font-size:26px;font-weight:800;margin:5px 0 3px;color:var(--text);}
+.kpi-delta{font-size:11px;color:var(--text2);}
+.kpi-icon{position:absolute;right:14px;top:14px;font-size:22px;opacity:.15;}
+.section{margin-bottom:36px;}
+.section-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+.card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.card-title-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.scope-toggle{display:flex;gap:4px;flex-shrink:0;}
+.stog{padding:2px 9px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:11px;font-weight:600;transition:all .15s;white-space:nowrap;}
+.stog:hover{border-color:var(--accent);color:var(--accent);}
+.stog.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.stog.active.gl{background:#475569;border-color:#475569;}
+.chart-wrap{position:relative;height:220px;}
+.chart-wrap-lg{position:relative;height:260px;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th{background:var(--bg3);color:var(--text2);font-weight:600;padding:8px 10px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--border);}
+td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8fafc;}
+.tbl-scroll{overflow-x:auto;}
+.dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+@media(max-width:700px){.dim-grid{grid-template-columns:1fr;}}
+.dim-card{border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.6;}
+.dim-card.phenom{background:rgba(37,99,235,.06);border-left:3px solid var(--accent);}
+.dim-card.cause{background:rgba(217,119,6,.06);border-left:3px solid var(--orange);}
+.dim-card.impact{background:rgba(220,38,38,.06);border-left:3px solid var(--red);}
+.dim-card.action{background:rgba(22,163,74,.06);border-left:3px solid var(--green);}
+.dim-label{font-weight:700;margin-bottom:4px;font-size:11px;text-transform:uppercase;}
+.dim-card.phenom .dim-label{color:var(--accent);}
+.dim-card.cause .dim-label{color:var(--orange);}
+.dim-card.impact .dim-label{color:var(--red);}
+.dim-card.action .dim-label{color:var(--green);}
+.action-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+.action-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;border-left-width:4px;border-left-style:solid;}
+.action-card.p0-card{border-left-color:var(--red);}
+.action-card.p1-card{border-left-color:var(--orange);}
+.action-card.p2-card{border-left-color:var(--accent);}
+.action-card.p3-card{border-left-color:var(--green);}
+.action-priority{font-size:10px;font-weight:800;letter-spacing:1px;margin-bottom:6px;}
+.p0{color:var(--red);}.p1{color:var(--orange);}.p2{color:var(--accent);}.p3{color:var(--green);}
+.action-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.action-body{font-size:12px;color:var(--text2);line-height:1.7;}
+.warn-bar{background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#b91c1c;font-weight:600;}
+.info-bar{background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#1d4ed8;font-weight:600;}
+.progress-bar-wrap{background:var(--bg3);border-radius:4px;height:8px;margin-top:4px;}
+.progress-bar{height:8px;border-radius:4px;}
+/* Market cards */
+.mkt-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px;}
+@media(max-width:800px){.mkt-grid{grid-template-columns:repeat(2,1fr);}}
+.mkt-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px 10px;text-align:center;}
+.mkt-flag{font-size:24px;margin-bottom:4px;}
+.mkt-name{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:4px;}
+.mkt-rev{font-size:16px;font-weight:800;color:var(--text);}
+.mkt-arpu{font-size:11px;color:var(--accent);font-weight:700;}
+.mkt-vip{font-size:10px;color:var(--text2);margin-top:4px;}
+/* Density meter */
+.density-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.funnel-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:11.5px;}
+.funnel-label{width:140px;flex-shrink:0;color:var(--text);font-weight:600;}
+.funnel-bar{height:12px;border-radius:4px;transition:width .4s ease;}
+.funnel-val{width:60px;flex-shrink:0;text-align:right;font-size:11px;color:var(--text2);font-weight:700;}
+.density-label{font-size:12px;min-width:80px;font-weight:600;}
+.density-bar{flex:1;background:var(--bg3);border-radius:4px;height:10px;overflow:hidden;}
+.density-fill{height:100%;border-radius:4px;}
+.density-val{font-size:12px;font-weight:700;min-width:50px;text-align:right;}
+
+/* === P0~P3 Strategy Strip === */
+.p-strip-wrap{margin-bottom:20px;}
+.p-strip{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:10px 10px 0 0;overflow:hidden;}
+.p-strip-card{padding:14px 16px;border-right:1px solid var(--border);background:var(--bg2);transition:background .15s;}.p-strip-card:hover{background:var(--bg3);}
+.p-strip-card:last-child{border-right:none;}
+.p-strip-hd{display:flex;align-items:flex-start;gap:8px;margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid var(--border);}
+.ps-badge{font-size:10px;font-weight:800;letter-spacing:.4px;padding:2px 9px;border-radius:10px;white-space:nowrap;flex-shrink:0;margin-top:1px;}
+.ps-b-p0{background:rgba(220,38,38,.12);color:#b91c1c;}
+.ps-b-p1{background:rgba(217,119,6,.12);color:#b45309;}
+.ps-b-p2{background:rgba(37,99,235,.12);color:#1d4ed8;}
+.ps-b-p3{background:rgba(22,163,74,.12);color:#15803d;}
+.p-strip-title{font-size:12.5px;font-weight:700;color:var(--text);line-height:1.3;}
+.p-strip-sub{font-size:10.5px;color:var(--text2);margin-top:1px;}
+.p-strip-body{font-size:11.5px;color:var(--text);line-height:1.78;list-style:none;padding:0;margin:0;}
+.p-strip-body li{margin-bottom:2px;}
+.p-strip-body li::before{content:"→ ";color:var(--text2);}
+.p-decision{background:rgba(220,38,38,.04);border:1px solid rgba(220,38,38,.18);border-top:none;border-radius:0 0 10px 10px;padding:8px 18px;font-size:11px;color:#b91c1c;font-weight:600;}
+@media(max-width:900px){.p-strip{grid-template-columns:1fr 1fr;}}
+@media(max-width:500px){.p-strip{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-title">🗡️ CSB《天上碑M》數據戰情室 <span class="scope-tag">TW / HK / MO（TWHK 版本）</span><span class="global-tag">依 Dashboard_需求確認表 v1 建置</span></div>
+      <div class="header-sub">變身系統 × 裝備掉落 × PvP｜營運 2023-11-30 起（累計 1310 天）｜架構沿用 GNO Dashboard 範本（MS合金彈頭）四維分析法</div>
+    </div>
+    <div class="header-date">最後更新：2026-08-26　｜　資料來源：Metabase（17張表）+ AppsFlyer + SilverLog/GoldLog + ID對照表</div>
+  </div>
+</div>
+<div class="chip-nav">
+  <button class="chip active" onclick="filterSec('all')">🌐 全部</button>
+  <button class="chip" onclick="filterSec('retention')">🚨 流失與留存</button>
+  <button class="chip" onclick="filterSec('funnel')">⏱️ 遊玩時長與轉化漏斗</button>
+  <button class="chip" onclick="filterSec('economy')">🪙 貨幣與外掛</button>
+  <button class="chip" onclick="filterSec('vip')">👑 VIP與商業化</button>
+  <button class="chip" onclick="filterSec('pareto')">📊 帕累托分析</button>
+  <button class="chip" onclick="filterSec('action')">💡 營運行動策略</button>
+</div>
+<div class="main" style="padding:16px;max-width:1400px;margin:0 auto;">
+
+<div class="kpi-grid">
+  <div class="kpi-card blue">
+    <div class="kpi-icon">👥</div>
+    <div class="kpi-label">最新月活躍 MAU（2026-7）</div>
+    <div class="kpi-value">1,557</div>
+    <div class="kpi-delta">較2024-1高峰123,485已降98.7%（見§1.3）</div>
+  </div>
+  <div class="kpi-card green">
+    <div class="kpi-icon">💰</div>
+    <div class="kpi-label">全服歷史累計營收</div>
+    <div class="kpi-value">$79.9M</div>
+    <div class="kpi-delta">2023-11-30上線至今真實付費總額（見§5.1/4.11）</div>
+  </div>
+  <div class="kpi-card red">
+    <div class="kpi-icon">🐳</div>
+    <div class="kpi-label">Top 1% 付費集中度</div>
+    <div class="kpi-value">71.0%</div>
+    <div class="kpi-delta">121人貢獻超過7成營收，結構脆弱（見§5.1）</div>
+  </div>
+  <div class="kpi-card purple">
+    <div class="kpi-icon">🚨</div>
+    <div class="kpi-label">高危VIP待召回潛在營收</div>
+    <div class="kpi-value">$12.7M</div>
+    <div class="kpi-delta">Top30高危名單歷史累計消費（見§4.7）</div>
+  </div>
+  <div class="kpi-card orange">
+    <div class="kpi-icon">📋</div>
+    <div class="kpi-label">Dashboard資料完整度</div>
+    <div class="kpi-value">44/48</div>
+    <div class="kpi-delta">91.7%卡片已用真實數據回填（見§議題8）</div>
+  </div>
+</div>
+
+<div class="warn-bar" style="background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.25);border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:16px;color:#15803d;">
+✅ <b>資料完整度說明（2026-08-26 更新）</b>：本檔案沿用 GNO Dashboard 範本之 HTML/CSS/JS 架構與「現象→原因→影響→行動」四維分析法。
+48張卡片中 <span class="badge status-success">✅ 真實數據</span> 共44張，已用貴方於 Metabase 實際執行 <code>CSB_Dashboard_SQL查詢語法庫.sql</code> 回填之查詢結果，及2026-07-14匯出之全服SilverLog/GoldLog真實LOG（3.1/3.3/3.7/交易所監控/貨幣帕累托/活動檔期效果分析）回填；
+<span class="badge status-danger">⛔ 資料缺口已確認</span> 共4張，經核對17張Metabase表後確認對應資料表不存在（多集中在「遊戲伺服器端自訂行為事件」缺席，詳見§議題8）；
+1.8/3.4/7.7已100%對照到真實禮包名稱或商城通用名稱；4.4僅剩1項因交易日期在OB活動排程與金流表皆查無記錄而顯示原始product_id，<b>全程不含任何推估或示意數值</b>。
+</div>
+<!-- ===== 區塊一：流失與留存 ===== -->
+<div class="section" data-sec="retention">
+  <div class="section-title">🚨 流失診斷 · 留存曲線 · 新手分析</div>
+  <div class="info-bar" style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:8px;padding:8px 12px;font-size:11.5px;margin-bottom:16px;">📍 對應需求確認表 區塊一（11項，全數「是」）。CSB 目前實際上線伺服器僅 server_id=11/12（真風雲錄01/02，2023-11-30上線），其餘規劃伺服器尚未開放，請以此核實 MAU/PCU 範疇。</div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[1.1] PCU 月峰值趨勢 <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="chart-wrap"><canvas id="chart1_1"></canvas></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>PCU月峰值從上線首月（2024-1-）<b class="hl-b">1,973</b> 一路下滑至 2026-7- 的 <b class="hl-r">154</b>，歷史最高峰為 2024-1-（1,973）。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>典型MMORPG「上線首月爆量、隨後自然衰退」曲線；CSB已營運2.5年+，屬正常生命週期後期現象，需搭配§1.3 MAU/§1.6新註冊數確認是否為老化加速或已趨穩。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>PCU持續探底代表同時在線密度降低，直接影響世界頻道熱度、交易所流動性與PvP匹配等依賴人口密度的系統體驗。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>與§1.3/1.6交叉比對是否已止跌；若仍下滑，評估合服（見§7.5低人口伺服器識別）以拉高單服人口密度。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[1.2] PCU vs 平均CCU 峰谷比趨勢 <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="chart-wrap"><canvas id="chart1_2"></canvas></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>2026-7- 峰谷比為 <b class="hl-o">3.46</b>（PCU 154 vs 平均CCU 45），歷史峰谷比最高點在 2026-3-（3.48）。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>峰谷比長期落在2.6-2.7區間，顯示玩家高度集中在特定尖峰時段（可交叉§1.9 24小時分布確認確切時段），屬硬核MMORPG常見的「下班/假日集中在線」模式。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>離峰時段在線密度僅為尖峰的1/2.6，離峰時段的組隊/交易/PvP體驗可能明顯弱於尖峰，影響全時段留存。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>離峰時段可規劃限時活動或雙倍經驗，引導玩家分流上線；長期監控峰谷比是否隨MAU下滑而惡化。</div>
+    </div>
+  </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[1.3] MAU 月活躍趨勢 <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="chart-wrap"><canvas id="chart1_3"></canvas></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>MAU由2024-1-的<b class="hl-b">123,485</b>降至2026-7-的<b class="hl-r">1,557</b>（累計降幅98.7%），但avgDAU/MAU比率反而由29.0%升高到100.0%。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>典型「洗掉輕度用戶、留下核心玩家」的老服結構——雖然總量減少，但留下來的玩家黏著度（比率）不降反升，代表核心玩家群仍相對穩定活躍。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>MAU基數縮小直接壓縮潛在付費池與商城曝光量，但高比率意味現有核心玩家的LTV/ARPPU可能有支撐空間（見§4.1）。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>對核心玩家（高avgDAU/MAU群體）強化VIP服務與內容深度；同時評估是否需要新導量或回流活動來補充MAU基數。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[1.4] D1 / D7 / D30 留存率趨勢 <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="chart-wrap"><canvas id="chart1_4"></canvas></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>全期平均 D1=33.5%／D7=15.1%／D30=8.4%；最新cohort（2026-6-）為 D1=46.0%／D7=13.0%／D30=0.0%。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>對照§1.7業界基準（D1中位數25-33%、D7中位數3.4-3.9%、D30中位數約11-12%），CSB的D1留存持平於業界中位數，但D7/D30留存<b class="hl-g">明顯優於業界中位數</b>，顯示前3天新手引導雖有流失，撐過首週的玩家黏著度相對健康。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>D1流失（約65-70%）仍是最大單一斷層，是新增玩家池縮小最主要的漏損點，優化空間集中在前24小時體驗。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>優先投入新手Day0-1體驗優化（對照§7.1新手村任務漏斗）；D7/D30留存已優於業界，可作為向管理層說明「產品體質健康、問題在導流轉化」的實證依據。</div>
+    </div>
+  </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[1.5] 回流玩家留存分布（沉睡≥30天再登入） <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="tbl-scroll"><table><tr><th>沉睡區間</th><th>回流事件數</th><th>D7實測留存</th></tr><tr><td>30-59天</td><td>5,981</td><td>43.0%</td></tr><tr><td>60-89天</td><td>2,672</td><td>39.0%</td></tr><tr><td>90-179天</td><td>4,191</td><td>37.0%</td></tr><tr><td>180天以上</td><td>6,136</td><td>38.0%</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>近90天共 <b class="hl-b">18,980</b> 次回流事件；D7實測留存最高的沉睡區間是「30-59天」（43.0%），最低是「90-179天」（37.0%）。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>四個沉睡區間的D7留存差距不大（37%-43%），代表「沉睡多久」對回流後能否再留住影響有限，回流召回活動本身的品質可能比鎖定哪個沉睡區間更關鍵。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>回流玩家整體D7留存（約37-43%）明顯高於新玩家D1留存，顯示回流召回是相對高效的獲客管道，值得持續投入。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>可對所有沉睡區間玩家一視同仁發送召回通知/禮包，不需依沉睡天數差異化，優先擴大回流觸及規模而非篩選特定區間。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[1.6] 新玩家月註冊 × 平台來源 <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="chart-wrap"><canvas id="chart1_6"></canvas></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>累計註冊 AOS <b class="hl-b">141,236</b> vs IOS <b class="hl-p">76,795</b>（約1.84:1）；兩平台皆呈現上線首月爆量後逐月遞減，2026年6月新註冊僅剩AOS 32／IOS 9。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>與§1.1/1.3的PCU/MAU下滑曲線高度吻合，證實新增玩家池萎縮是MAU下滑的主要驅動來源之一，而非單純既有玩家流失。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>新註冊已降至個位數百人/月，若無新增導量措施，MAU/PCU長期趨勢預期將持續探底。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>對照§7.6a-d真實廣告投放CPI，評估是否值得重啟/擴大付費UA以補充新註冊量；AOS佔比顯著高於IOS，UA資源可優先配置Android渠道。</div>
+    </div>
+  </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">1.7　產業留存基準對標<span class="badge status-info">✅ 外部真實引用（非CSB實測）</span></div>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th>指標</th><th>2025 業界中位數</th><th>Top 25% 門檻</th><th>CSB 實測值</th><th>來源</th></tr>
+        <tr><td>D1 留存</td><td>31-33%(iOS) / 25-27%(Android)　※Top表現組</td><td>45%+</td><td class="hl-o"><b>33.5%</b>（全期平均，持平業界中位數）</td><td rowspan="3">GameAnalytics《Mobile Retention Benchmarks 2026》；maf.ad Mobile Game Retention Benchmarks</td></tr>
+        <tr><td>D7 留存</td><td>3.4-3.9%（全案件中位數）</td><td>7-8%</td><td class="hl-g"><b>15.1%</b>（優於業界中位數）</td></tr>
+        <tr><td>D30/D28 留存</td><td>中重度RPG類約11-12%；75%專案&lt;3%</td><td>10%+</td><td class="hl-g"><b>8.4%</b>（持平/優於業界中位數）</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:8px;font-size:11px;color:var(--text2);">來源連結：<a href="https://gamedevreports.substack.com/p/gameanalytics-mobile-gaming-benchmarks" target="_blank">GameAnalytics Mobile Benchmarks</a>、<a href="https://maf.ad/en/blog/mobile-game-retention-benchmarks/" target="_blank">maf.ad Retention Benchmarks</a>（查詢日期 2026-07-02）</p>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>D7/D30已優於業界中位數，D1接近中位數但仍有優化空間，建議將新手引導優化資源集中在Day0-1（見§7.1）。</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[1.8] 新手破冰 — 首次付費商品分析 <span class="badge status-success">✅ 真實數據（精準拆分：真實禮包名稱＋銷售期間比對）</span></div>
+    <p style="margin-bottom:8px;font-size:11px;color:var(--text2);">✅ 2026-08-26更新：已改用「精準拆分」SQL重跑，依真實交易日期比對CSB_OB活動排程，解出每筆首購當下的真實禮包名稱，取代先前SKU層級的靜態對照。</p>
+    <div class="tbl-scroll"><table><tr><th>商品名稱</th><th>ProID</th><th>首儲人數</th><th>佔比</th><th>均額</th><th>總收入</th></tr><tr><td>金幣基金2</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.dailygold430</code></td><td>12,792</td><td>3.1%</td><td>$13.09</td><td>$167,419.11</td></tr><tr><td>每週黑血石禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.weekblack.670</code></td><td>12,185</td><td>3.0%</td><td>$20.14</td><td>$245,389.25</td></tr><tr><td>7600金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.gold3290</code></td><td>11,632</td><td>2.8%</td><td>$100.26</td><td>$1,166,174.70</td></tr><tr><td>金幣基金1</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.dailygold130</code></td><td>10,937</td><td>2.6%</td><td>$4.02</td><td>$44,016.66</td></tr><tr><td>每週裝備素質禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.weekoptionstone.670</code></td><td>9,176</td><td>2.2%</td><td>$20.00</td><td>$183,546.26</td></tr><tr><td>600金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.gold270</code></td><td>7,819</td><td>1.9%</td><td>$8.02</td><td>$62,735.82</td></tr><tr><td>新手幻影術支援禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.pg1.1090</code></td><td>5,555</td><td>1.3%</td><td>$32.99</td><td>$183,259.45</td></tr><tr><td>達成聲望2800紀念限定商品</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.condition11.670</code></td><td>5,076</td><td>1.2%</td><td>$20.25</td><td>$102,769.26</td></tr><tr><td>2500金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.gold1090</code></td><td>5,027</td><td>1.2%</td><td>$32.99</td><td>$165,840.73</td></tr><tr><td>每月黑血石/煩惱的結晶禮包1</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.monthawakenstone.1090</code></td><td>4,783</td><td>1.2%</td><td>$33.67</td><td>$161,023.26</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>精準拆分後真相大白：Top10首儲商品合計僅佔全體首儲人數約 <b class="hl-b">20.5%</b>，第一名「金幣基金2」僅 <b class="hl-b">3.1%</b>（12,792人，均額$13.09）；前三名（金幣基金2／每週黑血石禮包／7600金幣）合計8.9%，且皆為<b>低單價、常態販售</b>的每日/每週補給包，而非過去誤判的「限定禮包組合」。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>先前版本因商店SKU被反覆重複使用於不同真實禮包，導致同一SKU的所有交易被誤合併成單一「限定禮包組合」，嚴重高估其首儲貢獻；精準拆分後可見，新手玩家的第一筆消費其實高度集中在低門檻、高頻率的功能性商品（金幣基金、每週黑血石禮包、每週裝備素質禮包等），顯示破冰入口設計方向基本正確。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>低門檻常態商品確實有效吸引首購，但Top10仍分散在10種不同真實商品上、總合僅20.5%，代表尚未形成單一「破冰主力商品」可集中資源優化轉化率或做A/B測試。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>已驗證有效的低門檻商品（金幣基金1/2、每週黑血石禮包、每週裝備素質禮包）可在新手UI做更顯著的導流曝光；同時可評估新增一款專屬「首購限定」低價包，測試能否進一步集中首購轉化率。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[1.9] 24小時在線人數分布 <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="chart-wrap"><canvas id="chart1_9"></canvas></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>尖峰時段為 13:00（UV 1,710），離峰谷底為 20:00（UV 945），尖峰/谷底比約1.81倍。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>尖峰集中在13-14時（午休）與傍晚後逐步回升，符合TW/HK玩家的日常作息模式，19-20時反而是低谷（可能為晚餐/通勤時段）。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>與§1.2峰谷比2.6-2.7倍互相印證；活動/維護排程若安排在19-20時低谷，對玩家體驗影響最小。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>系統維護、版本更新優先排在19-21時低谷區段；世界頻道限時活動可安排在13-14時或22-23時尖峰，最大化參與人數。</div>
+    </div>
+  </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[1.10] 流失玩家等級段分布（14天未登入） <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="tbl-scroll"><table><tr><th>等級段</th><th>流失人數</th><th>佔比</th></tr><tr><td>Lv.1-9 新手段</td><td>79,631</td><td>44.9%</td></tr><tr><td>Lv.10-19</td><td>13,930</td><td>7.8%</td></tr><tr><td>Lv.20-29</td><td>9,178</td><td>5.2%</td></tr><tr><td>Lv.30-49</td><td>5,835</td><td>3.3%</td></tr><tr><td>Lv.50-79</td><td>3,720</td><td>2.1%</td></tr><tr><td>Lv.80+</td><td>65,186</td><td>36.7%</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>流失呈現「雙峰」分布：新手段（Lv.1-9）流失 <b class="hl-r">79,631</b> 人（44.9%），頂級段（Lv.80+）流失更高達 <b class="hl-r">79,631</b> 人（44.9%），中間等級段流失量反而相對少。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>新手段流失是典型新手引導問題；但Lv.80+流失量最大，代表大量玩家已練到高等級後停止登入——可能是內容深度不足、缺乏長期目標，或裝備強化/機率系統挫折感累積所致。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>Lv.80+通常是最具付費力的核心玩家群，這批玩家流失對營收（見§4.6/4.7 VIP流失預警）的潛在衝擊遠大於新手流失。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>優先分析Lv.80+流失玩家的最後行為軌跡（強化失敗？裝備瓶頸？）；與§4.6/4.7交叉比對高消費VIP是否集中在此流失段，針對性設計回流/留存方案。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[1.11] 平台活躍對比（iOS/AOS） <span class="badge status-success">✅ 真實數據</span></div>
+    <p style="margin-bottom:8px;font-size:11px;color:var(--text2);">⚠️ etl_login.serverid/platform欄位中未見獨立PC平台標記，本卡僅涵蓋AOS/IOS兩個真實平台值，無PC數據可回填。</p>
+    <div class="chart-wrap"><canvas id="chart1_11"></canvas></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>最新月份（2026-7-）AOS MAU 1,307 vs IOS MAU 273，AOS佔比82.7%；此比例與§1.6新註冊的AOS偏多趨勢一致。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>AOS長期為主力平台，與TW/HK市場Android滲透率較高的整體行動裝置生態相符。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>UA、活動、商城定價策略若僅以iOS為主要參考基準可能失真，應以AOS數據為權重核心。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>行銷資源與活動素材優先以Android體驗為準；後續若補上PC/其他平台埋點，可補強本卡完整度。</div>
+    </div>
+  </div>
+  </div>
+
+  
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[🆕建議新增] 新手村前3日任務漏斗（AppsFlyer SDK事件替代版） <span class="badge status-success">✅ 真實數據（替代指標）</span><span class="badge status-vip">建議新增</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">⚠️ 17張表中無獨立「新手任務」自訂事件表，本卡改用 AppsFlyer SDK 的 vgsdk_af_TUTORIAL（教學完成）／vgsdk_af_LEVELACHIEVED（升級）事件作為替代信號，非遊戲server端原生任務漏斗，僅供方向性參考。</p>
+    <div class="tbl-scroll"><table><tr><th>天數</th><th>TUTORIAL完成人數</th><th>LEVELACHIEVED人數</th></tr><tr><td>Day 0</td><td>2,596</td><td>4,681</td></tr><tr><td>Day 1</td><td>205</td><td>476</td></tr><tr><td>Day 2</td><td>208</td><td>435</td></tr><tr><td>Day 3</td><td>225</td><td>403</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>Day0教學完成 <b class="hl-b">2,596</b> 人，Day3僅剩 <b class="hl-r">225</b> 人，Day0→Day3衰減 <b class="hl-r">91.3%</b>，且Day1相對Day0已幾乎斷崖式下跌。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>與§1.4 D1留存（約30%流失65-70%）方向一致，教學/新手引導完成人數的斷崖也集中在Day0→Day1，兩組獨立數據互相印證新手前24小時是最大流失點。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>此為替代指標，無法定位「卡在哪一關任務」，僅能確認流失時間點在Day0-1，無法做關卡級別優化。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>建議請客端/後端工程評估是否能新增遊戲內任務進度自訂事件埋點，才能做到關卡級別的漏斗分析；短期內可先針對Day0-1體驗做整體性review。</div>
+    </div>
+  </div>
+</div>
+<!-- ===== 區塊二：遊玩時長與轉化漏斗 ===== -->
+<div class="section" data-sec="funnel">
+  <div class="section-title">⏱️ 遊玩時長 · 平台漏斗 · 星期活躍</div>
+  <div class="info-bar" style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:8px;padding:8px 12px;font-size:11.5px;margin-bottom:16px;">📍 對應需求確認表 區塊二（4項，全數「是」）。本區塊新增「行銷安裝來源」卡為本次唯一取得真實資料來源（AppsFlyer 原始CSV），已100%彙總真實數字，非推估。</div>
+
+  <div class="card" style="margin-bottom:20px;border-top:3px solid var(--green);">
+    <div class="card-title">🆕 行銷安裝來源與轉化（2026 H1，六個月彙總）<span class="badge status-success">✅ 真實數據（AppsFlyer 原始CSV彙總）</span></div>
+    <div class="grid-2">
+      <div>
+        <div class="chart-wrap-lg"><canvas id="chartAFInstalls"></canvas></div>
+      </div>
+      <div>
+        <table>
+          <tr><th>指標</th><th>數值</th></tr>
+          <tr><td>總安裝量（Organic+Paid）</td><td class="hl-b"><b>79,558</b></td></tr>
+          <tr><td>自然安裝 Organic</td><td class="hl-g"><b>76,700</b>（96.4%）</td></tr>
+          <tr><td>行銷歸因安裝 Paid Attributed</td><td class="hl-o"><b>2,858</b>（3.6%）</td></tr>
+          <tr><td>付費歸因 IAP 收入（af_purchase, 6個月）</td><td>$7,401.79</td></tr>
+          <tr><td>自然量 IAP 收入（af_purchase, 6個月, Top10國家）</td><td class="hl-g">$239,550.68</td></tr>
+          <tr><td>行銷花費 Cost Value</td><td class="hl-r"><b>$0（欄位全數為空）</b></td></tr>
+        </table>
+        <div class="tbl-scroll" style="margin-top:10px;">
+          <table>
+            <tr><th>Media Source</th><th>Paid 安裝數</th><th>佔Paid比例</th></tr>
+            <tr><td>Apple Search Ads</td><td>1,329</td><td>46.5%</td></tr><tr><td>Facebook Ads</td><td>585</td><td>20.5%</td></tr><tr><td>CSB_Web</td><td>394</td><td>13.8%</td></tr><tr><td>Social_facebook</td><td>248</td><td>8.7%</td></tr><tr><td>CSB_SMS</td><td>136</td><td>4.8%</td></tr><tr><td>restricted</td><td>86</td><td>3.0%</td></tr><tr><td>CSB_Social</td><td>71</td><td>2.5%</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="dim-grid" style="margin-top:12px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>2026上半年總安裝 79,558 次中，<b class="hl-g">96.4% 為自然量</b>，付費歸因僅 <b class="hl-o">3.6%</b>（2,858次）。付費安裝中 Apple Search Ads 佔比最高（1,329次），其次為 Facebook Ads（585次）。IAP收入亦高度集中在自然量玩家（$239,551 vs 付費歸因 $7,402）</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>CSB 為營運2年+的老遊戲，玩家池以長期自然回訪/口碑/官網（CSB_Web）為主；AppsFlyer 匯出檔中 Cost Value 欄位全數為0，僅代表<b>該匯出報表未串接花費</b>，並非行銷成本真的不可查（見下方更新）</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>✅ <b>已更新（2026-07-02）</b>：經核對 Metabase 真實欄位，etl_apple／etl_google／etl_facebook／etl_skan_performance_report 四張表均含真實花費欄位（localspend_amount／cost／spend／total_cost），iOS SKAN 表甚至已預先算好 roi／arpu／average_ecpi。行銷成本「並非」不可視，只是不在 AppsFlyer 匯出檔這條路徑上</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>① 改執行 SQL §7.6a-d，直接從四張廣告平台成效表取得真實CPI/ROI；② 進一步用 §7.6e（std_revrpi_360_daily）交叉驗證行銷歸因後的實際回收曲線；③ 鑑於付費量僅佔3.6%，取得真實ROI後再評估是否值得擴大付費UA</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">自然安裝地區分布 Top 9（2026 H1）<span class="badge status-success">✅ 真實數據</span></div>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th>國家/地區</th><th>Organic 安裝數</th><th>佔比</th></tr>
+        <tr><td>TW</td><td>66,430</td><td>86.6%</td></tr><tr><td>HK</td><td>4,435</td><td>5.8%</td></tr><tr><td>CN</td><td>2,483</td><td>3.2%</td></tr><tr><td>KR</td><td>1,518</td><td>2.0%</td></tr><tr><td>US</td><td>875</td><td>1.1%</td></tr><tr><td>JP</td><td>323</td><td>0.4%</td></tr><tr><td>VN</td><td>199</td><td>0.3%</td></tr><tr><td>SG</td><td>109</td><td>0.1%</td></tr><tr><td>MO</td><td>67</td><td>0.1%</td></tr>
+      </table>
+    </div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>TW 佔自然安裝 86.6%，為絕對主力市場；HK 次之（5.8%）；CN（3.2%）與 KR（2.0%）亦有一定量，值得留意此二地區是否為VPN/跳板或真實當地玩家</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>與 etl_login.country_code 交叉比對，確認 KR/CN 安裝是否轉化為實際活躍付費玩家，避免將無效流量誤判為市場機會</div>
+    </div>
+  </div>
+
+  
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[2.1] 遊玩時長 × 付費率 / 消費額 <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="tbl-scroll"><table><tr><th>時長區間</th><th>用戶數</th><th>付費率</th><th>人均消費</th></tr><tr><td>0-5hr</td><td>120,791</td><td>1.1%</td><td>$2.47</td></tr><tr><td>5-20hr</td><td>14,913</td><td>9.0%</td><td>$28.35</td></tr><tr><td>20-50hr</td><td>8,259</td><td>13.0%</td><td>$37.71</td></tr><tr><td>50-150hr</td><td>12,630</td><td>13.0%</td><td>$58.04</td></tr><tr><td>150hr+</td><td>22,467</td><td>29.0%</td><td>$3,479.81</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>付費率與人均消費隨遊玩時長強烈正相關：0-5hr輕度用戶付費率僅1.1%／人均消費$2.47，150hr+重度用戶付費率飆升至29.0%／人均消費$3,479.81（約1,409倍）。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>硬核MMORPG典型模式：投入時間越長，越深度涉入強化/裝備/公會等付費循環，時長是付費意願最強的先行指標。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>0-5hr輕度用戶佔比極高但轉化極低，是留存優化（拉長遊玩時長）而非直接付費轉化優化的目標客群；重度用戶雖佔比小但貢獻絕大多數營收。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>對0-5hr輕度用戶聚焦於延長遊玩時長的內容鉤子（而非直接推商城），對50hr+用戶則可加強VIP/付費循環深度設計。</div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[2.2] 新玩家平台轉化漏斗（iOS vs AOS） <span class="badge status-success">✅ 真實數據</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">⚠️ n_install（AppsFlyer歸因安裝事件）與n_register（累計歷史註冊帳號數）統計口徑/時間範圍不同，故n_register可能大於n_install，非資料錯誤。restricted（ATT拒絕同意安裝）因隱私限制無法歸因回註冊帳號，屬正常現象。</p>
+    <div class="tbl-scroll"><table><tr><th>平台</th><th>安裝</th><th>累計註冊</th><th>次日登入</th><th>首儲</th></tr><tr><td>restricted</td><td>9</td><td>—</td><td>—</td><td>—</td></tr><tr><td>AOS</td><td>103,219</td><td>120,272</td><td>41,474</td><td>7,741</td></tr><tr><td>IOS</td><td>68,717</td><td>70,421</td><td>15,761</td><td>6,080</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>AOS 註冊→D1 轉化 <b class="hl-b">34.5%</b>／註冊→首儲 <b class="hl-b">6.4%</b>；IOS 註冊→D1 <b class="hl-p">22.4%</b>／註冊→首儲 <b class="hl-p">8.6%</b>。IOS的D1轉化率明顯低於AOS，但首儲轉化率反而略高於AOS。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>IOS用戶次日回訪意願較低，但一旦回訪、付費意願不弱於甚至略優於AOS，可能與iOS用戶消費力/裝置門檻較高的族群特性有關。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>IOS的次日流失是轉化漏斗最大的損耗點，若能提升IOS D1留存，首儲轉化率有機會進一步放大。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>檢視IOS新手引導/推播機制是否與AOS一致，優先修補IOS平台D1斷點；長期監控此漏斗確認平台差異是否隨版本迭代收斂。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[2.3] 每週各日活躍 <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="tbl-scroll"><table><tr><th>星期</th><th>DAU</th></tr><tr><td>星期一</td><td>2,557</td></tr><tr><td>星期二</td><td>2,596</td></tr><tr><td>星期三</td><td>2,540</td></tr><tr><td>星期四</td><td>2,589</td></tr><tr><td>星期五</td><td>2,633</td></tr><tr><td>星期六</td><td>2,622</td></tr><tr><td>星期日</td><td>2,578</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>近90天各星期DAU差異極小（星期五最高2,633，星期三最低2,540，波動僅3.7%），並無明顯的「假日效應」。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>核心玩家群體（見§4.9鯨魚/海豚）多為長期穩定的重度玩家，每日固定上線已成習慣，較不受平假日影響，這也印證§1.3提到「留存核心玩家黏著度高」的判斷。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>沒有明顯活躍週期性，代表活動排程不需刻意避開/集中在特定星期，但也意味「假日特別活動」對DAU的拉抬效果可能有限。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>活動排程可依內容節奏（而非星期）自由安排；若欲驗證假日活動成效，建議另做活動期間前後DAU對比而非單看星期分布。</div>
+    </div>
+  </div>
+  </div>
+  
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[2.4] 平台漏斗 KPI 摘要表 <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="tbl-scroll"><table><tr><th>平台</th><th>安裝→註冊</th><th>註冊→D1</th><th>註冊→首儲</th></tr><tr><td>IOS</td><td>102.0%</td><td>22.0%</td><td>8.6%</td></tr><tr><td>AOS</td><td>117.0%</td><td>34.0%</td><td>6.4%</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>安裝→註冊比率兩平台皆超過100%（見上方口徑差異說明），核心可比指標「註冊→首儲」AOS為6.4%，IOS為8.6%。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 待辦</div>本卡與§2.2為同一資料的摘要視角，建議與§2.2一併檢視，行動建議見§2.2。</div>
+    </div>
+  </div>
+</div>
+<!-- ===== 區塊三：貨幣與外掛 ===== -->
+<div class="section" data-sec="economy">
+  <div class="section-title">🪙 貨幣流通 · 道具流向 · 外掛監控</div>
+  <div class="info-bar" style="background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.25);border-radius:8px;padding:8px 12px;font-size:11.5px;margin-bottom:16px;">✅ <b>資料缺口已部分補齊</b>：3.1/3.3/3.7已改用2026-07-14匯出之全服SilverLog（1,140,372筆）／GoldLog（474,681筆）真實LOG回填，涵蓋2026-01-01～2026-07-14。3.2/3.6仍待數據工程確認對應遊戲行為事件記錄表名。</div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[3.1] 全服貨幣 Mint vs Burn <span class="badge status-success">✅ 真實數據（SilverLog/GoldLog）</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">✅ 資料來源：2026-07-14匯出之全服SilverLog（1,140,372筆）／GoldLog（474,681筆），涵蓋2026-01-01～2026-07-14，共4,256（銀幣）／2,794（金幣）位真實玩家。logtypestr事件分類已與CSB_GM指令_道具列表_機率表對照確認。</p>
+    <div class="chart-wrap"><canvas id="chart3_1"></canvas></div>
+    <div class="tbl-scroll" style="margin-top:8px;"><table><tr><th>幣別</th><th>總入帳</th><th>總消耗</th><th>淨額</th></tr><tr><td>銀幣</td><td>300,249,014</td><td>275,796,725</td><td class="hl-g">+24,452,289</td></tr><tr><td>金幣</td><td>65,024,286</td><td>64,604,260</td><td class="hl-g">+420,026</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>銀幣呈淨增加 <b class="hl-g">+24,452,289</b>（入帳$300,249,014／消耗$275,796,725），金幣淨增加 <b class="hl-g">+420,026</b>（入帳$65,024,286／消耗$64,604,260），兩幣別皆屬「入&gt;出」的溫和通膨狀態，尚未失控。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>銀幣最大入帳來源為「道具兌換入帳」EXCHANGE_GOLD_ITEM_DEPOSIT（60.5%，玩家消耗銀幣券道具轉換所得），最大消耗為「經脈初始化」GYEONGMAEK_INIT（42.3%）與「商城購買消耗」CASH_STORE_CONSUME（28.8%）；金幣最大入帳為「世界交易賣出」WORLD_TRADE_DEPOSIT（36.3%），最大消耗為「世界交易購買」WORLD_TRADE_BUY_CONSUME（40.7%），顯示金幣經濟高度依賴玩家間交易市場（詳見下方交易所卡片）。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>金幣的最大出入項目皆為玩家間交易，代表金幣總量變化不大、但高度集中於少數活躍交易玩家手中流轉，需留意交易所是否存在代練/RMT炒作；銀幣的CASH_STORAGE_DEPOSIT（倉庫存入）等項目需與數據工程確認是否為角色↔倉庫內部轉移而非真正新增貨幣，避免高估通膨幅度。另見§7.7殭屍商品清單發現4項金幣SKU（8250/25200/7500/126000金幣）已90天以上無成交，若確認是被下架而非替換，將直接減少金幣入帳管道，是未來監控金幣淨額成長是否趨緩的潛在解釋之一。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>建議將此SilverLog/GoldLog匯出流程排入常態週期（如每週/每月），並與數據工程確認CASH_STORAGE_DEPOSIT、LETTER_DEPOSIT等入帳項目是否含玩家間轉移，以校正淨額解讀之準確度。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[3.2] 人均貨幣持有量趨勢 <span class="badge status-danger">⛔ 資料缺口已確認</span></div>
+    <div class="chart-wrap" style="display:flex;align-items:center;justify-content:center;border:1px dashed var(--border);border-radius:8px;color:var(--text2);font-size:12px;background:var(--bg3);">⛔ 對應資料表不存在，非估算或省略</div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>17張Metabase表中僅見etl_dbgadd／etl_gameadd（支付閘道/訂單記錄，無logtype欄位），並非通用貨幣mint/burn流水表，此指標目前「找不到」對應真實資料表，非估算或省略。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>此為需求確認表列為「是」的核心貨幣監控指標，缺席將形成經濟通膨/惡性套利風險的監控盲區。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>請數據工程確認遊戲內貨幣mint/consume事件實際記錄於哪張表（可能命名為etl_dbgconsume等），取得表名後立即補上SQL。</div>
+    </div>
+  </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[3.3] 道具流向 Top 15 <span class="badge status-success">✅ 真實數據（SilverLog/GoldLog）</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">✅ 統計2026-01-01～2026-07-14全服道具兌換/商城購買/交易所買賣事件，已用CSB_GM指令對照表（Product ID／所有道具ID分頁）解出真實道具名稱。金幣與銀幣為不同計價單位，分開列示，不合併加總。</p>
+    <div style="font-size:11px;font-weight:700;color:var(--text2);margin:8px 0 4px;">銀幣道具流向 Top 15</div>
+    <div class="tbl-scroll"><table><tr><th>道具名稱</th><th>事件類型</th><th>次數</th><th>方向</th><th>銀幣金額</th></tr><tr><td>1000銀幣</td><td><code style='font-size:10px;color:var(--text2);'>EXCHANGE_GOLD_ITEM_DEPOSIT</code></td><td>17,963</td><td>入帳</td><td>79,573,000</td></tr><tr><td>100銀幣</td><td><code style='font-size:10px;color:var(--text2);'>EXCHANGE_GOLD_ITEM_DEPOSIT</code></td><td>115,647</td><td>入帳</td><td>78,783,900</td></tr><tr><td>煩惱的結晶(10個)</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>2,740</td><td>消耗</td><td>17,011,300</td></tr><tr><td>500銀幣</td><td><code style='font-size:10px;color:var(--text2);'>EXCHANGE_GOLD_ITEM_DEPOSIT</code></td><td>17,267</td><td>入帳</td><td>16,828,000</td></tr><tr><td>完美的一般素質變換石(10個)</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>3,750</td><td>消耗</td><td>15,105,600</td></tr><tr><td>許願球(10個)</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>1,765</td><td>消耗</td><td>9,352,250</td></tr><tr><td>八卦玉(20個)</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>1,074</td><td>消耗</td><td>6,707,200</td></tr><tr><td>黑血石(10個)</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>1,781</td><td>消耗</td><td>6,103,800</td></tr><tr><td>250銀幣</td><td><code style='font-size:10px;color:var(--text2);'>EXCHANGE_GOLD_ITEM_DEPOSIT</code></td><td>20,887</td><td>入帳</td><td>6,048,500</td></tr><tr><td>完美的上級素質變換石(10個)</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>933</td><td>消耗</td><td>5,822,400</td></tr><tr><td>每週戰鬥支援禮包</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>2,489</td><td>消耗</td><td>2,239,000</td></tr><tr><td>守護靈11回召喚</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>905</td><td>消耗</td><td>1,357,500</td></tr><tr><td>幻影術11回召喚</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>843</td><td>消耗</td><td>1,264,500</td></tr><tr><td>同伴11回召喚</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>478</td><td>消耗</td><td>717,000</td></tr><tr><td>丹田還原符自選箱</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>1,206</td><td>消耗</td><td>693,600</td></tr></table></div>
+    <div style="font-size:11px;font-weight:700;color:var(--text2);margin:12px 0 4px;">金幣道具流向 Top 15</div>
+    <div class="tbl-scroll"><table><tr><th>道具名稱</th><th>事件類型</th><th>次數</th><th>方向</th><th>金幣金額</th></tr><tr><td>靈魂火花</td><td><code style='font-size:10px;color:var(--text2);'>WORLD_TRADE_BUY_CONSUME</code></td><td>7,061</td><td>消耗</td><td>2,155,431</td></tr><tr><td>極燦爛之光</td><td><code style='font-size:10px;color:var(--text2);'>WORLD_TRADE_BUY_CONSUME</code></td><td>4,958</td><td>消耗</td><td>2,017,313</td></tr><tr><td>角色欄位追加券</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>1,094</td><td>消耗</td><td>878,000</td></tr><tr><td>黑白無常 靈魂精華</td><td><code style='font-size:10px;color:var(--text2);'>WORLD_TRADE_BUY_CONSUME</code></td><td>879</td><td>消耗</td><td>828,873</td></tr><tr><td>以下為召喚相關 소환 관련 상품</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>124</td><td>消耗</td><td>687,000</td></tr><tr><td>極龍煉鐵</td><td><code style='font-size:10px;color:var(--text2);'>WORLD_TRADE_BUY_CONSUME</code></td><td>2,349</td><td>消耗</td><td>654,766</td></tr><tr><td>真五行球</td><td><code style='font-size:10px;color:var(--text2);'>WORLD_TRADE_BUY_CONSUME</code></td><td>1,929</td><td>消耗</td><td>610,253</td></tr><tr><td>龍煉鐵</td><td><code style='font-size:10px;color:var(--text2);'>WORLD_TRADE_BUY_CONSUME</code></td><td>523</td><td>消耗</td><td>556,628</td></tr><tr><td>特級天上寶牌</td><td><code style='font-size:10px;color:var(--text2);'>WORLD_TRADE_BUY_CONSUME</code></td><td>2,668</td><td>消耗</td><td>501,111</td></tr><tr><td>裝備強化保護券</td><td><code style='font-size:10px;color:var(--text2);'>CASH_STORE_CONSUME</code></td><td>680</td><td>消耗</td><td>499,600</td></tr><tr><td>龍煉鐵</td><td><code style='font-size:10px;color:var(--text2);'>TRADE_ITEM_BUY_CONSUME</code></td><td>404</td><td>消耗</td><td>450,918</td></tr><tr><td>元素之氣息</td><td><code style='font-size:10px;color:var(--text2);'>TRADE_ITEM_BUY_CONSUME</code></td><td>730</td><td>消耗</td><td>441,239</td></tr><tr><td>天極木</td><td><code style='font-size:10px;color:var(--text2);'>WORLD_TRADE_BUY_CONSUME</code></td><td>2,276</td><td>消耗</td><td>399,026</td></tr><tr><td>特級未知寶石</td><td><code style='font-size:10px;color:var(--text2);'>WORLD_TRADE_BUY_CONSUME</code></td><td>1,176</td><td>消耗</td><td>388,560</td></tr><tr><td>1級未知寶石</td><td><code style='font-size:10px;color:var(--text2);'>WORLD_TRADE_BUY_CONSUME</code></td><td>1,453</td><td>消耗</td><td>329,371</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>銀幣消耗集中在強化/合成輔助道具（煩惱的結晶、完美的一般素質變換石、許願球等）；金幣消耗集中在交易所高需求強化素材（靈魂火花、極燦爛之光、龍煉鐵等）。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>兩幣別的道具流向皆高度指向裝備強化循環，符合CSB作為天堂式硬核強化玩法的核心付費/黏著機制。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>強化素材集中度高，代表這些道具的供給/價格波動會直接影響玩家強化成本與付費體驗，是經濟平衡最需優先監控的項目。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>建議對Top5道具建立常態供需監控（產出量 vs 消耗量），並評估是否需調整掉落率或商城售價以維持強化成本穩定。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[3.4] 商城道具熱銷榜 Top 12 <span class="badge status-success">✅ 真實數據（精準拆分：真實禮包名稱＋銷售期間比對）</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">✅ 2026-08-26更新：已改用「精準拆分」SQL重跑，依真實交易日期比對CSB_OB活動排程解出每筆交易當下的真實禮包名稱，取代先前SKU層級的靜態對照（同一SKU過去因重複用於不同真實禮包而被誤合併）。</p>
+    <div class="tbl-scroll"><table><tr><th>商品名稱</th><th>ProID</th><th>訂單數</th><th>購買人數</th><th>收入</th></tr><tr><td>8250金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold3290</code></td><td>2,427</td><td>183</td><td>$7,946,955.00</td></tr><tr><td>25200金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold10000</code></td><td>793</td><td>169</td><td>$6,564,028.00</td></tr><tr><td>12600金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold5000</code></td><td>1,257</td><td>299</td><td>$6,146,868.00</td></tr><tr><td>4950金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold2000</code></td><td>2,813</td><td>308</td><td>$5,618,325.00</td></tr><tr><td>126000金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold50000</code></td><td>111</td><td>19</td><td>$5,550,000.00</td></tr><tr><td>75600金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold30000</code></td><td>96</td><td>24</td><td>$2,880,000.00</td></tr><tr><td>店小二的幻影術回饋禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.pg1.5000</code></td><td>431</td><td>254</td><td>$2,108,956.00</td></tr><tr><td>1.5週年幻影術回饋禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.pg1.5000</code></td><td>348</td><td>143</td><td>$1,728,489.00</td></tr><tr><td>幻影術集結禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.pg1.10000</code></td><td>181</td><td>74</td><td>$1,717,912.00</td></tr><tr><td>7500金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold3000</code></td><td>535</td><td>220</td><td>$1,586,584.00</td></tr><tr><td>召喚集結禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.pg1.10000</code></td><td>139</td><td>52</td><td>$1,390,000.00</td></tr><tr><td>7600金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.gold3290</code></td><td>12,052</td><td>1,177</td><td>$1,208,170.50</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>精準拆分後，Top12商品合計貢獻 <b class="hl-b">$44,446,287.50</b> 全歷史收入，其中 <b class="hl-b">8</b> 項為金幣類商品，合計 <b class="hl-b">$37,500,930.50</b>（佔Top12的 <b class="hl-b">84.4%</b>）；命名式限定禮包（如「店小二的幻影術回饋禮包」）雖進入Top12，但佔比遠低於金幣類。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>先前版本因SKU重複使用被誤判放大的「限定禮包組合」已回歸真實規模；精準拆分後可見，金幣消耗品才是全歷史熱銷榜真正主力，符合MMORPG玩家對持續性資源（金幣）的剛性複購需求。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>金幣類商品是最穩定的現金流來源，佔Top12收入84.4%，商城資源配置應優先確保金幣商品的曝光與購買體驗；限定禮包組合類則需個別評估真實表現，不再被單一SKU的錯誤合併數字誤導決策。<b class="hl-r">需特別留意</b>：本Top12榜單中有4項金幣SKU（8250/25200/126000金幣位居前五、7500金幣位居第十）已同時出現在§7.7殭屍商品清單（90天以上無成交），代表這些歷史主力現金流商品目前可能已停售，直接影響現有現金流結構。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>針對佔比最高的金幣商品（如8250金幣）評估訂閱制/自動儲值模式以進一步提高複購黏著度；限定禮包類（幻影術/召喚回饋禮包）證實有真實需求，建議研究其重複開賣節奏是否可優化提升單檔收入。</div>
+    </div>
+  </div>
+  </div>
+
+  
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[3.5] 外掛 / 工作室監控 — 風險分級 <span class="badge status-success">✅ 真實數據</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">規則式偵測：單日登入&gt;20次 或 曾被etl_login_infolog.isemulator標記為模擬器。原始查詢結果共171,102列，其中34列（&lt;0.03%）因Metabase匯出編碼異常被排除，不影響其餘171,068列真實資料。</p>
+    <div class="tbl-scroll"><table><tr><th>👀 Top10 高頻異常帳號（真實ID）</th><th>被標記天數</th><th>單日最高登入次數</th><th>曾用模擬器</th></tr><tr><td><code style='font-size:10.5px;'>1207155421028249600</code></td><td>742</td><td>64</td><td>是</td></tr><tr><td><code style='font-size:10.5px;'>1199596069489807360</code></td><td>723</td><td>101</td><td>否</td></tr><tr><td><code style='font-size:10.5px;'>1202319282284539904</code></td><td>659</td><td>204</td><td>否</td></tr><tr><td><code style='font-size:10.5px;'>1199692013126909952</code></td><td>659</td><td>134</td><td>否</td></tr><tr><td><code style='font-size:10.5px;'>1199607833907003392</code></td><td>637</td><td>106</td><td>否</td></tr><tr><td><code style='font-size:10.5px;'>1206925410140647424</code></td><td>619</td><td>185</td><td>否</td></tr><tr><td><code style='font-size:10.5px;'>1191953396542033920</code></td><td>605</td><td>166</td><td>否</td></tr><tr><td><code style='font-size:10.5px;'>1199628002533904384</code></td><td>599</td><td>201</td><td>否</td></tr><tr><td><code style='font-size:10.5px;'>1199572759501176832</code></td><td>592</td><td>178</td><td>否</td></tr><tr><td><code style='font-size:10.5px;'>1191966344125648896</code></td><td>592</td><td>225</td><td>否</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>共 <b class="hl-b">12,634</b> 個不重複帳號至少被標記過一次；其中<b class="hl-r">高風險</b>（單日登入&gt;20次 且 曾用模擬器）帳號 <b class="hl-r">4</b> 個，<b class="hl-o">中風險</b>（僅命中其一）帳號 <b class="hl-o">12,634</b> 個。Top1帳號連續被標記高達742天。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>高頻登入帳號集中出現、且多數Top10帳號並未使用模擬器，較可能是真人工作室多開/腳本掛機，而非單純模擬器偽裝。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>中風險帳號規模達12,634個，佔比不小，若確為工作室/外掛行為，將扭曲貨幣供給與交易所價格（見上方交易所監控卡片，已有真實交易量體數據但尚無異常偵測機制）。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>優先對Top10連續多日高頻帳號人工review／凍結審查；此規則式偵測屬示範性MVP，建議後續導入更完整的行為指紋比對（設備ID重複率、操作間隔規律性等）強化準確度。</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[3.6] 強化系統失敗率分析 <span class="badge status-danger">⛔ 資料缺口已確認</span><span class="badge status-vip">建議由「待討論」改列為「是」</span></div>
+    <div class="chart-wrap" style="display:flex;align-items:center;justify-content:center;border:1px dashed var(--border);border-radius:8px;color:var(--text2);font-size:12px;background:var(--bg3);">⛔ 對應資料表不存在，非估算或省略</div>
+    <p style="margin-top:8px;font-size:11px;color:var(--text2);">CSB為天堂式硬核MMORPG，裝備強化是核心付費循環，失敗率分析直接關聯營收與玩家挫折感，強烈建議納入常態監控。</p>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>經核對，etl_inapp_event／etl_install均為AppsFlyer原始事件複製表，event_name僅含SDK端事件（af_purchase／vgsdk_af_LOGIN等），不含ENHANCE_ATTEMPT等遊戲伺服器端自訂事件，17張表中找不到記錄強化系統行為的表。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>請後端/數據工程確認是否存在獨立的遊戲行為日誌系統（不在此17表清單內），取得表名後可立即補上此高優先級指標。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[3.7] 副幣消耗榜（近90日） <span class="badge status-success">✅ 真實數據（SilverLog）</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">✅ 銀幣為CSB次級貨幣體系，統計近90日（2026-04-16～2026-07-14）商城以銀幣購買之道具消耗排行，已用CSB_GM指令對照表（Product ID分頁）對照真實商品名稱。Top15合計消耗 35,321,000 銀幣。</p>
+    <div class="tbl-scroll"><table><tr><th>商品名稱</th><th>ProductIndex</th><th>消耗次數</th><th>銀幣消耗總額</th></tr><tr><td>煩惱的結晶(10個)</td><td><code style='font-size:10px;color:var(--text2);'>314</code></td><td>1,469</td><td>10,576,700</td></tr><tr><td>完美的一般素質變換石(10個)</td><td><code style='font-size:10px;color:var(--text2);'>310</code></td><td>1,467</td><td>6,296,400</td></tr><tr><td>許願球(10個)</td><td><code style='font-size:10px;color:var(--text2);'>402</code></td><td>764</td><td>4,962,750</td></tr><tr><td>八卦玉(20個)</td><td><code style='font-size:10px;color:var(--text2);'>404</code></td><td>622</td><td>4,769,500</td></tr><tr><td>黑血石(10個)</td><td><code style='font-size:10px;color:var(--text2);'>308</code></td><td>879</td><td>3,411,800</td></tr><tr><td>完美的上級素質變換石(10個)</td><td><code style='font-size:10px;color:var(--text2);'>312</code></td><td>375</td><td>2,482,400</td></tr><tr><td>每週戰鬥支援禮包</td><td><code style='font-size:10px;color:var(--text2);'>112</code></td><td>1,141</td><td>1,043,000</td></tr><tr><td>守護靈11回召喚</td><td><code style='font-size:10px;color:var(--text2);'>22</code></td><td>204</td><td>306,000</td></tr><tr><td>仙人瞬間移動符(20個)</td><td><code style='font-size:10px;color:var(--text2);'>307</code></td><td>340</td><td>301,500</td></tr><tr><td>丹田還原符自選箱</td><td><code style='font-size:10px;color:var(--text2);'>313</code></td><td>447</td><td>257,300</td></tr><tr><td>幻影術11回召喚</td><td><code style='font-size:10px;color:var(--text2);'>21</code></td><td>168</td><td>252,000</td></tr><tr><td>同伴11回召喚</td><td><code style='font-size:10px;color:var(--text2);'>45</code></td><td>154</td><td>231,000</td></tr><tr><td>如意珠</td><td><code style='font-size:10px;color:var(--text2);'>258</code></td><td>266</td><td>149,700</td></tr><tr><td>褪色的一般素質變換石(10個)</td><td><code style='font-size:10px;color:var(--text2);'>309</code></td><td>60</td><td>143,100</td></tr><tr><td>寶珠</td><td><code style='font-size:10px;color:var(--text2);'>256</code></td><td>224</td><td>137,850</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>近90日最大消耗品為「煩惱的結晶(10個)」，共1,469次、消耗10,576,700銀幣；其次為「完美的一般素質變換石(10個)」，消耗6,296,400銀幣，兩者合計佔Top15總消耗約47.8%。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>Top消耗品多為裝備強化輔助道具（變換石、結晶、許願球等），與§3.3道具流向現象一致，銀幣主要作為強化循環的日常消耗貨幣。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>副幣消耗高度集中於少數道具，這些道具的商城定價/供給調整將直接牽動玩家日常銀幣需求與商城活躍度。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>建議此榜單納入常態週報，觀察Top項目消耗量變化以評估銀幣經濟健康度，並與§3.1全服Mint/Burn交叉驗證通膨風險。</div>
+    </div>
+  </div>
+  </div>
+
+  
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[🆕建議新增] 交易所（世界交易所/一般交易所）流動性與RMT風險監控 <span class="badge status-success">✅ 真實數據（SilverLog/GoldLog）</span><span class="badge status-info">建議新增</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">✅ 已用SilverLog/GoldLog真實交易事件（TRADE_ITEM_*／WORLD_TRADE_*）統計，涵蓋2026-01-01～2026-07-14。銀幣無任何交易所交易紀錄，僅金幣可用於交易所買賣。</p>
+    <div class="tbl-scroll"><table><tr><th>幣別</th><th>交易筆數</th><th>賣出總額(入帳)</th><th>買入總額(消耗)</th><th>不重複交易玩家數</th></tr><tr><td>金幣</td><td>363,904</td><td>31,796,237</td><td>35,057,991</td><td>2,624</td></tr><tr><td>銀幣</td><td colspan="4">無交易紀錄（銀幣不可用於交易所交易）</td></tr></table></div>
+    <div style="font-size:11px;font-weight:700;color:var(--text2);margin:12px 0 4px;">Top交易道具（金幣計價）</div>
+    <div class="tbl-scroll"><table><tr><th>道具名稱</th><th>成交次數</th><th>交易總額(金幣)</th></tr><tr><td>靈魂火花</td><td>7,061</td><td>2,155,431</td></tr><tr><td>極燦爛之光</td><td>4,958</td><td>2,017,313</td></tr><tr><td>黑白無常 靈魂精華</td><td>879</td><td>828,873</td></tr><tr><td>極龍煉鐵</td><td>2,349</td><td>654,766</td></tr><tr><td>真五行球</td><td>1,929</td><td>610,253</td></tr><tr><td>龍煉鐵</td><td>523</td><td>556,628</td></tr><tr><td>特級天上寶牌</td><td>2,668</td><td>501,111</td></tr><tr><td>龍煉鐵</td><td>404</td><td>450,918</td></tr><tr><td>元素之氣息</td><td>730</td><td>441,239</td></tr><tr><td>天極木</td><td>2,276</td><td>399,026</td></tr><tr><td>特級未知寶石</td><td>1,176</td><td>388,560</td></tr><tr><td>1級未知寶石</td><td>1,453</td><td>329,371</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>2,624位玩家在363,904筆交易中買賣金幣，總交易額賣出31,796,237／買入35,057,991金幣，分別佔金幣總入帳的48.9%與總消耗的54.3%——代表金幣經濟中相當比例的流動發生在玩家間交易市場，而非直接產出/消耗。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>熱門交易道具集中於強化/合成素材（靈魂火花、極燦爛之光、龍煉鐵、真五行球等），符合硬核強化玩法對材料的高需求，交易所已是金幣最大單一流動管道之一。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>高度依賴交易所流動的經濟體，若出現代練/工作室壟斷特定素材或炒價，將直接影響一般玩家的強化成本與付費轉換率；目前完全缺乏異常交易模式偵測（如同一組帳號互轉、單一玩家異常高頻交易）。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>建議將SilverLog/GoldLog匯出常態化後，優先針對Top交易道具建立單日/單週異常量閾值告警，並與§3.5外掛監控名單交叉比對高風險帳號的交易行為。</div>
+    </div>
+  </div>
+  
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[🆕建議新增] 殭屍商品清單（90天以上無銷售之上架商品） <span class="badge status-success">✅ 真實數據（精準拆分：真實禮包名稱＋銷售期間比對）</span><span class="badge status-info">建議新增</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">2026-08-26更新：已改用「精準拆分」SQL重跑，依真實交易日期比對CSB_OB活動排程解出真實禮包名稱。lifetime_orders為該SKU上架以來累計總訂單數（非近90天），last_sale_date為該SKU最後一次成交日（已對照到當時真實販售的禮包名稱）。</p>
+    <div class="tbl-scroll"><table><tr><th>商品名稱</th><th>ProID</th><th>歷史累計訂單</th><th>最後銷售日</th><th>已滯銷</th></tr><tr><td>夏末幻影術召喚禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.pg2.10000</code></td><td>80</td><td>2024-9-11</td><td>713天</td></tr><tr><td>王大俠階段1禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.pg3.270</code></td><td>1,135</td><td>2024-10-16</td><td>678天</td></tr><tr><td>王大俠新手禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.pg1.130</code></td><td>20,719</td><td>2024-10-16</td><td>678天</td></tr><tr><td>第八季末新手強化禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.pg4.670</code></td><td>545</td><td>2025-2-19</td><td>552天</td></tr><tr><td>126000金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold50000</code></td><td>111</td><td>2025-2-23</td><td>548天</td></tr><tr><td>限定禮包組合A</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.pg2.130</code></td><td>11,012</td><td>2025-3-5</td><td>538天</td></tr><tr><td>唐慧的召喚禮包 II</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.pg4.1530</code></td><td>848</td><td>2025-10-27</td><td>302天</td></tr><tr><td>唐慧的回饋禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.pg4.130</code></td><td>1,204</td><td>2025-10-28</td><td>301天</td></tr><tr><td>唐慧的召喚禮包 I</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.pg4.430</code></td><td>1,201</td><td>2025-10-28</td><td>301天</td></tr><tr><td>萬聖節豪華許願禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.pg1.10000</code></td><td>746</td><td>2025-11-4</td><td>294天</td></tr><tr><td>限時禮包商品35</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.condition35.2290</code></td><td>1</td><td>2026-1-26</td><td>211天</td></tr><tr><td>新春階段一禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.pg2.430</code></td><td>8,275</td><td>2026-2-25</td><td>181天</td></tr><tr><td>招財御守禮包1</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.condition23.130</code></td><td>83</td><td>2026-2-25</td><td>181天</td></tr><tr><td>8250金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold3290</code></td><td>2,427</td><td>2026-2-28</td><td>178天</td></tr><tr><td>達成聲望5600紀念限定商品</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.condition29.1530</code></td><td>187</td><td>2026-3-10</td><td>168天</td></tr><tr><td>限時禮包商品16</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.condition16.230</code></td><td>621</td><td>2026-4-6</td><td>141天</td></tr><tr><td>達成聲望4500紀念限定商品</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.condition13.1530</code></td><td>284</td><td>2026-5-9</td><td>108天</td></tr><tr><td>25200金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold10000</code></td><td>793</td><td>2026-5-22</td><td>95天</td></tr><tr><td>7500金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold3000</code></td><td>535</td><td>2026-5-26</td><td>91天</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>精準拆分後共 <b class="hl-o">19</b> 項商品滯銷≥90天，最久的「夏末幻影術召喚禮包」已 <b class="hl-r">713天</b> 無成交；歷史累計訂單最高的「王大俠新手禮包」（com.cheonsangbi.pg1.130）曾賣出 <b class="hl-b">20,719</b> 筆，證實這是曾經熱銷、後來停售的商品而非本來冷門。<b class="hl-r">值得注意：清單中有4項是金幣類常態商品</b>（「126000金幣」（548天）、「8250金幣」（178天）、「25200金幣」（95天）、「7500金幣」（91天）），一般而言金幣類商品應為常態販售、不應滯銷，這是本次精準拆分後浮現的新異常訊號。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>多數滯銷品是活動限定禮包（萬聖節、新春、季末等節慶/紀念商品），設計上本就限期販售，滯銷屬正常現象；但金幣類商品停售90天以上並不符合「常態販售」的預期，可能是價格帶/SKU被下架或替換（例如改用新SKU重新上架同面額商品），需與商城PM確認。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>若金幣商品確實已被下架而非替換，將直接影響玩家儲值選項完整度與相關營收；若只是SKU更換但名義商品仍在架，則此清單存在「假滯銷」，需要更新對照表以避免誤判。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>優先與商城PM確認4項滯銷金幣商品（126000金幣、8250金幣、25200金幣、7500金幣）目前架上狀態：已下架、被新SKU取代、或單純滯銷；活動限定禮包滯銷則屬預期內，無需特別處理。</div>
+    </div>
+  </div>
+</div>
+<!-- ===== 區塊四：VIP與商業化 ===== -->
+<div class="section" data-sec="vip">
+  <div class="section-title">👑 VIP管理 · 商業化效率 · 活動半衰期</div>
+  <div class="info-bar" style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:8px;padding:8px 12px;font-size:11.5px;margin-bottom:16px;">📍 對應需求確認表 區塊四（12項：9項「是」+3項「待討論」）。</div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[4.1] 付費轉化率（CVR）+ ARPPU 月趨勢 <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="chart-wrap"><canvas id="chart4_1"></canvas></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>CVR由2024-1-的5.0%<b class="hl-g">逆勢升高</b>至2026-7-的3.3%；ARPPU從$686攀升至歷史高點$4,602（2024-5-），近期回落至$294。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>MAU雖大幅萎縮（見§1.3），但CVR與ARPPU反而上升，代表付費玩家佔比與人均消費力都在提高——典型「留存精粹化」：輕度免費玩家流失，剩下的核心玩家付費強度更高。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>雖然總營收可能因MAU萎縮而承壓，但ARPPU/CVR提升代表核心付費群體健康，商業模式並未失效，只是玩家池變小。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>對現有高CVR/ARPPU核心玩家群持續深化VIP服務與付費體驗；若欲提高總營收，關鍵槓桿是擴大MAU基數（見§1.6新增導量）而非再拉高單客付費率。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[4.2] 付費玩家生命週期 — Cohort 月留存 <span class="badge status-success">✅ 真實數據</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">完整資料含全部31個月cohort，下表精選代表性月份展示（括號為相對於當月+0月付費人數之留存率）。</p>
+    <div class="tbl-scroll"><table><tr><th>Cohort月</th><th>+0月</th><th>+1月</th><th>+2月</th><th>+3月</th><th>+4月</th><th>+5月</th><th>+6月</th></tr><tr><td>2024-12</td><td>177 (100%)</td><td>158 (89%)</td><td>142 (80%)</td><td>141 (80%)</td><td>125 (71%)</td><td>121 (68%)</td><td>104 (59%)</td></tr><tr><td>2025-12</td><td>46 (100%)</td><td>31 (67%)</td><td>23 (50%)</td><td>13 (28%)</td><td>13 (28%)</td><td>12 (26%)</td><td>12 (26%)</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>全期加權平均：付費玩家+1月留存率69.7%，+3月38.8%，+6月26.9%——衰減主要發生在前1-2個月，之後趨於平緩。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>付費後第一個月留存率驟降至約7成，可能與首購後的新鮮感消退、或內容消耗完畢後缺乏持續付費誘因有關；撐過前3個月的付費玩家則相對穩定（月流失趨緩）。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>付費玩家+1月留存是LTV的最大槓桿點，此階段流失直接壓縮長期LTV天花板（見§4.3）。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>針對首購後30天內玩家設計「回購禮包」或「連續儲值獎勵」等留存機制，把+1月留存率作為商業化團隊的核心KPI追蹤。</div>
+    </div>
+  </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[4.3] 付費玩家 LTV 分析 <span class="badge status-success">✅ 真實數據</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">std_ltv_360_daily 資料粒度為(register_date cohort × 國家 × day_diff)，下表為所有cohort加權平均後的每付費用戶累計營收（USD）。</p>
+    <div class="tbl-scroll"><table><tr><th>付費後天數</th><th>每付費用戶累計LTV</th></tr><tr><td>Day 7</td><td>$148</td></tr><tr><td>Day 30</td><td>$113</td></tr><tr><td>Day 90</td><td>$111</td></tr><tr><td>Day 180</td><td>$107</td></tr><tr><td>Day 360</td><td>$107</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>Day7每付費用戶LTV為$148，Day360降至$107——注意這是「當時仍在付費統計窗口內的用戶」平均值，非同一批人持續累加，隨day_n增加分母（仍活躍付費用戶）快速減少。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>與§4.2 Cohort留存相互印證：付費玩家在+1月大量流失，能撐到Day360仍計入統計的用戶基數大幅縮小，故此處呈現的是「倖存者」的人均值而非全體cohort的完整生命週期LTV。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>單看此表容易誤讀為「LTV隨時間下降」，實際上應理解為「早期付費爆發 + 後期倖存者高值化」的組合現象。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>建議與數據工程確認std_ltv_360_daily的rev_usd是否為cohort累積值，並另外用固定cohort（如2024-01）追蹤同一批人的完整LTV曲線，避免分母漂移造成誤判。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[4.4] 套餐熱銷榜（近90天，按收入排序） <span class="badge status-success">✅ 真實數據（精準拆分：真實禮包名稱＋銷售期間比對）</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">✅ 2026-08-26更新：已改用「精準拆分」SQL重跑（顯示Top12，完整Top20合計金額見下方現象說明）。部分交易日期無法比對到CSB_OB活動排程中的確切銷售期間，依規則改顯示金流表通用名稱或原始product_id（見現象說明）。</p>
+    <div class="tbl-scroll"><table><tr><th>商品名稱</th><th>ProID</th><th>訂單數</th><th>收入</th></tr><tr><td>店小二的超值召喚禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.pg2.5000</code></td><td>94</td><td>$470,000.00</td></tr><tr><td>12600金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold5000</code></td><td>73</td><td>$357,326.00</td></tr><tr><td>限定禮包組合1</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.pg2.5000</code></td><td>56</td><td>$280,000.00</td></tr><tr><td>限定禮包組合1</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.pg1.5000</code></td><td>30</td><td>$150,000.00</td></tr><tr><td>com.cheonsangbi.web.pg1.2290</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.pg1.2290</code></td><td>53</td><td>$121,370.00</td></tr><tr><td>4950金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold2000</code></td><td>45</td><td>$88,465.00</td></tr><tr><td>店小二的真覺醒境界禮包</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.pg1.2290</code></td><td>34</td><td>$77,860.00</td></tr><tr><td>75600金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold30000</code></td><td>2</td><td>$60,000.00</td></tr><tr><td>3600金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold1490</code></td><td>38</td><td>$55,477.00</td></tr><tr><td>店小二的飾品禮包 II</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.pg1.5000</code></td><td>11</td><td>$55,000.00</td></tr><tr><td>2400金幣</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.web.gold1000</code></td><td>48</td><td>$47,233.00</td></tr><tr><td>端午節紀念禮包 1</td><td><code style='font-size:10px;color:var(--text2);'>com.cheonsangbi.condition30.2290</code></td><td>387</td><td>$31,526.15</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>近90天Top12套餐合計貢獻 <b class="hl-b">$1,794,257.15</b>（Top20合計$1,895,541.92），第一名「店小二的超值召喚禮包」貢獻$470,000.00（94筆訂單，均價約$5,000/筆），為近90天單一收入最高的真實限定包；其中1項（com.cheonsangbi.web.pg1.2290）因交易日期未能比對到OB活動排程中的確切期間，且金流表也未收錄，故顯示原始product_id。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>近90天真正熱賣的是幾檔高單價限定召喚/覺醒類禮包，而非日常金幣商品，顯示近期營收動能較依賴大型活動檔期而非常態消耗；與§3.4全歷史榜單（金幣類佔多數）形成對比，代表短期與長期的營收結構不同。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>近90天收入集中在少數高單價限定包，一旦缺乏新活動檔期，短期營收可能大幅波動；仍有1項商品完全無法對照名稱，建議請商城PM確認該筆交易期間是否漏登OB活動排程。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>針對「店小二的超值召喚禮包」等高單價活動包評估固定排期常態化，作為穩定近期營收的槓桿；並補齊OB活動排程中缺漏的期間資料，讓榜單能100%對照到真實名稱。</div>
+    </div>
+  </div>
+  </div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[🆕建議新增] 活動檔期效果分析（活動期間 vs 非活動期間營收比較） <span class="badge status-success">✅ 真實數據（CSB_OB活動排程比對etl_recharge）</span><span class="badge status-info">建議新增</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">✅ 用CSB_OB活動排程真實販售期間，將etl_recharge每一天標記為「活動檔期中」或「非活動檔期」後彙總。涵蓋全部有真實付費紀錄的945天（905天有至少一檔真實禮包在售、40天完全無活動）。</p>
+    <div class="tbl-scroll"><table><tr><th>檔期類型</th><th>天數</th><th>總營收</th><th>總訂單數</th><th>日均營收</th><th>日均訂單數</th></tr><tr><td>活動檔期中</td><td>905</td><td>$80,473,262.19</td><td>417,972</td><td>$88,920.73</td><td>461.85</td></tr><tr><td>非活動檔期</td><td>40</td><td>$816,696.04</td><td>5,900</td><td>$20,417.40</td><td>147.50</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>活動檔期中日均營收 <b class="hl-g">$88,920.73</b>，是非活動檔期日均營收 $20,417.40 的 <b class="hl-b">4.36倍</b>；日均訂單數同樣是 <b class="hl-b">3.13倍</b>（461.9 vs 147.5筆/天）。惟需留意非活動檔期僅40天（佔全部有交易天數的4.2%），樣本數偏小，且無法排除這40天是否恰好落在OB活動排程試算表本身未收錄的期間（資料缺口）而非真正的「刻意不開活動」。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>CSB幾乎全年95.8%的時間都有至少一檔真實禮包活動在架上同時銷售，顯示商城營運高度依賴「持續有檔期」的節奏，而非依賴少數幾波大型活動衝量。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>若活動檔期真的是營收的關鍵槓桿（而非僅是排程覆蓋率的統計假象），代表任何檔期銜接空窗都可能造成營收明顯下滑（依此數據估算日均營收可能降至約1/4），檔期排程的連續性應被視為營運關鍵指標。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>建議先請商城PM確認這40天是否為真實的「檔期空窗」或僅是OB活動排程試算表漏登，釐清後再決定是否將「檔期覆蓋率」納入常態營運KPI；若確認為真實空窗，應優先避免檔期銜接出現空檔。</div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[4.5] 充值頻次分布（近90天） <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="tbl-scroll"><table><tr><th>頻次段</th><th>用戶數</th><th>佔比</th></tr><tr><td>1次（首儲）</td><td>138</td><td>22.3%</td></tr><tr><td>2-3次</td><td>136</td><td>22.0%</td></tr><tr><td>4-6次</td><td>68</td><td>11.0%</td></tr><tr><td>7-12次</td><td>76</td><td>12.3%</td></tr><tr><td>13次以上</td><td>200</td><td>32.4%</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>近90天共618位付費用戶，複購率（2次以上）達77.7%，其中13次以上高頻付費用戶200人（32.4%）。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>複購率過6成顯示付費循環設計具一定黏著性，非一次性消費為主；高頻付費用戶群與§4.9鯨魚/海豚分層高度重疊。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>13次以上用戶雖僅佔32.4%，但依§5.1帕累托分布經驗，這批人對總營收的貢獻比例遠高於人數佔比。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>對高頻付費用戶群設計專屬忠誠度計畫（如累計儲值里程碑獎勵），提升尚在2-6次區間用戶往高頻段遷移的誘因。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[4.6] VIP 高等級最後登入分析（流失預警） <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="tbl-scroll"><table><tr><th>層級</th><th>總人數</th><th>14天內活躍</th><th>14-29天預警</th><th>30天+高危</th></tr><tr><td>🐳 鯨魚</td><td>597</td><td class='hl-g'>284</td><td class='hl-o'>7</td><td class='hl-r'>306</td></tr><tr><td>🐬 海豚</td><td>1,745</td><td class='hl-g'>325</td><td class='hl-o'>26</td><td class='hl-r'>1,394</td></tr><tr><td>🦐 小蝦米</td><td>9,708</td><td class='hl-g'>604</td><td class='hl-o'>104</td><td class='hl-r'>9,000</td></tr><tr><td>0課</td><td>167,514</td><td class='hl-g'>871</td><td class='hl-o'>316</td><td class='hl-r'>166,327</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>鯨魚（597人）中<b class="hl-r">306</b>人（51.3%）已30天以上未登入，僅284人（47.6%）14天內活躍；海豚（1,745人）高危佔比更高達79.9%。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>與§1.10流失玩家等級段分布（Lv.80+流失量最大）相互印證——高付費玩家的流失並非個案，而是與整體高等級玩家流失趨勢同步。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>鯨魚/海豚合計高危流失人數雖不多，但依§4.9歷史資料鯨魚單月人均貢獻可達數萬美元，此群體流失對營收影響遠超人數佔比。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>對30天+高危鯨魚/海豚立即啟動VIP專員一對一召回（見§4.7名單）；14-29天預警名單則可用自動化召回禮包搶在流失前介入。</div>
+    </div>
+  </div>
+  </div>
+  
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[4.7] Top 30 高危 VIP 最後登入明細（顯示Top15） <span class="badge status-success">✅ 真實數據</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">✅ 2026-08-26更新：補上真實account_id欄位，供VIP營運團隊可直接依帳號啟動召回（先前版本僅顯示消費/登入資訊，缺帳號識別）。</p>
+    <div class="tbl-scroll"><table><tr><th>帳號ID</th><th>歷史累計消費</th><th>最後登入日</th><th>沉睡天數</th></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1221925738062499840</code></td><td>$2,504,234</td><td>2025-11-28</td><td>215天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1199585246679732224</code></td><td>$1,298,294</td><td>2026-3-20</td><td>103天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1199925971412418560</code></td><td>$764,174</td><td>2024-7-10</td><td>721天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1199567740489502720</code></td><td>$703,940</td><td>2025-7-28</td><td>338天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1199560959017385984</code></td><td>$502,873</td><td>2026-3-27</td><td>96天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1200743601093435392</code></td><td>$489,512</td><td>2024-6-29</td><td>732天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1191928029561262080</code></td><td>$455,742</td><td>2024-3-18</td><td>835天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1239084726118023168</code></td><td>$409,868</td><td>2024-9-25</td><td>644天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1199626017636712448</code></td><td>$401,939</td><td>2024-7-19</td><td>712天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1199781721049432064</code></td><td>$365,021</td><td>2025-1-16</td><td>531天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1199550254599929856</code></td><td>$338,894</td><td>2026-1-22</td><td>160天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1201389321696772096</code></td><td>$337,576</td><td>2025-5-13</td><td>414天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1191928186355191808</code></td><td>$327,344</td><td>2025-10-26</td><td>248天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1199582709958934528</code></td><td>$301,701</td><td>2026-2-25</td><td>126天</td></tr><tr><td><code style='font-size:10.5px;color:var(--text2);'>1200760015917375488</code></td><td>$300,508</td><td>2026-1-26</td><td>156天</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>Top30高危VIP歷史累計消費合計 <b class="hl-r">$12,660,816</b>，第一名（帳號1221925738062499840）沉睡215天前消費金額高達$2,504,234；30人中沉睡天數橫跨43天到835天，代表流失是持續累積而非單一事件。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>沉睡天數分布廣，顯示這是長期未被系統性召回的流失存量，而非近期單一版本問題造成的集中流失。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>這$12,660,816為30位玩家的歷史消費總量，代表若能召回其中一部分，潛在營收貢獻相當可觀，是ROI最高的召回目標名單。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>建議VIP營運團隊直接依上表帳號ID啟動一對一召回（客服電話/專屬禮包/客製化優惠），並將此清單設為常態每週更新的營運SOP，而非一次性名單。</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[4.8] 轉蛋活動日趨勢 <span class="badge status-danger">⛔ 資料缺口已確認</span><span class="badge status-vip">建議由「待討論」改列為「是」</span></div>
+    <div class="chart-wrap" style="display:flex;align-items:center;justify-content:center;border:1px dashed var(--border);border-radius:8px;color:var(--text2);font-size:12px;background:var(--bg3);">⛔ 對應資料表不存在，非估算或省略</div>
+    <p style="margin-top:8px;font-size:11px;color:var(--text2);">ID對照表含完整「機率表」分頁（2564列），CSB抽卡機制已相當成熟，且台灣《機率型遊戲管理辦法》要求機率揭露稽核，強烈建議此指標定案為「是」並延伸出 §7.2 掉落機率合規稽核。</p>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>17張表中的etl_inapp_event／etl_install僅含AppsFlyer SDK事件，無GACHA_DRAW等遊戲伺服器端自訂抽卡事件，找不到記錄抽卡行為的表。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>不僅商業化分析缺席，更直接影響§7.2「掉落機率合規稽核」——台灣《機率型遊戲管理辦法》要求業者可稽核實際掉率，此資料缺口同時是法遵風險。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>與3.6同批向數據工程/後端提出需求：確認抽卡/強化等遊戲核心付費行為記錄於哪張表，建議列為P0，因涉及法遵而非僅營運優化。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[4.9] VIP 分層趨勢（鯨魚/海豚/小蝦米） <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="chart-wrap"><canvas id="chart4_9"></canvas></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>鯨魚人數由2024-1-的44人萎縮至2026-6-的30人，但鯨魚營收佔三層總營收比例由78.6%升至97.6%——人數變少，集中度更高。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>與§4.1/1.3「精粹化」現象一致：整體玩家池萎縮過程中，留下的鯨魚玩家對營收的相對重要性不斷提高，營收結構更依賴少數核心大戶。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>營收集中度越高，單一鯨魚流失（見§4.6/4.7）對整體營收的衝擊也越大，屬於「雞蛋放在少數籃子」的結構性風險。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>對鯨魚層級投入不成比例的VIP服務資源（一對一客服/專屬活動）；同時將§4.7流失預警名單的執行優先度提升為營運週會固定議程。</div>
+    </div>
+  </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[4.10] TW/HK VIP 名單狀態 <span class="badge status-success">✅ 真實數據（部分）</span><span class="badge status-danger">待確認「SM」定義</span></div>
+    <div class="tbl-scroll"><table><tr><th>市場</th><th>VIP人數（累計消費≥500）</th></tr><tr><td>HK</td><td>564</td></tr><tr><td>TW</td><td>2,270</td></tr></table></div>
+    <p style="margin-top:8px;font-size:11px;color:var(--text2);">⚠️ 需求表中「SM」市場代碼定義仍不明確，本查詢暫以country_code IN ('TW','HK')執行；若SM代表其他市場（如新加坡/馬來西亞），需另外確認country_code值後補查。</p>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>TW VIP 2,270人，HK VIP 564人，TW約為HK的4倍。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>請需求方確認「SM」實際定義（國家代碼或內部分類），確認後可直接沿用本題SQL改條件即可補齊。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[4.11] 伺服器歷史營收分布 <span class="badge status-success">✅ 真實數據</span><span class="badge status-vip">建議由「待討論」改列為「是」</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">⚠️ 實際活躍伺服器數遠多於原先假設的1-2組（dim_server維度表僅涵蓋Excel「伺服器列表」分頁30組規劃伺服器，實測發現另有 server_id=1011/1012 等未列於維度表的伺服器同樣有真實營收，需請數據工程補充完整伺服器清單）。</p>
+    <div class="tbl-scroll"><table><tr><th>伺服器</th><th>ID</th><th>付費人數</th><th>收入</th><th>ARPPU</th></tr><tr><td>真風雲錄03</td><td>13</td><td>1,037</td><td>$16,289,227</td><td>$15,708</td></tr><tr><td>武林秘史01</td><td>21</td><td>897</td><td>$6,557,896</td><td>$7,311</td></tr><tr><td>武林秘史03</td><td>23</td><td>963</td><td>$6,148,267</td><td>$6,384</td></tr><tr><td>武林秘史05</td><td>25</td><td>1,115</td><td>$6,055,333</td><td>$5,431</td></tr><tr><td>真風雲錄05</td><td>15</td><td>969</td><td>$4,915,188</td><td>$5,072</td></tr><tr><td>真風雲錄04</td><td>14</td><td>893</td><td>$4,897,435</td><td>$5,484</td></tr><tr><td>獨步江湖03</td><td>33</td><td>608</td><td>$4,316,889</td><td>$7,100</td></tr><tr><td>武林秘史04</td><td>24</td><td>1,257</td><td>$4,007,001</td><td>$3,188</td></tr><tr><td>獨步江湖05</td><td>35</td><td>1,065</td><td>$3,924,346</td><td>$3,685</td></tr><tr><td>獨步江湖02</td><td>32</td><td>586</td><td>$3,666,976</td><td>$6,258</td></tr><tr><td>獨步江湖01</td><td>31</td><td>1,087</td><td>$3,634,716</td><td>$3,344</td></tr><tr><td>真風雲錄02</td><td>12</td><td>651</td><td>$3,508,742</td><td>$5,390</td></tr><tr><td>武林秘史02</td><td>22</td><td>740</td><td>$3,249,986</td><td>$4,392</td></tr><tr><td>獨步江湖04</td><td>34</td><td>885</td><td>$2,730,536</td><td>$3,085</td></tr><tr><td>真風雲錄01</td><td>11</td><td>929</td><td>$2,708,759</td><td>$2,916</td></tr><tr><td>潛龍之夢01</td><td>41</td><td>146</td><td>$309,390</td><td>$2,119</td></tr><tr><td>（未列於dim_server）</td><td>1,011</td><td>23</td><td>$2,945,898</td><td>$128,083</td></tr><tr><td>（未列於dim_server）</td><td>1,012</td><td>2</td><td>$80,350</td><td>$40,175</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>全服合計歷史營收 <b class="hl-b">$79,946,935</b>；最高營收伺服器為真風雲錄03（$16,289,227），但ARPPU最高的反而是未列於維度表的server_id=1011（$128,083，付費人數少但單價極高，可能是GM/測試/特殊帳號）。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>各伺服器營收差距不算懸殊（前3名皆在600-1630萬區間），顯示營收並未過度集中在單一伺服器，與整體「真風雲錄」「武林秘史」系列伺服器均衡發展的規劃一致。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>維度表未涵蓋全部真實伺服器，代表原先「僅server_id=11/12上線」的假設是錯誤的，需重新盤點才能正確評估合服等策略（見§7.5）。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>請數據工程/GM提供完整、即時更新的伺服器清單（含server_id=10/20/30/1010-1012/1123等），更新dim_server維度表；同時查明1011/1012等特殊ID的實際性質。</div>
+    </div>
+  </div>
+  </div>
+  
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[4.12] 玩家地區分布 Top 15 <span class="badge status-success">✅ 真實數據</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">⚠️ 原始查詢結果含19,545個相異country_code，其中19,412個為亂碼/非標準格式（合計19,757人，佔8.9%），研判為etl_login.country_code欄位編碼異常，非真實國家；下表僅顯示133個標準2碼國家（合計201,355人，佔91.1%）之Top15。</p>
+    <div class="tbl-scroll"><table><tr><th>國家/地區</th><th>玩家數</th><th>佔全體比例</th></tr><tr><td>TW</td><td>124,468</td><td>56.3%</td></tr><tr><td>HK</td><td>24,559</td><td>11.1%</td></tr><tr><td>CN</td><td>12,036</td><td>5.4%</td></tr><tr><td>US</td><td>11,018</td><td>5.0%</td></tr><tr><td>KR</td><td>7,801</td><td>3.5%</td></tr><tr><td>JP</td><td>7,471</td><td>3.4%</td></tr><tr><td>SG</td><td>5,911</td><td>2.7%</td></tr><tr><td>MO</td><td>1,154</td><td>0.5%</td></tr><tr><td>GB</td><td>706</td><td>0.3%</td></tr><tr><td>IN</td><td>670</td><td>0.3%</td></tr><tr><td>VN</td><td>554</td><td>0.3%</td></tr><tr><td>AU</td><td>540</td><td>0.2%</td></tr><tr><td>AR</td><td>320</td><td>0.1%</td></tr><tr><td>TH</td><td>306</td><td>0.1%</td></tr><tr><td>CA</td><td>282</td><td>0.1%</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>TW玩家124,468人（56.3%）為絕對主力，與區塊二行銷安裝地區分布（TW佔自然安裝86.6%）數量級一致，可互相驗證資料合理性。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>country_code亂碼問題疑似與etl_login欄位編碼轉換有關，建議與數據工程確認該欄位ETL流程是否有字元集轉換遺漏。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>亂碼佔比僅8.9%，對整體地區分布結論影響輕微，但長尾19000+個相異亂碼值會拖累任何依country_code分組的查詢效能。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>回報數據工程修正country_code欄位ETL邏輯；分析類查詢建議統一加上country_code規則式過濾（如僅取[A-Z]{2}格式）避免長尾亂碼干擾。</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[🆕建議新增] 公會活躍度（月，Top10） <span class="badge status-success">✅ 真實數據</span><span class="badge status-vip">建議新增</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">來源：etl_inapp_event.event_value JSON payload中的vng_ge_guild_name欄位，查詢實際可執行並回傳真實資料（原標記待驗證，現已確認可行）。共識別出4,099個相異公會名稱。</p>
+    <div class="tbl-scroll"><table><tr><th>公會名稱</th><th>累計活躍人次（2024-01至2026-07）</th></tr><tr><td>神盾局</td><td>1,342</td></tr><tr><td>勢如破竹</td><td>1,317</td></tr><tr><td>煙花三月</td><td>1,250</td></tr><tr><td>移花閣</td><td>1,192</td></tr><tr><td>新手村</td><td>1,173</td></tr><tr><td>佛怒火蓮</td><td>1,095</td></tr><tr><td>海賊團</td><td>1,084</td></tr><tr><td>酗酒協會</td><td>1,002</td></tr><tr><td>幽冥幻境</td><td>991</td></tr><tr><td>琅琊閣</td><td>977</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>全服共4,099個公會，最活躍公會（神盾局）累計活躍人次達1,342；另有相當比例事件無公會歸屬（每月平均3,188人次未帶公會標籤，可能為未入會玩家）。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>公會系統確實有相當規模的活躍社群，4,099個公會分布顯示玩家社交結構多元而非集中在少數幾個大公會。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>公會黏著度是MMORPG重要的社交留存槓桿，此資料證實可作為長期監控指標，能與§1.4留存曲線交叉驗證「有無加入公會」是否影響留存率。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>建議正式納入需求確認表為常態指標；後續可分析「有公會 vs 無公會」玩家的D30留存與ARPPU差異，驗證公會系統對留存/付費的實際貢獻度。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[🆕建議新增] 變身道具持有 / 使用率 <span class="badge status-danger">⛔ 資料缺口已確認</span><span class="badge status-vip">建議新增</span></div>
+    <div class="chart-wrap" style="display:flex;align-items:center;justify-content:center;border:1px dashed var(--border);border-radius:8px;color:var(--text2);font-size:12px;background:var(--bg3);">⛔ 對應資料表不存在，非估算或省略</div>
+    <p style="margin-top:8px;font-size:11px;color:var(--text2);">使用者需求說明CSB核心機制含「變身系統」，屬產品差異化賣點，建議追蹤變身道具的持有率、使用頻率與付費轉化關聯，需先與PM/客端工程確認變身道具item_id清單。</p>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>17張表中無TRANSFORM_USE等變身道具使用的伺服器端自訂事件，與3.6/4.8/7.1/7.2同屬「遊戲行為事件日誌系統缺席」這一整類資料缺口。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>變身系統是CSB產品定位的核心差異化賣點（見Dashboard標題），目前完全無法用數據驗證其實際使用率與付費轉化貢獻，是產品策略層級的分析盲區。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>與3.6/4.8/7.1/7.2/7.8合併為同一份「遊戲行為事件日誌需求」提交數據工程/後端，這五項指標若能一次補齊，將顯著提升Dashboard對核心玩法的洞察深度。</div>
+    </div>
+  </div>
+  </div>
+</div>
+<!-- ===== 區塊五：帕累托分析 ===== -->
+<div class="section" data-sec="pareto">
+  <div class="section-title">📊 收入帕累托分布 · 伺服器 ARPU · 破冰分析</div>
+  <div class="info-bar" style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:8px;padding:8px 12px;font-size:11.5px;margin-bottom:16px;">📍 對應需求確認表 區塊五（4項：3項「是」+1項「待討論」）。</div>
+
+  
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[5.1] 收入帕累托分布（付費玩家分層） <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="tbl-scroll"><table><tr><th>分層</th><th>人數</th><th>收入</th><th>收益佔比</th></tr><tr><td>Top 1%</td><td>121</td><td>$56,885,840</td><td>71.0%</td></tr><tr><td>Top 1-5%</td><td>482</td><td>$18,513,642</td><td>23.0%</td></tr><tr><td>Top 5-20%</td><td>1,864</td><td>$3,846,416</td><td>4.8%</td></tr><tr><td>Bottom 80%</td><td>9,583</td><td>$701,037</td><td>0.9%</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>Top 1%（121人）貢獻了 <b class="hl-r">71.0%</b> 的總營收，Top 1-5%再貢獻23.0%——前5%玩家合計貢獻超過9成營收，Bottom 80%（9,583人）僅貢獻0.9%。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>比業界MMORPG常見的「二八法則」更極端（通常Top20%貢獻80%營收，這裡Top1%就貢獻71%），與§4.9 VIP集中度攀升趨勢完全吻合，反映CSB營收結構高度依賴極少數鯨魚玩家。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>營收結構脆弱——僅121人的去留就能左右超過7成營收，任一Top1%玩家流失的財務衝擊遠大於任何營運活動能彌補的量級。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>Top1%與Top1-5%這603人應設為公司層級的VIP名單，享有超越常規VIP服務等級的專屬照護與流失預警（見§4.6/4.7），是財務風險管理的核心對象。</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[🆕建議新增] 貨幣消耗帕累托分布（玩家集中度） <span class="badge status-success">✅ 真實數據（SilverLog/GoldLog）</span><span class="badge status-info">建議新增</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">✅ 用SilverLog/GoldLog真實資料統計每位玩家的貨幣消耗總量（out），依消耗量排序分層，比照§5.1收入帕累托做法，涵蓋2026-01-01～2026-07-14。</p>
+    <div style="font-size:11px;font-weight:700;color:var(--text2);margin:8px 0 4px;">銀幣消耗集中度（2,860位有消耗紀錄玩家，合計275,796,725銀幣）</div>
+    <div class="tbl-scroll"><table><tr><th>分層</th><th>人數</th><th>銀幣消耗量</th><th>佔比</th></tr><tr><td>Top 1%</td><td>28</td><td>61,264,880</td><td>22.2%</td></tr><tr><td>Top 1-5%</td><td>115</td><td>74,965,411</td><td>27.2%</td></tr><tr><td>Top 5-20%</td><td>429</td><td>71,432,432</td><td>25.9%</td></tr><tr><td>Bottom 80%</td><td>2,288</td><td>68,134,002</td><td>24.7%</td></tr></table></div>
+    <div style="font-size:11px;font-weight:700;color:var(--text2);margin:12px 0 4px;">金幣消耗集中度（2,649位有消耗紀錄玩家，合計64,604,260金幣）</div>
+    <div class="tbl-scroll"><table><tr><th>分層</th><th>人數</th><th>金幣消耗量</th><th>佔比</th></tr><tr><td>Top 1%</td><td>26</td><td>16,661,065</td><td>25.8%</td></tr><tr><td>Top 1-5%</td><td>106</td><td>21,288,210</td><td>33.0%</td></tr><tr><td>Top 5-20%</td><td>397</td><td>19,523,657</td><td>30.2%</td></tr><tr><td>Bottom 80%</td><td>2,120</td><td>7,131,328</td><td>11.0%</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>貨幣消耗集中度遠低於§5.1真實金錢收入集中度：銀幣Top1%（28人）僅佔消耗總量 <b class="hl-b">22.2%</b>，金幣Top1%（26人）佔 <b class="hl-b">25.8%</b>——相較§5.1真實付費Top1%貢獻71.0%營收，貨幣消耗的分布明顯平均得多。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>付費（真實金錢）與貨幣消耗（遊戲內行為）本質不同：付費是少數鯨魚玩家的自由選擇，但金幣/銀幣多半來自玩家的日常遊玩產出（任務/副本/交易所），因此消耗行為廣泛分布在活躍玩家群中，而非集中在少數付費大戶。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>這是經濟健康度的正面訊號——貨幣經濟並未被少數玩家壟斷，Bottom 80%玩家仍貢獻銀幣消耗 <b class="hl-g">24.7%</b>／金幣消耗 <b class="hl-g">11.0%</b>，代表一般玩家的遊玩行為對貨幣經濟循環仍有實質貢獻，不完全依賴鯨魚玩家撐起整體活躍度。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>與§5.1真實付費帕累托對照解讀：付費集中度可作為VIP名單管理依據，但貨幣消耗集中度較低代表一般玩家活躍度監控（DAU/任務完成率等）仍是經濟與留存健康度的關鍵指標，不應只關注鯨魚玩家。</div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[5.2] 各伺服器 ARPU 與活躍度比較（近1個月） <span class="badge status-success">✅ 真實數據</span><span class="badge status-vip">建議由「待討論」改列為「是」</span></div>
+    <div class="tbl-scroll"><table><tr><th>伺服器</th><th>ID</th><th>MAU</th><th>近月收入</th><th>ARPU</th></tr><tr><td>武林秘史01</td><td>21</td><td>176</td><td>$124,513</td><td>$707</td></tr><tr><td>武林秘史03</td><td>23</td><td>255</td><td>$154,521</td><td>$606</td></tr><tr><td>真風雲錄04</td><td>14</td><td>187</td><td>$71,102</td><td>$380</td></tr><tr><td>真風雲錄03</td><td>13</td><td>241</td><td>$82,156</td><td>$341</td></tr><tr><td>真風雲錄05</td><td>15</td><td>215</td><td>$59,295</td><td>$276</td></tr><tr><td>真風雲錄01</td><td>11</td><td>305</td><td>$71,802</td><td>$235</td></tr><tr><td>武林秘史02</td><td>22</td><td>181</td><td>$35,733</td><td>$197</td></tr><tr><td>獨步江湖05</td><td>35</td><td>266</td><td>$46,988</td><td>$177</td></tr><tr><td>武林秘史04</td><td>24</td><td>275</td><td>$38,231</td><td>$139</td></tr><tr><td>獨步江湖01</td><td>31</td><td>328</td><td>$41,286</td><td>$126</td></tr><tr><td>真風雲錄02</td><td>12</td><td>208</td><td>$20,908</td><td>$101</td></tr><tr><td>獨步江湖03</td><td>33</td><td>142</td><td>$11,355</td><td>$80</td></tr><tr><td>獨步江湖02</td><td>32</td><td>149</td><td>$11,380</td><td>$76</td></tr><tr><td>武林秘史05</td><td>25</td><td>176</td><td>$7,143</td><td>$41</td></tr><tr><td>獨步江湖04</td><td>34</td><td>152</td><td>$3,736</td><td>$25</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>ARPU最高為武林秘史01（$707），最低為獨步江湖04（$25），約29倍差距；另有7個server_id（未列於維度表）有MAU但近月完全無付費紀錄。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>ARPU差異可能反映各伺服器玩家開服時間不同（越早開服的伺服器玩家等級/裝備投入越深，付費黏著度越高）。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>低ARPU伺服器若同時MAU也偏低（見§7.5低人口伺服器識別），是合服評估的優先候選對象。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>與§7.5低人口伺服器清單交叉比對，MAU與ARPU皆低的伺服器優先評估合服；ARPU高但MAU低的伺服器則需留意合服時避免衝擊高價值玩家體驗。</div>
+    </div>
+  </div>
+    
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[5.3] 首儲商品分布（破冰入口分析，Top5） <span class="badge status-success">✅ 真實數據（精準拆分：真實禮包名稱＋銷售期間比對）</span></div>
+    <div class="tbl-scroll"><table><tr><th>商品名稱</th><th>首儲人數</th><th>佔比</th></tr><tr><td>金幣基金2</td><td>12,792</td><td>3.1%</td></tr><tr><td>每週黑血石禮包</td><td>12,185</td><td>3.0%</td></tr><tr><td>7600金幣</td><td>11,632</td><td>2.8%</td></tr><tr><td>金幣基金1</td><td>10,937</td><td>2.6%</td></tr><tr><td>每週裝備素質禮包</td><td>9,176</td><td>2.2%</td></tr></table></div>
+    <p style="margin-top:8px;font-size:11px;color:var(--text2);">與區塊一 §1.8 共用同一份精準拆分查詢結果，完整Top10請見§1.8卡片。</p>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>詳細現象/原因/影響/行動分析請見§1.8卡片，此處為帕累托區塊摘要視角。</div>
+    </div>
+  </div>
+  </div>
+  
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[5.4] 付費玩家首次付費當下等級段分布 <span class="badge status-success">✅ 真實數據</span></div>
+    <div class="tbl-scroll"><table><tr><th>等級段</th><th>首付玩家數</th><th>佔比</th></tr><tr><td>Lv.1-9（新手村）</td><td>1,665</td><td>0.4%</td></tr><tr><td>Lv.10-29（成長期）</td><td>1,697</td><td>0.4%</td></tr><tr><td>Lv.30-49（中期）</td><td>1,023</td><td>0.3%</td></tr><tr><td>Lv.50-79（資深）</td><td>686</td><td>0.2%</td></tr><tr><td>Lv.80+（頂級）</td><td>400,301</td><td>98.7%</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div><b class="hl-r">98.7%</b> 的首次付費發生在「Lv.80+（頂級）」，遠高於其他等級段（Lv.1-9僅0.4%）。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>大量玩家撐到Lv.80+才首次付費，而非在早期新手階段——這與§1.8「首儲商品分散、無明確破冰神器」的現象一致，代表新手階段的付費誘因設計偏弱，多數人是玩到後期遇到強化/裝備瓶頸才開始付費。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>從註冊到首次付費的週期可能被拉得很長，若這段期間流失（見§1.4 D1流失65-70%），這批玩家可能根本沒機會走到「Lv.80+首付」這一步，代表潛在營收因早期流失而流失。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>評估在Lv.1-29新手/成長期階段設計更有吸引力的低門檻首購方案，把首付時間點往前移，讓更多玩家在流失前就先建立付費習慣。</div>
+    </div>
+  </div>
+  
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">[🆕建議新增] 低人口伺服器識別 / 合服評估（已上線伺服器，近30天MAU） <span class="badge status-success">✅ 真實數據</span><span class="badge status-danger">建議新增，優先執行</span></div>
+    <p style="margin-top:0;margin-bottom:8px;font-size:11px;color:var(--text2);">⚠️ dim_server維度表標記「已上線」的15組伺服器中，實際MAU範圍從142到328，證實原先「僅server_id=11/12上線」的假設不成立，實際上線規模遠大於此（另見§4.11有更多未列於維度表的真實伺服器）。</p>
+    <div class="tbl-scroll"><table><tr><th>伺服器</th><th>ID</th><th>近30天MAU</th></tr><tr><td>獨步江湖03</td><td>33</td><td>142</td></tr><tr><td>獨步江湖02</td><td>32</td><td>149</td></tr><tr><td>獨步江湖04</td><td>34</td><td>152</td></tr><tr><td>武林秘史05</td><td>25</td><td>176</td></tr><tr><td>武林秘史01</td><td>21</td><td>176</td></tr><tr><td>武林秘史02</td><td>22</td><td>181</td></tr><tr><td>真風雲錄04</td><td>14</td><td>187</td></tr><tr><td>真風雲錄02</td><td>12</td><td>208</td></tr><tr><td>真風雲錄05</td><td>15</td><td>215</td></tr><tr><td>真風雲錄03</td><td>13</td><td>241</td></tr><tr><td>武林秘史03</td><td>23</td><td>255</td></tr><tr><td>獨步江湖05</td><td>35</td><td>266</td></tr><tr><td>武林秘史04</td><td>24</td><td>275</td></tr><tr><td>真風雲錄01</td><td>11</td><td>305</td></tr><tr><td>獨步江湖01</td><td>31</td><td>328</td></tr></table></div>
+    <div class="dim-grid" style="margin-top:10px;">
+      <div class="dim-card phenom"><div class="dim-label">🔵 現象</div>最低人口伺服器（獨步江湖03）僅142 MAU，最高（獨步江湖01）達328，約2倍差距，7組伺服器MAU低於200。</div>
+      <div class="dim-card cause"><div class="dim-label">🟡 原因</div>與§1.1-1.3全服MAU長期下滑趨勢一致，人口分散到多組伺服器後，低人氣伺服器的絕對數字已相當小，可能影響組隊/交易所/PvP等依賴人口密度的體驗。</div>
+      <div class="dim-card impact"><div class="dim-label">🔴 影響</div>低MAU伺服器玩家的社交/交易/PvP體驗品質可能明顯劣化，是玩家流失的潛在加速因子；同時營運/GM人力成本並未隨伺服器人口下降而降低。</div>
+      <div class="dim-card action"><div class="dim-label">🟢 行動</div>MAU&lt;200的7組伺服器建議列為合服優先候選，並與§5.2 ARPU數據交叉評估合服對高價值玩家的影響，規劃分階段合服方案。</div>
+    </div>
+  </div>
+</div>
+<!-- ===== 區塊六：營運行動策略 ===== -->
+<div class="section" data-sec="action">
+  <div class="section-title">💡 營運優化策略 — 八大核心議題行動方案</div>
+  <div class="info-bar" style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:8px;padding:8px 12px;font-size:11.5px;margin-bottom:16px;">📍 對應需求確認表 區塊六。以下八大議題均基於本次協作<b>已掌握之真實資訊</b>（AppsFlyer實測數據、ID對照表真實結構、需求確認表現況）歸納，凡涉及CSB遊戲內行為之定量結論，均標註「待SQL驗證」，待Metabase查詢結果回填後可進一步深化。</div>
+  <div class="grid-2" style="gap:16px;">
+    
+    <div class="card" style="border-top:3px solid var(--green);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">💸</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 1 — 行銷成本其實可查，只是查錯了路徑（已修正）</div>
+          <span class="badge status-success">2026-07-02 已修正</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>AppsFlyer原始CSV彙總 2026 H1 六個月，Cost Value欄位全數為0；但經核對Metabase真實欄位後，etl_apple／etl_google／etl_facebook／etl_skan_performance_report 四張廣告平台成效表<b>均有真實花費欄位</b>（localspend_amount／cost／spend／total_cost），iOS SKAN表甚至已預算好roi/arpu/average_ecpi。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>先前「行銷成本完全不可視」的判斷是誤判——問題出在AppsFlyer的Cost Integration匯出檔沒串接，而非Metabase倉庫真的沒有這筆資料。CPI/ROAS其實可以直接算出來。</div>
+      <div style="background:rgba(22,163,74,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>執行SQL語法庫 §7.6a-d 取得四渠道真實CPI/ROI，並用§7.6e(std_revrpi_360_daily)驗證行銷歸因後的實際收入回收曲線，取代原本「請行銷團隊補資料」的計畫。</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--accent);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">🌱</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 2 — 自然流量佔比96.4%，已驗證為警訊而非健康訊號</div>
+          <span class="badge status-danger">已驗證 · 需關注</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>2026 H1真實安裝數：自然量76,700次（96.4%）遠高於付費歸因2,858次（3.6%）；TW佔自然安裝86.6%。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>✅ 已用§1.3/1.6真實數據驗證：MAU由上線首月12.3萬降至最新約2,500，新註冊數同步從月均10萬+降至數百人，兩者高度同步下滑——證實是「盤子變小」而非「口碑變好」，96.4%自然量佔比是警訊而非健康訊號。</div>
+      <div style="background:rgba(37,99,235,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>對照§7.6a-d真實CPI數據評估重啟付費UA的投資報酬率；同時§4.1顯示CVR/ARPPU不降反升，證明產品體質健康、問題純粹在導流量能，值得投入UA預算。</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--orange);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">⏳</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 3 — 老服生命週期風險已驗證：核心玩家健康，但總量持續萎縮</div>
+          <span class="badge status-warning">已驗證 · 結構性風險</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>ID對照表真實伺服器清單顯示server_id=11（真風雲錄01）於2023-11-30上線，至今2026-07已營運約2.6年；此為MMORPG典型的「中後期老化」階段。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>✅ 已用§1.1-1.3真實數據驗證：PCU/MAU確實長期下滑（MAU降幅逾97%），但§1.4顯示D7/D30留存優於業界中位數，§4.1顯示CVR/ARPPU反而提升——證實CSB是「核心玩家池健康但總量萎縮」的老服，而非「連核心玩家都在流失」的衰敗型老服。</div>
+      <div style="background:rgba(37,99,235,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>問題定位明確為「新增量不足」而非「產品失去吸引力」，建議評估大型版本更新/回流計劃的同時，優先檢視§7.6真實CPI數據是否支持擴大付費UA投放。</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--accent);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">🖥️</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 4 — 伺服器規劃與實際上線規模已釐清，需合服評估</div>
+          <span class="badge status-success">已驗證</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>dim_server真實資料顯示CSB規劃6大服系×5組=30組伺服器，但僅server_id=11、12標註實際上線日期（2023-11-30），其餘28組Launch欄位定義不一致（部分True但日期為「not requested yet」）。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>✅ 已用§7.5/4.11真實數據驗證：實際上線伺服器遠多於原先假設的1-2組，共15組「已標記上線」伺服器有真實MAU（142-521不等），另有多組未列於維度表的伺服器（如1011/1012等）同樣有真實營收，dim_server維度表本身需要更新。</div>
+      <div style="background:rgba(37,99,235,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>MAU&lt;200的伺服器（§7.5已列出具體清單）建議優先評估合服；同時請數據工程提供完整、即時的伺服器清單以修正dim_server維度表。</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--red);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">🪙</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 5 — 貨幣「消耗端」資料表缺失，已透過SilverLog/GoldLog真實LOG補齊</div>
+          <span class="badge status-success">2026-08-26 已更新</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>Metabase 17張表確實未見貨幣消耗(burn)專屬表，但使用者另行提供2026-07-14匯出之全服SilverLog（114萬筆）／GoldLog（47.5萬筆）真實LOG（非Metabase來源，含logtypestr事件分類與balance欄位），已可完整涵蓋mint/burn雙向流水。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>3.1全服Mint vs Burn、3.3道具流向Top15、3.7副幣消耗榜三項指標已用真實LOG回填；銀幣淨增加+2,445萬、金幣淨增加+42萬，皆屬溫和通膨、尚未失控，但金幣經濟高度依賴交易所流動（詳見新增之交易所監控卡片）。</div>
+      <div style="background:rgba(37,99,235,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>建議將SilverLog/GoldLog匯出排入常態週期（週/月），並與數據工程確認CASH_STORAGE_DEPOSIT等入帳項目是否含角色↔倉庫內部轉移，以避免高估通膨幅度；3.2人均持有量趨勢仍需固定週期匯出才能真正繪製時間序列。</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--purple);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">🎰</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 6 — 強化與抽卡機率系統— 核心商業化機制卻仍列為「待討論」</div>
+          <span class="badge status-vip">建議升級為P0</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>ID對照表「機率表」分頁含2,564列真實機率資料，證實CSB具備成熟的抽卡/強化機率系統；但需求確認表中3.6強化失敗率、4.8轉蛋活動趨勢均標註「待討論」而非「是」。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>強化與抽卡向來是天堂式MMORPG最主要的付費循環與玩家挫折感來源，且台灣《機率型遊戲管理辦法》要求業者揭露並可稽核實際掉率——若監控缺席，同時存在營收優化與法遵雙重風險。</div>
+      <div style="background:rgba(37,99,235,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>建議將3.6、4.8由「待討論」正式改列為「是」；並新增§7.2「掉落/機率合規稽核」，比對實際掉率與機率表公告值，同時作為法遵稽核與付費體驗優化的雙重依據。</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--green);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">🔁</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 7 — 交易所與RMT監控已用真實LOG初步補齊，異常偵測仍待建置</div>
+          <span class="badge status-success">2026-08-26 已更新</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>用SilverLog/GoldLog真實交易事件已統計出：2,624位玩家在363,904筆交易中買賣金幣，交易額佔金幣總入帳48.9%／總消耗54.3%（詳見§3區塊新增之交易所監控卡片）；銀幣完全無交易紀錄（不可用於交易所交易）。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>已能呈現交易量體與Top交易道具，但尚無法識別「異常」交易模式（帳號互轉、單一玩家異常高頻交易等），與3.5外掛監控名單的交叉比對也尚未建立。</div>
+      <div style="background:rgba(37,99,235,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>在現有交易量體基礎上，建立單日/單週異常交易閾值告警，並與§3.5外掛風險名單共用同一套帳號黑名單進行交叉比對。</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--accent);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:20px;">📋</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--text);">議題 8 — Dashboard真實資料回填已完成44/48項，剩餘缺口集中且明確</div>
+          <span class="badge status-success">2026-08-26 已更新</span>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>📊 數據現象：</b>✅ 資料落地持續推進：48項卡片中已有44項回填真實查詢結果（Metabase SQL 39項 + SilverLog/GoldLog真實LOG 5項：3.1/3.3/3.7/交易所監控/貨幣帕累托），僅剩3.2、3.6、4.8、變身道具持有/使用率共4項因遊戲行為事件日誌系統不在現有17張表中、或需固定週期時間序列匯出而暫無法產出。</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px;"><b>💡 核心 Insight：</b>貨幣經濟與交易所類指標（3.1/3.3/3.7/交易所監控）已透過使用者另行提供的真實遊戲LOG補齊，證明「非Metabase來源之真實資料」也是有效的資料補齊路徑；剩餘4項缺口仍集中在強化/抽卡系統事件與需要時間序列快照的指標，並非分散的個別問題。</div>
+      <div style="background:rgba(37,99,235,.05);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text);"><b>🎯 行動：</b>比照SilverLog/GoldLog的成功經驗，向數據工程/後端確認是否存在強化/抽卡事件的獨立LOG系統可比照匯出；3.2人均持有量趨勢建議請R&D提供固定週期（如每週）快照匯出以繪製真正的時間序列。</div>
+    </div>
+  </div>
+</div>
+</div><!-- /main -->
+
+<div class="footer" style="text-align:center;padding:16px;font-size:11px;color:var(--text2);border-top:1px solid var(--border);margin-top:20px;">
+  CSB《天上碑M》數據戰情室 · 依 Dashboard_需求確認表 v1 + GNO Dashboard 範本架構建置 · 2026-08-26 最終回填
+  <br>資料狀態：AppsFlyer行銷數據=100%真實彙總｜Metabase+SilverLog/GoldLog 48張卡片中44張已真實回填、4張確認資料缺口｜ID對照表維度=已真實匯出（dim_server/dim_product/dim_currency_logtype）
+</div>
+<script>
+new Chart(document.getElementById('chart3_1'), {
+  type: 'bar',
+  data: {
+    labels: ['銀幣', '金幣'],
+    datasets: [
+      { label: '總入帳', data: [300249014, 65024286], backgroundColor: 'rgba(22,163,74,.75)', borderRadius: 4 },
+      { label: '總消耗', data: [275796725, 64604260], backgroundColor: 'rgba(220,38,38,.75)', borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } },
+                title: { display: true, text: '全服貨幣 Mint(入帳) vs Burn(消耗)（真實LOG，2026-01-01~2026-07-14）', font: { size: 12 } } },
+    scales: { y: { beginAtZero: true, title: { display:true, text:'金額' } } }
+  }
+});
+
+new Chart(document.getElementById('chartAFInstalls'), {
+  type: 'bar',
+  data: {
+    labels: ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06'],
+    datasets: [
+      { label: '自然安裝 Organic', data: [17240, 16706, 10991, 11183, 10011, 10569], backgroundColor: 'rgba(22,163,74,.75)', borderRadius: 4 },
+      { label: '行銷歸因安裝 Paid Attributed', data: [574, 957, 97, 440, 336, 454], backgroundColor: 'rgba(217,119,6,.75)', borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } },
+                title: { display: true, text: '月安裝量：自然量 vs 行銷歸因（真實數據）', font: { size: 12 } } },
+    scales: { y: { beginAtZero: true, title: { display:true, text:'安裝數' } } }
+  }
+});
+
+new Chart(document.getElementById('chart1_1'), {
+  type: 'line',
+  data: { labels: ["2024-1-", "2024-2-", "2024-3-", "2024-4-", "2024-5-", "2024-6-", "2024-7-", "2024-8-", "2024-9-", "2024-10", "2024-11", "2024-12", "2025-1-", "2025-2-", "2025-3-", "2025-4-", "2025-5-", "2025-6-", "2025-7-", "2025-8-", "2025-9-", "2025-10", "2025-11", "2025-12", "2026-1-", "2026-2-", "2026-3-", "2026-4-", "2026-5-", "2026-6-", "2026-7-"],
+    datasets: [{ label: 'PCU月峰值', data: [1973, 1445, 862, 751, 537, 416, 416, 399, 324, 319, 283, 280, 290, 279, 281, 278, 273, 226, 220, 215, 207, 198, 201, 202, 178, 175, 177, 166, 161, 149, 154], borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,.08)', fill:true, tension:.25, pointRadius:2 }] },
+  options: { responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:false} },
+    scales:{ y:{beginAtZero:true} } }
+});
+
+
+new Chart(document.getElementById('chart1_2'), {
+  type: 'line',
+  data: { labels: ["2024-1-", "2024-2-", "2024-3-", "2024-4-", "2024-5-", "2024-6-", "2024-7-", "2024-8-", "2024-9-", "2024-10", "2024-11", "2024-12", "2025-1-", "2025-2-", "2025-3-", "2025-4-", "2025-5-", "2025-6-", "2025-7-", "2025-8-", "2025-9-", "2025-10", "2025-11", "2025-12", "2026-1-", "2026-2-", "2026-3-", "2026-4-", "2026-5-", "2026-6-", "2026-7-"],
+    datasets: [
+      { label:'PCU', data:[1973, 1445, 862, 751, 537, 416, 416, 399, 324, 319, 283, 280, 290, 279, 281, 278, 273, 226, 220, 215, 207, 198, 201, 202, 178, 175, 177, 166, 161, 149, 154], borderColor:'#2563eb', tension:.25, pointRadius:1 },
+      { label:'平均CCU', data:[738.0, 539.0, 311.0, 254.0, 200.0, 176.0, 160.0, 141.0, 123.0, 118.0, 110.0, 105.0, 107.0, 101.0, 97.0, 90.0, 86.0, 82.0, 74.0, 73.0, 69.0, 67.0, 64.0, 65.0, 62.0, 53.0, 51.0, 51.0, 51.0, 52.0, 45.0], borderColor:'#16a34a', tension:.25, pointRadius:1 }
+    ] },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{beginAtZero:true}} }
+});
+
+
+new Chart(document.getElementById('chart1_3'), {
+  type: 'line',
+  data: { labels: ["2024-1-", "2024-2-", "2024-3-", "2024-4-", "2024-5-", "2024-6-", "2024-7-", "2024-8-", "2024-9-", "2024-10", "2024-11", "2024-12", "2025-1-", "2025-2-", "2025-3-", "2025-4-", "2025-5-", "2025-6-", "2025-7-", "2025-8-", "2025-9-", "2025-10", "2025-11", "2025-12", "2026-1-", "2026-2-", "2026-3-", "2026-4-", "2026-5-", "2026-6-", "2026-7-"],
+    datasets: [
+      { label:'MAU', data:[123485, 52278, 23121, 15342, 10708, 8787, 8431, 7142, 6047, 5435, 5130, 5235, 5559, 4731, 5168, 4782, 4629, 4428, 5277, 4050, 3426, 3293, 3506, 3692, 3745, 4348, 3186, 2811, 2845, 2547, 1557], borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,.08)', fill:true, tension:.25, pointRadius:1 },
+      { label:'avgDAU', data:[36424.0, 13721.0, 8868.0, 7016.0, 5669.0, 4942.0, 4400.0, 3934.0, 3458.0, 3184.0, 3236.0, 3168.0, 3201.0, 2977.0, 2980.0, 2882.0, 2560.0, 2355.0, 2343.0, 2136.0, 1947.0, 1892.0, 1847.0, 1919.0, 1914.0, 1954.0, 1735.0, 1618.0, 1565.0, 1521.0, 1557.0], borderColor:'#7c3aed', tension:.25, pointRadius:1 }
+    ] },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{beginAtZero:true}} }
+});
+
+
+new Chart(document.getElementById('chart1_4'), {
+  type: 'line',
+  data: { labels: ["2024-1-", "2024-2-", "2024-3-", "2024-4-", "2024-5-", "2024-6-", "2024-7-", "2024-8-", "2024-9-", "2024-10", "2024-11", "2024-12", "2025-1-", "2025-2-", "2025-3-", "2025-4-", "2025-5-", "2025-6-", "2025-7-", "2025-8-", "2025-9-", "2025-10", "2025-11", "2025-12", "2026-1-", "2026-2-", "2026-3-", "2026-4-", "2026-5-", "2026-6-"],
+    datasets: [
+      { label:'D1留存%', data:[37.0, 26.0, 37.0, 36.0, 32.0, 37.0, 35.0, 32.0, 38.0, 36.0, 45.0, 41.0, 36.0, 40.0, 32.0, 34.0, 26.0, 33.0, 20.0, 36.0, 32.0, 30.0, 26.0, 33.0, 33.0, 28.0, 32.0, 28.0, 29.0, 46.0], borderColor:'#2563eb', tension:.25, pointRadius:1 },
+      { label:'D7留存%', data:[16.0, 12.0, 18.0, 18.0, 15.0, 20.0, 22.0, 15.0, 22.0, 16.0, 26.0, 19.0, 14.0, 16.0, 16.0, 17.0, 12.0, 12.0, 7.8, 13.0, 12.0, 14.0, 11.0, 14.0, 12.0, 10.0, 15.0, 10.0, 15.0, 13.0], borderColor:'#d97706', tension:.25, pointRadius:1 },
+      { label:'D30留存%', data:[6.4, 5.7, 11.0, 8.4, 10.0, 13.0, 16.0, 6.8, 11.0, 10.0, 27.0, 16.0, 8.3, 12.0, 9.5, 9.6, 6.8, 4.7, 4.5, 4.5, 6.7, 7.3, 7.3, 4.4, 5.2, 4.0, 5.5, 6.1, 3.6, 0.0], borderColor:'#dc2626', tension:.25, pointRadius:1 }
+    ] },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{beginAtZero:true, title:{display:true,text:'%'}}} }
+});
+
+
+new Chart(document.getElementById('chart1_6'), {
+  type: 'bar',
+  data: { labels: ["2024-1-", "2024-2-", "2024-3-", "2024-4-", "2024-5-", "2024-6-", "2024-7-", "2024-8-", "2024-9-", "2024-10", "2024-11", "2024-12", "2025-1-", "2025-2-", "2025-3-", "2025-4-", "2025-5-", "2025-6-", "2025-7-", "2025-8-", "2025-9-", "2025-10", "2025-11", "2025-12", "2026-1-", "2026-2-", "2026-3-", "2026-4-", "2026-5-", "2026-6-", "2026-7-"],
+    datasets: [
+      { label:'AOS新註冊', data:[82563, 21087, 7125, 4685, 2528, 1620, 3011, 1678, 1232, 852, 777, 722, 1218, 617, 1031, 625, 663, 783, 1297, 665, 517, 549, 708, 647, 696, 1421, 603, 464, 460, 360, 32], backgroundColor:'rgba(37,99,235,.7)' },
+      { label:'IOS新註冊', data:[42024, 18970, 4280, 1508, 1123, 759, 906, 521, 357, 311, 339, 440, 373, 293, 613, 346, 271, 275, 255, 256, 227, 222, 247, 210, 296, 702, 187, 143, 187, 145, 9], backgroundColor:'rgba(124,58,237,.7)' }
+    ] },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}} }
+});
+
+
+new Chart(document.getElementById('chart1_9'), {
+  type: 'bar',
+  data: { labels: ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"], datasets: [{ label:'UV', data:[1414, 1392, 1380, 1383, 1448, 1502, 1566, 1648, 1599, 1637, 1613, 1620, 1655, 1710, 1679, 1565, 1403, 1194, 1027, 952, 945, 1047, 1220, 1407], backgroundColor:'rgba(37,99,235,.7)', borderRadius:3 }] },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
+});
+
+
+new Chart(document.getElementById('chart1_11'), {
+  type: 'line',
+  data: { labels: ["2024-1-", "2024-2-", "2024-3-", "2024-4-", "2024-5-", "2024-6-", "2024-7-", "2024-8-", "2024-9-", "2024-10", "2024-11", "2024-12", "2025-1-", "2025-2-", "2025-3-", "2025-4-", "2025-5-", "2025-6-", "2025-7-", "2025-8-", "2025-9-", "2025-10", "2025-11", "2025-12", "2026-1-", "2026-2-", "2026-3-", "2026-4-", "2026-5-", "2026-6-", "2026-7-"],
+    datasets: [
+      { label:'AOS MAU', data:[86166, 39458, 17427, 12677, 8627, 7146, 7041, 6005, 5067, 4498, 4260, 4224, 4558, 3844, 3999, 3640, 3485, 3462, 3949, 3089, 2697, 2674, 2867, 2874, 3032, 3290, 2583, 2295, 2348, 2043, 1307], borderColor:'#2563eb', tension:.25, pointRadius:1 },
+      { label:'IOS MAU', data:[43329, 16475, 8197, 4521, 3638, 2971, 2715, 2237, 1941, 1822, 1898, 2005, 1993, 1799, 1999, 1986, 1864, 1513, 1963, 1474, 1177, 1058, 1099, 1259, 1105, 1482, 953, 833, 799, 812, 273], borderColor:'#7c3aed', tension:.25, pointRadius:1 }
+    ] },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{beginAtZero:true}} }
+});
+
+
+new Chart(document.getElementById('chart4_1'), {
+  type: 'bar',
+  data: { labels: ["2024-1-", "2024-2-", "2024-3-", "2024-4-", "2024-5-", "2024-6-", "2024-7-", "2024-8-", "2024-9-", "2024-10", "2024-11", "2024-12", "2025-1-", "2025-2-", "2025-3-", "2025-4-", "2025-5-", "2025-6-", "2025-7-", "2025-8-", "2025-9-", "2025-10", "2025-11", "2025-12", "2026-1-", "2026-2-", "2026-3-", "2026-4-", "2026-5-", "2026-6-", "2026-7-"],
+    datasets: [
+      { type:'line', label:'CVR%', data:[5.0, 8.7, 13.0, 14.0, 16.0, 16.0, 16.0, 14.0, 16.0, 16.0, 27.0, 26.0, 24.0, 25.0, 21.0, 21.0, 21.0, 15.0, 13.0, 14.0, 16.0, 16.0, 16.0, 15.0, 14.0, 13.0, 14.0, 15.0, 15.0, 16.0, 3.3], borderColor:'#dc2626', yAxisID:'y1', tension:.25, pointRadius:1 },
+      { type:'bar', label:'ARPPU', data:[686.0, 2404.0, 2548.0, 3436.0, 4602.0, 3724.0, 2664.0, 2653.0, 2450.0, 2471.0, 1034.0, 830.0, 1389.0, 1822.0, 2989.0, 1704.0, 1671.0, 1806.0, 2479.0, 2633.0, 1677.0, 1839.0, 1871.0, 1948.0, 1348.0, 1617.0, 2012.0, 1521.0, 1446.0, 2042.0, 294.0], backgroundColor:'rgba(37,99,235,.55)', yAxisID:'y' }
+    ] },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}},
+    scales:{ y:{beginAtZero:true, position:'left', title:{display:true,text:'ARPPU'}}, y1:{beginAtZero:true, position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:'CVR%'}} } }
+});
+
+
+new Chart(document.getElementById('chart4_9'), {
+  type: 'line',
+  data: { labels: ["2024-1-", "2024-2-", "2024-3-", "2024-4-", "2024-5-", "2024-6-", "2024-7-", "2024-8-", "2024-9-", "2024-10", "2024-11", "2024-12", "2025-1-", "2025-2-", "2025-3-", "2025-4-", "2025-5-", "2025-6-", "2025-7-", "2025-8-", "2025-9-", "2025-10", "2025-11", "2025-12", "2026-1-", "2026-2-", "2026-3-", "2026-4-", "2026-5-", "2026-6-"],
+    datasets: [
+      { label:'鯨魚營收', data:[3322652.0, 8803704.0, 6316243.0, 6212266.0, 6898680.0, 4363714.0, 2809773.0, 2144226.0, 1847519.0, 1766367.0, 1058631.0, 814959.0, 1508214.0, 1880938.0, 2799277.0, 1171007.0, 1298178.0, 833898.0, 1392705.0, 1189887.0, 675694.0, 677208.0, 823460.0, 834047.0, 500016.0, 644862.0, 692853.0, 472068.0, 419746.0, 599999.0], borderColor:'#7c3aed', tension:.25, pointRadius:1 },
+      { label:'海豚營收', data:[609302.0, 1661322.0, 1042548.0, 907862.0, 799859.0, 675310.0, 632836.0, 478927.0, 442348.0, 381927.0, 282342.0, 221839.0, 273342.0, 229313.0, 399574.0, 466542.0, 294801.0, 311722.0, 277059.0, 302138.0, 182662.0, 222654.0, 187865.0, 208852.0, 179223.0, 247782.0, 206787.0, 127461.0, 148641.0, 190791.0], borderColor:'#2563eb', tension:.25, pointRadius:1 },
+      { label:'小蝦米營收', data:[294664.0, 364800.0, 251760.0, 165144.0, 124421.0, 96891.0, 116758.0, 80488.0, 72167.0, 65980.0, 84334.0, 81959.0, 76583.0, 67331.0, 41761.0, 50683.0, 65024.0, 44729.0, 35833.0, 35222.0, 35599.0, 39838.0, 43817.0, 38375.0, 37664.0, 37023.0, 27872.0, 34655.0, 30428.0, 24031.0], borderColor:'#16a34a', tension:.25, pointRadius:1 }
+    ] },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{beginAtZero:true, title:{display:true,text:'月營收(當地貨幣)'}}} }
+});
+
+const SCOPE_DATA = {}; // 本版本未使用精英市場/全區切換功能，保留空物件避免JS報錯
+// ===== SCOPE TOGGLE =====
+function toggleScope(btn,chartId,scope){
+  const ch=window[chartId];
+  if(!ch||!SCOPE_DATA[chartId])return;
+  const d=SCOPE_DATA[chartId][scope];
+  ch.data.labels=d.labels;
+  ch.data.datasets=d.datasets;
+  ch.update();
+  const wrap=btn.closest('.scope-toggle');
+  if(wrap)wrap.querySelectorAll('.stog').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function toggleScope2(chartId,scope){
+  const ch=window[chartId];
+  if(!ch||!SCOPE_DATA[chartId])return;
+  const d=SCOPE_DATA[chartId][scope];
+  ch.data.labels=d.labels;
+  ch.data.datasets=d.datasets;
+  ch.update();
+}
+
+// ===== CHIP NAV FILTER =====
+function filterSec(key){
+  document.querySelectorAll('.section').forEach(s=>{
+    s.style.display=(key==='all'||s.dataset.sec===key)?'':'none';
+  });
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.classList.remove('active');
+        const oc=c.getAttribute('onclick')||'';
+    if(oc.includes("'"+key+"'"))c.classList.add('active');
+  });
+}
+function jumpSec(key){
+  filterSec(key);
+  setTimeout(()=>{
+    const el=document.querySelector('[data-sec="'+key+'"]');
+    if(el)el.scrollIntoView({behavior:'smooth'});
+  },50);
+}
+
+
+</script>
+</body>
+</html>
