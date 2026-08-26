@@ -14,7 +14,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-
 /* ── Header ── */
 .header{
   background:var(--bg2);border-bottom:1px solid var(--border);
@@ -27,14 +26,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 .header-divider{width:1px;height:38px;background:var(--border);flex-shrink:0;margin:0 4px}
 .header-text h1{font-size:18px;font-weight:700;color:var(--text)}
 .header-text p{font-size:12px;color:var(--text2);margin-top:3px}
-
 /* ── Main ── */
 .main{max-width:1100px;margin:0 auto;padding:48px 24px 80px}
 .section-title{
   font-size:12px;font-weight:700;letter-spacing:.8px;
   text-transform:uppercase;color:var(--text2);margin-bottom:20px;
 }
-
 /* ── Game grid ── */
 .game-grid{
   display:grid;
@@ -67,7 +64,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 }
 .game-card.active.selected::before{opacity:1}
 .game-card.inactive{opacity:.5;cursor:default}
-
 .game-icon{
   width:76px;height:76px;border-radius:17px;
   background:var(--bg3);border:1px solid var(--border);
@@ -78,7 +74,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 .game-icon img{width:100%;height:100%;object-fit:cover;display:block}
 .game-name{font-size:17px;font-weight:700;color:var(--text);letter-spacing:.5px}
 .game-sub{font-size:11px;color:var(--text2);min-height:15px;text-align:center}
-
 /* ── Badges ── */
 .badge{
   display:inline-flex;align-items:center;gap:4px;
@@ -87,7 +82,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 }
 .badge-live{background:rgba(22,163,74,.1);color:#15803d;border:1px solid rgba(22,163,74,.25)}
 .badge-soon{background:rgba(217,119,6,.09);color:#b45309;border:1px solid rgba(217,119,6,.25)}
-
 /* ── Report panel (accordion below grid) ── */
 .report-panel{
   margin-top:18px;
@@ -100,7 +94,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
   box-shadow:var(--shadow);
 }
 .report-panel.open{max-height:600px;opacity:1}
-
 .report-panel-inner{padding:22px 26px 24px}
 .report-panel-header{
   display:flex;align-items:center;justify-content:space-between;
@@ -121,7 +114,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
   transition:background .15s,border-color .15s;font-weight:600;
 }
 .rp-close:hover{background:var(--bg3);border-color:#cbd5e1;color:var(--text)}
-
 /* Report list */
 .report-list{display:flex;flex-direction:column;gap:8px}
 .report-item{
@@ -142,15 +134,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
   transition:background .15s;white-space:nowrap;
 }
 .report-item-open:hover{background:#1d4ed8}
-
 .no-reports{color:var(--text2);font-size:13px;padding:4px 0}
-
 /* ── Footer ── */
 .footer{
   text-align:center;padding:28px 24px;
   font-size:12px;color:var(--text2);border-top:1px solid var(--border);
 }
-
 @media(max-width:600px){
   .header{padding:16px 18px 14px;gap:14px}
   .vng-logo .vng{font-size:22px}
@@ -163,7 +152,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 </style>
 </head>
 <body>
-
 <header class="header">
   <div class="vng-logo">
     <span class="vng">VNG</span>
@@ -175,12 +163,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
     <p>Game Operations Analytics Dashboard Hub</p>
   </div>
 </header>
-
 <main class="main">
   <div class="section-title">📊 選擇遊戲查看報告</div>
-
   <div class="game-grid">
-
     <div class="game-card active" onclick="toggleGame('GNO')" id="card-GNO">
       <div class="game-icon">
         <img src="./assets/gno_icon.png" alt="GNO"
@@ -190,7 +175,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
       <div class="game-sub">DDTank TW</div>
       <span class="badge badge-live">● 已上線</span>
     </div>
-
     <div class="game-card active" onclick="toggleGame('MTG')" id="card-MTG">
       <div class="game-icon">
         <img src="./assets/mtg_icon.png" alt="MTG"
@@ -200,17 +184,15 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
       <div class="game-sub">MS 合金彈頭</div>
       <span class="badge badge-live">● 已上線</span>
     </div>
-
-    <div class="game-card inactive">
+    <div class="game-card active" onclick="toggleGame('CSB')" id="card-CSB">
       <div class="game-icon">
         <img src="./assets/csb_icon.png" alt="CSB"
              onerror="this.style.display='none';this.parentNode.innerHTML='CSB'">
       </div>
       <div class="game-name">CSB</div>
-      <div class="game-sub">&nbsp;</div>
-      <span class="badge badge-soon">⏳ 即將上線</span>
+      <div class="game-sub">天上碑M</div>
+      <span class="badge badge-live">● 已上線</span>
     </div>
-
     <div class="game-card active" onclick="toggleGame('COS')" id="card-COS">
       <div class="game-icon">
         <img src="./assets/cos_icon.png" alt="COS"
@@ -220,7 +202,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
       <div class="game-sub">&nbsp;</div>
       <span class="badge badge-live">● 已上線</span>
     </div>
-
     <div class="game-card active" onclick="toggleGame('CS2')" id="card-CS2">
       <div class="game-icon">
         <img src="./assets/cs2_icon.png" alt="CS2"
@@ -230,9 +211,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
       <div class="game-sub">刀劍朝鮮</div>
       <span class="badge badge-live">● 已上線</span>
     </div>
-
   </div>
-
   <!-- Accordion report panel -->
   <div class="report-panel" id="reportPanel">
     <div class="report-panel-inner">
@@ -246,13 +225,10 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
       <div class="report-list" id="reportList"></div>
     </div>
   </div>
-
 </main>
-
 <footer class="footer">
   GSTPE · 台灣遊戲營運數據分析平台 · 僅供內部使用
 </footer>
-
 <script>
 const GAMES = {
   GNO: {
@@ -274,21 +250,21 @@ const GAMES = {
     reports: [
       { date: '2026/07/08', label: 'COS 數據健檢報告 v20', url: './COS/dashboard.html' }
     ]
+  },
+  CSB: {
+    reports: [
+      { date: '2026/08/26', label: '天上碑M 數據戰情室', url: './CSB/dashboard.html' }
+    ]
   }
   // 其他遊戲上線後在此新增
 };
-
 let activeGame = null;
-
 function toggleGame(id) {
   if (activeGame === id) { closePanel(); return; }
   activeGame = id;
-
   document.querySelectorAll('.game-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('card-' + id).classList.add('selected');
-
   document.getElementById('panelTag').textContent = id;
-
   const g = GAMES[id];
   const list = document.getElementById('reportList');
   if (!g || !g.reports.length) {
@@ -307,18 +283,15 @@ function toggleGame(id) {
       </div>`
     ).join('');
   }
-
   const panel = document.getElementById('reportPanel');
   panel.classList.add('open');
   setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
 }
-
 function closePanel() {
   document.getElementById('reportPanel').classList.remove('open');
   document.querySelectorAll('.game-card').forEach(c => c.classList.remove('selected'));
   activeGame = null;
 }
 </script>
-
 </body>
 </html>
