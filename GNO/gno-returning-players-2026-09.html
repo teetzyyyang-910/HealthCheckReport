@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回流玩家表現對照 v4 | 21天對齊版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" onerror="document.write('<script src=\'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js\'>\x3c/script>')"></script>
+<style>
+  :root{
+    --bg:#0B0F1F; --bg-card:#121830; --bg-card2:#1a2242; --line:rgba(255,255,255,.09);
+    --ink:#EDEAE3; --ink-dim:#93a0c9; --ink-dim2:#5b6289;
+    --a:#E8A33D; --a-soft:rgba(232,163,61,.14);
+    --b:#3DDBD9; --b-soft:rgba(61,219,217,.14);
+    --c:#C77DFF; --c-soft:rgba(199,125,255,.14);
+    --good:#6EE7B7; --bad:#F0707A;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; font-size:17.5px; line-height:1.65; -webkit-font-smoothing:antialiased;}
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  a{color:var(--b);}
+
+  .tide-bg{
+    position:fixed; inset:0; z-index:-1; opacity:.5;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(232,163,61,.10), transparent 60%),
+      radial-gradient(ellipse 900px 600px at 100% 10%, rgba(61,219,217,.10), transparent 60%);
+  }
+
+  header.hero{ padding:88px 0 56px; position:relative; }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:.14em;
+    color:var(--ink-dim); text-transform:uppercase; margin:0 0 18px; display:flex; gap:10px; align-items:center;
+  }
+  .eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--b);box-shadow:0 0 0 4px var(--b-soft);}
+  h1.title{ font-family:'Fraunces',serif; font-weight:500; font-size:clamp(38px,5vw,65px); line-height:1.08; margin:0 0 22px; letter-spacing:-.01em; }
+  h1.title em{font-style:italic; color:var(--a); font-weight:400;}
+  .sub{ color:var(--ink-dim); font-size:19px; max-width:680px; margin:0 0 34px;}
+  .period-tags{display:flex; gap:14px; flex-wrap:wrap;}
+  .ptag{ display:flex; align-items:center; gap:9px; padding:9px 16px; border-radius:99px; border:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:15px; background:var(--bg-card); }
+  .dot{width:9px;height:9px;border-radius:50%;}
+  .dot.a{background:var(--a);} .dot.b{background:var(--b);}
+
+  section{padding:64px 0;border-top:1px solid var(--line);}
+  .s-head{display:flex; justify-content:space-between; align-items:baseline; gap:20px; margin-bottom:8px; flex-wrap:wrap;}
+  .s-num{font-family:'JetBrains Mono',monospace; color:var(--ink-dim2); font-size:15px;}
+  h2{font-family:'Fraunces',serif; font-weight:500; font-size:clamp(27px,3vw,36px); margin:0 0 6px;}
+  .s-desc{color:var(--ink-dim); max-width:700px; font-size:17px; margin:0 0 26px;}
+
+  .kpi-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  @media (max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:520px){.kpi-grid{grid-template-columns:1fr;}}
+  .kpi{ background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:22px 20px; }
+  .kpi .label{font-size:14px; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px;}
+  .kpi .rows{display:flex; flex-direction:column; gap:6px; margin-bottom:12px;}
+  .kpi .row{display:flex; align-items:baseline; justify-content:space-between; gap:10px;}
+  .kpi .row .tag{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-dim2);}
+  .kpi .row .val{font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:600;}
+  .kpi .row.a .val{color:var(--a);}
+  .kpi .row.b .val{color:var(--b);}
+  .kpi .delta{ font-family:'JetBrains Mono',monospace; font-size:14px; padding-top:10px; border-top:1px solid var(--line); display:flex; align-items:center; gap:6px; }
+  .delta.up{color:var(--good);} .delta.down{color:var(--bad);}
+  .kpi .foot{font-size:12.5px; color:var(--ink-dim2); margin-top:8px;}
+
+  .card{background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:26px;}
+  .grid-2{display:grid; grid-template-columns:1.3fr 1fr; gap:18px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media (max-width:860px){.grid-2, .grid-3{grid-template-columns:1fr;}}
+  .chart-box{position:relative; height:320px;}
+  .chart-box.short{height:260px;}
+  .chart-box.tall{height:360px;}
+  .legend-row{display:flex; gap:18px; margin-bottom:18px; flex-wrap:wrap;}
+  .legend-item{display:flex; align-items:center; gap:7px; font-size:15px; color:var(--ink-dim); font-family:'JetBrains Mono',monospace;}
+  .legend-sw{width:11px;height:11px;border-radius:3px;}
+
+  .seg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; flex-wrap:wrap;}
+  .seg button{ font-family:'JetBrains Mono',monospace; font-size:14px; padding:8px 14px; background:transparent; color:var(--ink-dim); border:none; cursor:pointer; border-right:1px solid var(--line); }
+  .seg button:last-child{border-right:none;}
+  .seg button.on{background:var(--bg-card2); color:var(--ink);}
+
+  .type-note{display:flex; gap:16px; flex-wrap:wrap; margin-top:18px;}
+  .type-pill{font-size:14px; color:var(--ink-dim); background:var(--bg-card2); border:1px solid var(--line); border-radius:8px; padding:8px 12px; max-width:340px;}
+  .type-pill b{color:var(--ink); font-weight:600;}
+
+  table.dtab{width:100%; border-collapse:collapse; font-size:15.5px;}
+  table.dtab th, table.dtab td{padding:11px 10px; text-align:right; border-bottom:1px solid var(--line);}
+  table.dtab th:first-child, table.dtab td:first-child{text-align:left; color:var(--ink-dim);}
+  table.dtab th{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink-dim2); text-transform:uppercase; letter-spacing:.04em;}
+  table.dtab td{font-family:'JetBrains Mono',monospace;}
+  table.dtab td.a{color:var(--a);} table.dtab td.b{color:var(--b);} table.dtab td.c{color:var(--c);}
+  table.dtab td.dim{color:var(--ink-dim2); font-size:13.5px;}
+
+  .insights{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media (max-width:780px){.insights{grid-template-columns:1fr;}}
+  .insight{background:var(--bg-card); border:1px solid var(--line); border-left:3px solid var(--b); border-radius:8px; padding:18px 20px; font-size:16.5px; color:var(--ink-dim);}
+  .insight b{color:var(--ink); font-weight:600;}
+  .insight .n{color:var(--a);}
+  .insight .m{color:var(--b);}
+  .insight .c{color:var(--c);}
+
+  .nextstep-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media (max-width:780px){.nextstep-grid{grid-template-columns:1fr;}}
+  .nextstep{background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:22px 24px;}
+  .nextstep .basis{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--b); text-transform:uppercase;
+    letter-spacing:.05em; margin-bottom:12px; display:inline-block; background:var(--b-soft);
+    padding:5px 10px; border-radius:6px;
+  }
+  .nextstep .finding{font-size:15.5px; color:var(--ink-dim2); margin-bottom:12px; line-height:1.5;}
+  .nextstep .rec{font-size:16.5px; color:var(--ink-dim); line-height:1.6;}
+  .nextstep .rec b{color:var(--ink); font-weight:600;}
+  .nextstep .rec::before{content:"→ "; color:var(--a); font-weight:700;}
+
+  footer{padding:40px 0 70px; color:var(--ink-dim2); font-size:14px; font-family:'JetBrains Mono',monospace;}
+
+  .caveat{
+    display:flex; gap:12px; align-items:flex-start;
+    background:var(--a-soft); border:1px solid rgba(232,163,61,.35); border-radius:9px;
+    padding:16px 18px; margin:0 0 26px; font-size:15px; color:var(--ink-dim);
+  }
+  .caveat .ic{font-size:16px; line-height:1.4; flex-shrink:0;}
+  .caveat b{color:var(--ink); font-weight:600;}
+  .caveat.small{padding:11px 15px; font-size:13.5px; margin-bottom:0;}
+  .caveat.good{background:var(--b-soft); border-color:rgba(61,219,217,.35);}
+</style>
+</head>
+<body>
+<div class="tide-bg"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">回流玩家 · 區間對照報告 · v5 — D14/D21/D30 資料補齊版（8/25更新）</p>
+    <h1 class="title">同樣21天，<br><em>故事</em>卻不一樣。</h1>
+    <p class="sub">v3之前，7月週年慶只抓了11天資料，跟4月嘉年華的21天視窗長度不同，付費率、留存等指標都被稀釋低估。這一版把7月週年慶延長到跟4月同樣的21天（7/23–8/12），兩區間口徑完全對齊，可以直接比較。新增「同時滾服」行為路徑分析，並拿掉了舊版基於舊B區間資料、現在已經過時的深度追蹤章節。</p>
+    <div class="period-tags">
+      <span class="ptag"><span class="dot a"></span>4月嘉年華 · 2026/04/23 – 05/13（21天）</span>
+      <span class="ptag"><span class="dot b"></span>7月週年慶 · 2026/07/23 – 08/12（21天）</span>
+    </div>
+  </div>
+</header>
+
+<section id="overview">
+  <div class="wrap">
+    <div class="s-head"><h2>總覽：兩區間關鍵指標</h2><span class="s-num">01 — Overview</span></div>
+    <p class="s-desc">「回流玩家」= 玩家類型為「回歸」或「滾服回歸」（不含全新創角的「新角」）。以下數字皆為兩個回流族群的加總表現，本次已用等長21天視窗重新計算。</p>
+    <div class="kpi-grid" id="kpiGrid"></div>
+  </div>
+</section>
+
+<section id="composition">
+  <div class="wrap">
+    <div class="s-head"><h2>玩家組成怎麼變了</h2><span class="s-num">02 — Composition</span></div>
+    <p class="s-desc">三種玩家類型在7月週年慶的量體全面高於4月嘉年華——新角+55.2%、滾服回歸+62.7%，回歸則幾乎持平（+0.03%）。</p>
+    <div class="card">
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>4月嘉年華</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>7月週年慶</span>
+      </div>
+      <div class="chart-box"><canvas id="compChart"></canvas></div>
+    </div>
+    <div class="type-note">
+      <div class="type-pill"><b>回歸</b> — 區間內回來登入，回來前已連續超過14天未登入，登入的是原本舊角色/舊帳號。</div>
+      <div class="type-pill"><b>滾服回歸</b> — 同樣符合回歸的沉寂條件，但選擇跑去新開的服重新創角，而非登回原角色。</div>
+      <div class="type-pill"><b>新角</b> — 區間內全新創角，無沉寂紀錄，作為對照組。</div>
+    </div>
+  </div>
+</section>
+
+<section id="retention">
+  <div class="wrap">
+    <div class="s-head"><h2>留存曲線：D-day 對齊比較</h2><span class="s-num">03 — D-day Retention</span></div>
+    <p class="s-desc">以每位玩家自己的節點日期（回歸節點日期／創角日期）為第0天，只計入「已經過了對應天數、真正能判定」的樣本，兩區間可直接比較同一個D值。</p>
+    <div class="caveat small">
+      <span class="ic">＊</span>
+      <div>【8/25更新】D14/D21已用登入明細重新驗證，覆蓋率分別提升到93~94%、72%；<b>D30首次有真實數字</b>（覆蓋27~42%，仍持續累積）。這次更新解決了原本D21因樣本量太小（僅12~30%）造成的異常低估——例如回歸D21原本只有2.5%，補齊後回到6.9%，跟D14的曲線走勢一致，之前的斷崖是資料未成熟的假象，不是真的留存驟降。另外09章節發現約25~32%的新角/滾服回歸「當天卡在10級」（受眾不匹配，非流程卡點），已用完整樣本重新驗證，下方可切換「排除10級」查看排除這批人後的曲線。</div>
+    </div>
+    <div class="card">
+      <div class="s-head" style="margin-bottom:18px;">
+        <div class="legend-row" style="margin-bottom:0;">
+          <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>4月嘉年華</span>
+          <span class="legend-item"><span class="legend-sw dash" style="background:none;border-top:2px dashed var(--b);width:16px;height:0;"></span>7月週年慶</span>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div class="seg" id="retTypeSeg">
+            <button data-t="回歸" class="on">回歸</button>
+            <button data-t="滾服回歸">滾服回歸</button>
+            <button data-t="新角">新角</button>
+          </div>
+          <div class="seg" id="retExSeg">
+            <button data-ex="all" class="on">全部玩家</button>
+            <button data-ex="ex10">排除10級</button>
+          </div>
+        </div>
+      </div>
+      <div class="chart-box tall"><canvas id="retCurveChart"></canvas></div>
+    </div>
+    <div class="grid-2" style="margin-top:18px;">
+      <div class="card">
+        <table class="dtab" id="retTable"></table>
+      </div>
+      <div class="card" style="display:flex; align-items:center;">
+        <p style="font-size:16px;color:var(--ink-dim);margin:0;" id="retSummaryText">修正未成熟樣本偏誤後，三類玩家在D7、D14的留存其實相當接近，沒有證據顯示留存明顯惡化——回歸D14：8.1%（4月）vs 7.6%（7月）；新角D14：8.8% vs 8.8%；滾服回歸D14：12.7% vs 10.7%。D30目前也有真實數字了：回歸6.9%、新角3.3%、滾服回歸8.0%（7月），跟4月的5.7%/4.5%/5.5%相比，滾服回歸的長期留存反而略優於4月。D7到D14之間留存率明顯陡降，但深挖後發現這比較像是自然衰退曲線的延續，不是特定事件——詳見09章節。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="weekly">
+  <div class="wrap">
+    <div class="s-head"><h2>逐週付費表現</h2><span class="s-num">04 — Weekly Trend</span></div>
+    <p class="s-desc">把21天拆成3週，看付費是集中在第一週衝高、還是分布得比較平均。</p>
+    <div class="card">
+      <div class="s-head" style="margin-bottom:18px;">
+        <div class="legend-row" style="margin-bottom:0;">
+          <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>4月嘉年華</span>
+          <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>7月週年慶</span>
+        </div>
+        <div class="seg" id="weekTypeSeg">
+          <button data-t="回歸" class="on">回歸</button>
+          <button data-t="滾服回歸">滾服回歸</button>
+          <button data-t="新角">新角</button>
+        </div>
+      </div>
+      <div class="chart-box"><canvas id="weeklyChart"></canvas></div>
+    </div>
+    <div class="caveat good" style="margin-top:18px; margin-bottom:0;">
+      <span class="ic">✓</span>
+      <div>本次最大亮點：<b>滾服回歸在7月週年慶的W1單週付費達 $19,329</b>（4月同期只有$1,914），ARPU高達$49.44。回歸玩家則是7月W2才是付費高峰（$6,750），跟4月「W1衝高、之後急墜」的分布模式不同，7月的付費分散在整個21天，不是曇花一現。</div>
+    </div>
+  </div>
+</section>
+
+<section id="payment">
+  <div class="wrap">
+    <div class="s-head"><h2>付費表現：三種類型全面對比</h2><span class="s-num">05 — Monetization</span></div>
+    <p class="s-desc">切換下方指標，觀察付費率、ARPU、ARPPU 在三種玩家類型 × 兩個區間之間的落差。</p>
+    <div class="card">
+      <div class="s-head" style="margin-bottom:18px;">
+        <div class="legend-row" style="margin-bottom:0;">
+          <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>4月嘉年華</span>
+          <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>7月週年慶</span>
+        </div>
+        <div class="seg" id="metricSeg">
+          <button data-m="payer_rate" class="on">付費率</button>
+          <button data-m="arpu">ARPU</button>
+          <button data-m="arppu">ARPPU</button>
+          <button data-m="revenue">總付費額</button>
+        </div>
+      </div>
+      <div class="chart-box"><canvas id="payChart"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section id="concentration">
+  <div class="wrap">
+    <div class="s-head"><h2>付費金額分佈與集中度</h2><span class="s-num">06 — Revenue Concentration</span></div>
+    <p class="s-desc">回流玩家（回歸＋滾服回歸）付費者的金額分佈，以及營收集中在多少人身上。</p>
+    <div class="grid-2">
+      <div class="card">
+        <div class="legend-row">
+          <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>4月嘉年華</span>
+          <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>7月週年慶</span>
+        </div>
+        <div class="chart-box short"><canvas id="revDistChart"></canvas></div>
+      </div>
+      <div class="card" style="display:flex; flex-direction:column; justify-content:center; gap:22px;">
+        <div>
+          <div class="label" style="font-size:14px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">付費集中度（Top 5% 付費者貢獻）</div>
+          <div style="display:flex; align-items:baseline; gap:26px;">
+            <div><span style="font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:600;color:var(--a);">64.3%</span><div style="font-size:13px;color:var(--ink-dim2);font-family:'JetBrains Mono',monospace;">4月嘉年華</div></div>
+            <div><span style="font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:600;color:var(--b);">75.7%</span><div style="font-size:13px;color:var(--ink-dim2);font-family:'JetBrains Mono',monospace;">7月週年慶</div></div>
+          </div>
+        </div>
+        <p style="font-size:16px;color:var(--ink-dim); margin:0;">付費率大幅提升的同時，集中度也同步升高——營收比4月更依賴少數大額付費者，這點在21天等長對齊後依然成立，不是視窗長度造成的假象。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="dormancy">
+  <div class="wrap">
+    <div class="s-head"><h2>沉寂多久才回來？</h2><span class="s-num">07 — Dormancy</span></div>
+    <p class="s-desc">柱狀為回流玩家的沉寂天數分佈（人數），折線為對應族群的查核日活躍率／付費率（輔助指標，非D-day留存）。</p>
+    <div class="card">
+      <div class="s-head" style="margin-bottom:18px;">
+        <div class="legend-row" style="margin-bottom:0;">
+          <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>4月嘉年華 人數</span>
+          <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>7月週年慶 人數</span>
+        </div>
+        <div class="seg" id="dormSeg">
+          <button data-m="active" class="on">查核日活躍率</button>
+          <button data-m="payer">付費率</button>
+        </div>
+      </div>
+      <div class="chart-box"><canvas id="dormChart"></canvas></div>
+    </div>
+    <div class="grid-2" style="margin-top:18px;">
+      <div class="card">
+        <table class="dtab">
+          <thead><tr><th>玩家類型</th><th>4月嘉年華 中位沉寂天數</th><th>7月週年慶 中位沉寂天數</th></tr></thead>
+          <tbody>
+            <tr><td>回歸</td><td class="a">67 天</td><td class="b">150 天</td></tr>
+            <tr><td>滾服回歸</td><td class="a">28 天</td><td class="b">24.5 天</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card" style="display:flex; align-items:center;">
+        <p style="font-size:16px;color:var(--ink-dim);margin:0;">「回歸」玩家在7月週年慶沉寂更久才回來（中位數67→150天），「滾服回歸」則跟4月相近（28→24.5天），這個模式跟舊版分析一致，用等長視窗重算後結論不變。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="concurrent">
+  <div class="wrap">
+    <div class="s-head"><h2>行為路徑驗證：選擇滾服的回歸玩家，付費力更強</h2><span class="s-num">08 — Behavior Path</span></div>
+    <p class="s-desc">新增欄位「同帳號同時有滾服回歸」讓我們第一次能直接驗證：回歸與滾服其實是同一群「有回歸資格」的玩家，只是選擇的行為路徑不同。</p>
+    <div class="grid-2">
+      <div class="card">
+        <div class="legend-row">
+          <span class="legend-item"><span class="legend-sw" style="background:var(--ink-dim2)"></span>僅登回舊角</span>
+          <span class="legend-item"><span class="legend-sw" style="background:var(--c)"></span>同時滾服</span>
+        </div>
+        <div style="display:flex; gap:16px;">
+          <div class="chart-box short" style="flex:1;"><canvas id="concurrentChartArpu"></canvas></div>
+          <div class="chart-box short" style="flex:1;"><canvas id="concurrentChartPayer"></canvas></div>
+        </div>
+      </div>
+      <div class="card" style="display:flex; align-items:center;">
+        <p style="font-size:16px;color:var(--ink-dim);margin:0;">7月週年慶的3,381名回歸玩家中，<b>453人（13.4%）同時也滾服</b>（跑去新開的服重新創角）。這批人的ARPU是<b class="c">$5.61</b>，付費率<b class="c">19.4%</b>；僅登回舊角的回歸玩家ARPU只有$4.21，付費率12.2%。數據支持「行為路徑」假說——回歸玩家的付費潛力其實不差，差別在於「願意去新服重練」的人明顯更捨得付費，值得設計「引導回歸玩家嘗試滾服」的操作。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="earlychurn">
+  <div class="wrap">
+    <div class="s-head"><h2>早期流失歸因：關鍵時刻是「登入隔天」</h2><span class="s-num">09 — Early Attrition</span></div>
+    <p class="s-desc">D7~D14的深挖顯示大部分人早就走了，於是把窗口往前挪到「節點日期~+7天」，追查戰力、道具消耗、付費、強化、活躍天數。答案比預期更早、更集中。</p>
+    <div class="card">
+      <div class="s-head" style="margin-bottom:14px;"><span style="font-family:'Fraunces',serif;font-size:20.5px;">超過一半的人，回來當天登入完就再也沒出現</span></div>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>4月嘉年華</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>7月週年慶</span>
+      </div>
+      <div class="chart-box short"><canvas id="oneDayChart"></canvas></div>
+    </div>
+    <div class="grid-2" style="margin-top:18px;">
+      <div class="card">
+        <table class="dtab" id="participationTable"></table>
+      </div>
+      <div class="card" style="display:flex; align-items:center;">
+        <p style="font-size:16px;color:var(--ink-dim);margin:0;">D1~D7這7天窗口，平均活躍天數只有<b>2天</b>，中位數僅<b>1天</b>——「只活躍1天（回來當天）」的比例，回歸59~63%、新角57~62%、滾服回歸約49~51%。<b>D7~D14看到的陡降，其實只是這個更早、更劇烈的「當天登入完就消失」現象的延遲反映。</b></p>
+      </div>
+    </div>
+    <div class="caveat good" style="margin-top:18px;">
+      <span class="ic">✓</span>
+      <div><b>撐過第一天、有回來的人（約27%）表現依然健康</b>——戰力持續成長（中位數+520~13,361），但上線時長在下降（53~66%的人時長減少），這個模式跟D7~D14看到的一致。有登入的人裡，<b>回歸玩家的參與深度明顯比新角/滾服回歸淺</b>：強化參與率只有29~33%（新角61~66%、滾服回歸74~76%），消耗事件數也最少（214~239次 vs 新角373~422次、滾服回歸681~689次）——回歸玩家比較像是「回來看一眼」，不是「認真回坑」。補齊更多成熟樣本後有個新發現：<b>回歸玩家在7月的D1~D7付費比例來到13.9%</b>（原本估計僅8.7%），比4月的3.0%大幅提升，顯示回歸玩家整體投入深度雖淺，但願意付費的比例其實成長不少。</div>
+    </div>
+    <p style="font-size:16px;color:var(--ink-dim); margin-top:18px;"><b>結論：真正的關鍵時刻是「登入當天 → 隔天」，不是D1~D7整個窗口，更不是D7~D14。</b>絕大多數的流失決定，其實在玩家回來的第一天結束時就已經定型了。撐過去的人本身狀態健康，問題完全集中在「怎麼讓人願意登入第二次」。</p>
+
+    <div class="card" style="margin-top:24px;">
+      <div class="s-head" style="margin-bottom:14px;"><span style="font-family:'Fraunces',serif;font-size:20.5px;">再拆一層：有一群人不是卡關，是根本沒興趣</span></div>
+      <p style="font-size:15px;color:var(--ink-dim); margin:0 0 16px;">追查「當天等級」發現一個明顯的群聚：<b>10級</b>是全體樣本裡最常見的單一等級（11,506筆裡有1,729筆），第二群聚在<b>15級</b>——這正好對應遊戲機制：新手教學跳過會直接跳到15級，10級則是預設起始等級。</p>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-sw" style="background:var(--ink-dim2)"></span>全部玩家</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--bad)"></span>當天卡在10級的人</span>
+      </div>
+      <div class="chart-box short"><canvas id="level10Chart"></canvas></div>
+      <div class="caveat" style="margin-top:18px;">
+        <span class="ic">⚠️</span>
+        <div><b>這不是卡點，是不對TA（受眾不匹配）。</b>這群「當天10級」的玩家連「跳過教學」都沒按——代表他們不是被某個機制卡住出不去，是<b>根本沒有嘗試意願，玩了一下就走了</b>。這批人佔新角25~29%、滾服回歸29~32%，留存幾乎歸零（D14僅0.6~3.7%）。跟前面「當天投入時間預測回訪率」那個劑量反應是同一群人拉低平均值——他們不是「投入不足」，是壓根不想投入。這類流失<b>較難靠優化新手引導解決</b>，比較像是廣告受眾/創意跟遊戲調性不匹配，如果這個比例持續偏高或上升，更該檢視的是導量來源的受眾品質，而不是繼續打磨新手流程。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="baseline">
+  <div class="wrap">
+    <div class="s-head"><h2>驗證兩件事：歷史基準 + 當天體驗</h2><span class="s-num">10 — Baseline & Day-0</span></div>
+    <p class="s-desc">在提出行動建議之前，先確認兩個資深PM視角提出的疑問：這個問題是不是最近才出現的？回來當天到底發生了什麼？</p>
+
+    <div class="card" style="margin-bottom:18px;">
+      <div class="s-head" style="margin-bottom:14px;"><span style="font-family:'Fraunces',serif;font-size:20.5px;">歷史基準：4月/7月的留存率其實完全正常</span></div>
+      <div class="chart-box"><canvas id="histChart"></canvas></div>
+      <p style="font-size:15px;color:var(--ink-dim); margin:16px 0 0;">拉了2022/07~2026/08共50個月的新角D1/D2留存趨勢（現成表`cons_game_new_user_retention_daily`）。排除2022年上線蜜月期，2023年後D1留存大多落在<b>21%~37%</b>之間波動，D2留存<b>15%~34%</b>——4月（D1=31.3%）、7月（D1=31.3%、D2=23.6%）都在這個歷史正常區間內，7月的D2甚至是2026年裡數字較好的月份之一。</p>
+      <div class="caveat small" style="margin-top:16px;">
+        <span class="ic">＊</span>
+        <div>結論：這不是「最近才出問題」，是這款遊戲/這個品類長期以來的正常水位。建議的急迫性框架應調整為「長期存在、值得優化」，不是「異常需要救火」。此趨勢僅涵蓋新角，回歸/滾服回歸目前沒有現成的日粒度歷史留存表，需要原始判定邏輯才能補上。</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="s-head" style="margin-bottom:14px;"><span style="font-family:'Fraunces',serif;font-size:20.5px;">當天體驗：投入程度與隔天回訪的關係</span></div>
+      <div class="grid-2">
+        <div class="chart-box short"><canvas id="doseChart"></canvas></div>
+        <table class="dtab" id="day0Table"></table>
+      </div>
+      <div class="caveat" style="margin-top:18px;">
+        <span class="ic">⚠️</span>
+        <div><b>因果提醒：</b>當天投入時間跟隔天回訪率呈現非常乾淨的正相關（&lt;5分鐘25.9%回來 → 60分鐘+80.6%回來），但這仍可能是「本來就有興趣的人自然玩得久、也自然比較可能回來」，不是「玩得久導致他回來」——跟我們之前提醒PM序號領取率是同一個因果陷阱，不能直接跳到「想辦法讓人多玩15分鐘」的結論，需要用實驗驗證（針對低投入玩家做介入，看能不能真的拉高回訪率）。</div>
+      </div>
+      <p style="font-size:16px;color:var(--ink-dim); margin-top:18px;"><b>意外但重要的發現：回歸玩家當天投入程度全面最低</b>——中位數只有3.6~5.5分鐘，48~58%的人不到5分鐘就走了，明顯低於新角（14~17分鐘）跟滾服回歸（15~16分鐘）。這給了「回歸玩家比較像回來看一眼」一個具體的當天證據，也讓「回歸玩家需要回坑任務」這個建議更站得住腳。</p>
+    </div>
+  </div>
+</section>
+
+<section id="insights">
+  <div class="wrap">
+    <div class="s-head"><h2>關鍵洞察</h2><span class="s-num">11 — Takeaways</span></div>
+    <div class="insights" id="insightGrid"></div>
+  </div>
+</section>
+
+<section id="nextsteps">
+  <div class="wrap">
+    <div class="s-head"><h2>下一步建議</h2><span class="s-num">12 — Next Steps</span></div>
+    <p class="s-desc">把這次的發現轉成具體可以執行的方向。</p>
+    <div class="nextstep-grid">
+
+      <div class="nextstep">
+        <span class="basis">依據 09/10 — 早期流失歸因 + 歷史基準</span>
+        <div class="finding">49~63%的人回來當天登入完就再也沒出現，關鍵時刻是「登入當天→隔天」。歷史基準已驗證：這個水位長期存在（近4年D1多在21~37%波動），不是最近才惡化。</div>
+        <div class="rec">把資源集中在<b>當天體驗跟次日召回</b>：優化回流/新角當天的首次體驗（開場任務、即時獎勵），並在當天結束後安排次日登入提醒或簽到獎勵。因為已確認這是長期結構性問題而非近期異常，<b>建議用實驗方式漸進推進、持續迭代</b>，而不是當成緊急異常用高強度手段速解。</div>
+      </div>
+
+      <div class="nextstep">
+        <span class="basis">依據 09 — 存活者觀察</span>
+        <div class="finding">撐過第一天的玩家（約27%）戰力持續成長、狀態健康，但每日上線時長逐步下滑，且回歸玩家的強化/消耗參與深度明顯比新角、滾服回歸淺。</div>
+        <div class="rec">對這群「已經留下來」的人，重點不是拉回來，而是<b>延緩淡出</b>：用縮短的每日流程設計（例如精簡版每日任務、離線掛機收益）承接下降的上線時長，並針對回歸玩家較淺的強化/消耗深度，設計「回坑任務鏈」引導他們更深入既有系統，而不是預設他們會像新角一樣自然摸索進去。</div>
+      </div>
+
+      <div class="nextstep">
+        <span class="basis">依據 08 — 行為路徑驗證</span>
+        <div class="finding">同時滾服的回歸玩家ARPU $5.61、付費率19.4%，明顯優於僅登回舊角的$4.21、12.2%。</div>
+        <div class="rec">針對符合回歸資格的玩家，<b>設計「試試新服」的引導活動</b>（例如新服限定禮包、跨服排行榜曝光），觀察能不能提高「選擇滾服」的比例，藉此拉高整體回歸玩家的付費表現。</div>
+      </div>
+
+      <div class="nextstep">
+        <span class="basis">依據 06 — 付費集中度</span>
+        <div class="finding">付費集中度從64.3%上升到75.7%——用等長視窗重算後，集中度上升的趨勢比之前看到的更明顯。</div>
+        <div class="rec">規劃<b>中量級付費者的升級路徑</b>（進階任務、專屬福利），避免營收過度依賴少數大戶，這個建議在等長對齊後更加需要正視。</div>
+      </div>
+
+      <div class="nextstep">
+        <span class="basis">依據 04 — 逐週付費表現</span>
+        <div class="finding">滾服回歸的W1付費暴衝到$19,329（ARPU $49.44），是否曇花一現還是能延續，目前只看得到21天內的數據。</div>
+        <div class="rec">持續追蹤這批W1高付費滾服玩家在<b>21天之後</b>的長期表現（次月留存、複購率），確認這波成長是真實的付費力提升，而非單次活動衝量。</div>
+      </div>
+
+      <div class="nextstep">
+        <span class="basis">依據 09 — 受眾不匹配（10級無跳過）</span>
+        <div class="finding">25~32%的新角/滾服回歸「當天卡在10級」，連跳過教學都沒按，留存幾乎歸零——這不是流程卡關，是玩了一下不喜歡就走。</div>
+        <div class="rec">不要用優化新手引導的方式處理這群人，<b>方向應轉向導量端</b>：檢視這批人的廣告素材/受眾標籤跟其他人是否不同，如果佔比持續偏高或上升，代表可能買到了跟遊戲調性不合的受眾，該調整的是投放策略，不是遊戲內流程。評估報告指標時也建議把這群人獨立拆出來看，避免拉低「真正有嘗試意願」族群的留存表現。</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">資料來源：0423-0513.xlsx（4月嘉年華，5,782 筆，21天）／ 814_GNO回流名單.xlsx（7月週年慶，7,142 筆，21天，2026/08/14截止）· 7月週年慶的D14/D21/D30已於2026/08/25用etl_ingame_login_logout重新驗證補齊（D30首次有真實數字，覆蓋27~42%，仍持續累積）· 09章節D1~D7/D7~D14的行為分析及「排除10級」比較均已同步補齊新增可判定樣本（7月當天等級資料達100%覆蓋）· 回流玩家 = 回歸 + 滾服回歸 · D-day 留存以「回歸節點日期／創角日期」為基準，僅納入已滿對應天數的樣本 · composition/付費/D7以前的留存數字已與同事之Word報告交叉驗證數字一致 · 舊版（v3）的深度行為快照章節（終身價值/流失前快照/二次流失）因B區間名單已更新而暫時下架，待重新查詢後補上</div>
+</footer>
+
+<script>
+const DATA = {
+  A:{
+    label:"4月嘉年華 2026/04/23-05/13",
+    by_type:{
+      "回歸":{count:3380, revenue:11544.5, arpu:3.4155, payer_rate:3.08, arppu:111.01,
+        dret:{"1":{rate:23.25,n_eligible:3380,n_total:3380},"3":{rate:16.51,n_eligible:3380,n_total:3380},"5":{rate:14.05,n_eligible:3380,n_total:3380},"7":{rate:12.25,n_eligible:3380,n_total:3380},"14":{rate:8.08,n_eligible:3380,n_total:3380},"21":{rate:7.07,n_eligible:3380,n_total:3380},"30":{rate:5.68,n_eligible:3380,n_total:3380}}},
+      "滾服回歸":{count:434, revenue:2899.4, arpu:6.6806, payer_rate:14.75, arppu:45.30,
+        dret:{"1":{rate:34.33,n_eligible:434,n_total:434},"3":{rate:23.27,n_eligible:434,n_total:434},"5":{rate:20.74,n_eligible:434,n_total:434},"7":{rate:20.05,n_eligible:434,n_total:434},"14":{rate:12.67,n_eligible:434,n_total:434},"21":{rate:9.22,n_eligible:434,n_total:434},"30":{rate:5.53,n_eligible:434,n_total:434}}},
+      "新角":{count:1968, revenue:6600.2, arpu:3.3537, payer_rate:10.62, arppu:31.58,
+        dret:{"1":{rate:34.91,n_eligible:1968,n_total:1968},"3":{rate:18.04,n_eligible:1968,n_total:1968},"5":{rate:13.62,n_eligible:1968,n_total:1968},"7":{rate:12.04,n_eligible:1968,n_total:1968},"14":{rate:8.79,n_eligible:1968,n_total:1968},"21":{rate:6.71,n_eligible:1968,n_total:1968},"30":{rate:4.52,n_eligible:1968,n_total:1968}}}
+    },
+    away_dist:{"<30天":688,"30-60天":855,"60-90天":725,"90-180天":382,"180-365天":496,">365天":667},
+    away_active:{"<30天":13.08,"30-60天":10.88,"60-90天":6.62,"90-180天":13.61,"180-365天":14.11,">365天":18.14},
+    away_payer:{"<30天":7.41,"30-60天":1.99,"60-90天":1.38,"90-180天":3.66,"180-365天":3.83,">365天":8.55},
+    rev_dist:{"0-1":51,"1-10":45,"10-50":30,"50-100":16,"100-500":20,"500-1000":4,"1000+":2},
+    returning:{total:3814, revenue:14443.91, payer_rate:4.40}
+  },
+  B:{
+    label:"7月週年慶 2026/07/23-08/12",
+    by_type:{
+      "回歸":{count:3381, revenue:14859.7, arpu:4.3951, payer_rate:13.16, arppu:33.39,
+        dret:{"1":{rate:23.72,n_eligible:3385,n_total:3385},"3":{rate:17.28,n_eligible:3385,n_total:3385},"5":{rate:12.08,n_eligible:3385,n_total:3385},"7":{rate:11.7,n_eligible:3385,n_total:3385},"14":{rate:7.62,n_eligible:3162,n_total:3385},"21":{rate:6.92,n_eligible:2413,n_total:3385},"30":{rate:6.88,n_eligible:1162,n_total:3385}}},
+      "滾服回歸":{count:706, revenue:20082.4, arpu:28.4453, payer_rate:21.39, arppu:133.00,
+        dret:{"1":{rate:35.31,n_eligible:708,n_total:708},"3":{rate:21.47,n_eligible:708,n_total:708},"5":{rate:17.66,n_eligible:708,n_total:708},"7":{rate:14.55,n_eligible:708,n_total:708},"14":{rate:10.65,n_eligible:657,n_total:708},"21":{rate:8.48,n_eligible:519,n_total:708},"30":{rate:8.03,n_eligible:299,n_total:708}}},
+      "新角":{count:3055, revenue:15662.9, arpu:5.1270, payer_rate:13.85, arppu:37.03,
+        dret:{"1":{rate:29.59,n_eligible:3055,n_total:3055},"3":{rate:20.79,n_eligible:3055,n_total:3055},"5":{rate:15.94,n_eligible:3055,n_total:3055},"7":{rate:13.49,n_eligible:3055,n_total:3055},"14":{rate:8.81,n_eligible:2884,n_total:3055},"21":{rate:7.28,n_eligible:2199,n_total:3055},"30":{rate:3.25,n_eligible:831,n_total:3055}}}
+    },
+    away_dist:{"<30天":846,"30-60天":716,"60-90天":288,"90-180天":457,"180-365天":588,">365天":1192},
+    away_active:{"<30天":20.57,"30-60天":19.13,"60-90天":14.58,"90-180天":22.10,"180-365天":18.20,">365天":14.26},
+    away_payer:{"<30天":13.83,"30-60天":10.06,"60-90天":12.50,"90-180天":24.73,"180-365天":17.01,">365天":13.26},
+    rev_dist:{"0-1":107,"1-10":300,"10-50":121,"50-100":24,"100-500":34,"500-1000":5,"1000+":5},
+    returning:{total:4087, revenue:34942.1, payer_rate:14.58}
+  }
+};
+
+const WEEKLY = {
+  A:{ "回歸":{W1:{n:1918,revenue:9300.9,arpu:4.85},W2:{n:814,revenue:1342.8,arpu:1.65},W3:{n:648,revenue:900.9,arpu:1.39}},
+      "滾服回歸":{W1:{n:188,revenue:1913.6,arpu:10.18},W2:{n:131,revenue:954.0,arpu:7.28},W3:{n:113,revenue:31.8,arpu:0.28}},
+      "新角":{W1:{n:756,revenue:3038.8,arpu:4.02},W2:{n:614,revenue:3100.8,arpu:5.05},W3:{n:598,revenue:460.6,arpu:0.77}} },
+  B:{ "回歸":{W1:{n:1685,revenue:5587.4,arpu:3.32},W2:{n:832,revenue:6749.6,arpu:8.11},W3:{n:864,revenue:2522.6,arpu:2.92}},
+      "滾服回歸":{W1:{n:391,revenue:19329.3,arpu:49.44},W2:{n:133,revenue:576.1,arpu:4.33},W3:{n:181,revenue:177.0,arpu:0.98}},
+      "新角":{W1:{n:1303,revenue:11439.1,arpu:8.78},W2:{n:1009,revenue:2835.4,arpu:2.81},W3:{n:743,revenue:1388.4,arpu:1.87}} }
+};
+
+const CONCURRENT_ROLL = {
+  "否":{n:2928, arpu:4.21, payer_rate:12.19},
+  "是":{n:453, arpu:5.61, payer_rate:19.43}
+};
+
+// 留存資料：全部 vs 排除當天10級（見03/09章節）
+const RET_EX10 = {
+  A:{
+    "回歸":{all:{"1":{rate:23.29,n_eligible:3384,n_total:3384},"3":{rate:16.55,n_eligible:3384,n_total:3384},"5":{rate:14.1,n_eligible:3384,n_total:3384},"7":{rate:12.23,n_eligible:3384,n_total:3384},"14":{rate:8.07,n_eligible:3384,n_total:3384},"21":{rate:7.06,n_eligible:3384,n_total:3384},"30":{rate:5.67,n_eligible:3384,n_total:3384}},
+              ex10:{"1":{rate:24.12,n_eligible:3238,n_total:3238},"3":{rate:17.02,n_eligible:3238,n_total:3238},"5":{rate:14.55,n_eligible:3238,n_total:3238},"7":{rate:12.63,n_eligible:3238,n_total:3238},"14":{rate:8.4,n_eligible:3238,n_total:3238},"21":{rate:7.38,n_eligible:3238,n_total:3238},"30":{rate:5.9,n_eligible:3238,n_total:3238}}},
+    "滾服回歸":{all:{"1":{rate:34.02,n_eligible:438,n_total:438},"3":{rate:23.06,n_eligible:438,n_total:438},"5":{rate:20.55,n_eligible:438,n_total:438},"7":{rate:19.86,n_eligible:438,n_total:438},"14":{rate:12.56,n_eligible:438,n_total:438},"21":{rate:9.13,n_eligible:438,n_total:438},"30":{rate:5.48,n_eligible:438,n_total:438}},
+                 ex10:{"1":{rate:41.94,n_eligible:310,n_total:310},"3":{rate:27.42,n_eligible:310,n_total:310},"5":{rate:23.55,n_eligible:310,n_total:310},"7":{rate:23.87,n_eligible:310,n_total:310},"14":{rate:16.45,n_eligible:310,n_total:310},"21":{rate:11.29,n_eligible:310,n_total:310},"30":{rate:6.77,n_eligible:310,n_total:310}}},
+    "新角":{all:{"1":{rate:34.91,n_eligible:1968,n_total:1968},"3":{rate:18.04,n_eligible:1968,n_total:1968},"5":{rate:13.62,n_eligible:1968,n_total:1968},"7":{rate:12.04,n_eligible:1968,n_total:1968},"14":{rate:8.79,n_eligible:1968,n_total:1968},"21":{rate:6.71,n_eligible:1968,n_total:1968},"30":{rate:4.52,n_eligible:1968,n_total:1968}},
+            ex10:{"1":{rate:41.37,n_eligible:1484,n_total:1484},"3":{rate:22.3,n_eligible:1484,n_total:1484},"5":{rate:16.78,n_eligible:1484,n_total:1484},"7":{rate:15.03,n_eligible:1484,n_total:1484},"14":{rate:10.51,n_eligible:1484,n_total:1484},"21":{rate:7.88,n_eligible:1484,n_total:1484},"30":{rate:5.19,n_eligible:1484,n_total:1484}}}
+  },
+  B:{
+    "回歸":{all:{"1":{rate:23.72,n_eligible:3385,n_total:3385},"3":{rate:17.28,n_eligible:3385,n_total:3385},"5":{rate:12.08,n_eligible:3385,n_total:3385},"7":{rate:11.7,n_eligible:3385,n_total:3385},"14":{rate:7.62,n_eligible:3162,n_total:3385},"21":{rate:6.92,n_eligible:2413,n_total:3385},"30":{rate:6.88,n_eligible:1162,n_total:3385}},
+              ex10:{"1":{rate:24.63,n_eligible:3199,n_total:3199},"3":{rate:18.22,n_eligible:3199,n_total:3199},"5":{rate:12.72,n_eligible:3199,n_total:3199},"7":{rate:12.25,n_eligible:3199,n_total:3199},"14":{rate:8.01,n_eligible:2998,n_total:3199},"21":{rate:7.2,n_eligible:2304,n_total:3199},"30":{rate:7.1,n_eligible:1113,n_total:3199}}},
+    "滾服回歸":{all:{"1":{rate:35.31,n_eligible:708,n_total:708},"3":{rate:21.47,n_eligible:708,n_total:708},"5":{rate:17.66,n_eligible:708,n_total:708},"7":{rate:14.55,n_eligible:708,n_total:708},"14":{rate:10.65,n_eligible:657,n_total:708},"21":{rate:8.48,n_eligible:519,n_total:708},"30":{rate:8.03,n_eligible:299,n_total:708}},
+                 ex10:{"1":{rate:45.32,n_eligible:481,n_total:481},"3":{rate:25.36,n_eligible:481,n_total:481},"5":{rate:22.04,n_eligible:481,n_total:481},"7":{rate:19.33,n_eligible:481,n_total:481},"14":{rate:13.49,n_eligible:467,n_total:481},"21":{rate:10.28,n_eligible:399,n_total:481},"30":{rate:8.7,n_eligible:253,n_total:481}}},
+    "新角":{all:{"1":{rate:29.59,n_eligible:3055,n_total:3055},"3":{rate:20.79,n_eligible:3055,n_total:3055},"5":{rate:15.94,n_eligible:3055,n_total:3055},"7":{rate:13.49,n_eligible:3055,n_total:3055},"14":{rate:8.81,n_eligible:2884,n_total:3055},"21":{rate:7.28,n_eligible:2199,n_total:3055},"30":{rate:3.25,n_eligible:831,n_total:3055}},
+            ex10:{"1":{rate:38.34,n_eligible:2170,n_total:2170},"3":{rate:25.99,n_eligible:2170,n_total:2170},"5":{rate:21.43,n_eligible:2170,n_total:2170},"7":{rate:17.56,n_eligible:2170,n_total:2170},"14":{rate:11.67,n_eligible:2073,n_total:2170},"21":{rate:9.65,n_eligible:1575,n_total:2170},"30":{rate:4.15,n_eligible:602,n_total:2170}}}
+  }
+};
+
+// 歷史D1/D2留存趨勢（新角，來源：cons_game_new_user_retention_daily，2022-07~2026-08）
+const HIST_MONTHS = ["2022-07","2022-08","2022-09","2022-10","2022-11","2022-12","2023-01","2023-02","2023-03","2023-04","2023-05","2023-06","2023-07","2023-08","2023-09","2023-10","2023-11","2023-12","2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08"];
+const HIST_D1 = [45.3,30.1,26.8,28.2,37.5,40.5,30.0,28.8,28.1,29.4,31.6,28.8,26.7,23.2,27.8,24.4,29.3,27.7,26.6,22.7,21.4,22.9,25.8,23.9,27.8,30.5,30.6,32.4,28.3,25.9,24.6,27.1,31.3,33.2,35.7,37.4,36.9,36.6,36.0,35.4,34.0,33.6,33.6,30.4,33.8,31.3,29.8,28.5,31.3,28.6];
+const HIST_D2 = [34.2,20.9,17.7,19.2,25.8,27.8,20.0,18.6,18.6,19.9,21.2,19.9,17.6,15.6,18.9,16.4,19.8,19.7,17.0,15.2,14.8,15.7,18.4,16.7,20.0,21.2,20.5,23.4,19.5,16.5,15.6,17.5,21.5,22.3,25.8,28.3,27.1,27.3,25.7,26.3,24.0,24.9,23.4,22.7,23.2,22.0,20.4,21.7,23.6,19.9];
+const HIGHLIGHT_MONTHS = ["2026-04","2026-07"];
+
+// Day0(回來/創角當天)投入程度 vs 隔天有沒有回來（dose-response）
+const DOSE_PLAYTIME = {labels:['<5分','5-15分','15-30分','30-60分','60分+'], values:[25.9,32.6,43.3,59.7,80.6]};
+const DAY0_BY_TYPE = {
+  "回歸":{A:{sessions:1.71, playtime:17.35, median:3.62, under5:57.66}, B:{sessions:2.06, playtime:18.65, median:5.45, under5:48.21}},
+  "新角":{A:{sessions:2.78, playtime:36.96, median:16.87, under5:24.95}, B:{sessions:2.74, playtime:37.12, median:13.68, under5:28.91}},
+  "滾服回歸":{A:{sessions:3.02, playtime:45.40, median:16.16, under5:28.94}, B:{sessions:4.01, playtime:48.36, median:14.89, under5:25.91}}
+};
+
+// 當天等級10（非TA/不感興趣）分析
+const LEVEL10 = {
+  pct_of_type: {"回歸":{A:4.3,B:5.5}, "新角":{A:24.6,B:29.0}, "滾服回歸":{A:29.2,B:32.1}},
+  retention_all: {
+    "回歸":{A:{d1:23.3,d7:12.2,d14:8.1}, B:{d1:23.7,d7:11.7,d14:7.6}},
+    "新角":{A:{d1:34.9,d7:12.0,d14:8.8}, B:{d1:29.6,d7:13.5,d14:8.8}},
+    "滾服回歸":{A:{d1:34.0,d7:19.9,d14:12.6}, B:{d1:35.3,d7:14.6,d14:10.7}}
+  },
+  retention_level10: {
+    "回歸":{A:{d1:4.8,d7:3.4,d14:0.7}, B:{d1:8.1,d7:2.2,d14:0.6}},
+    "新角":{A:{d1:15.1,d7:2.9,d14:3.5}, B:{d1:8.1,d7:3.5,d14:1.5}},
+    "滾服回歸":{A:{d1:14.8,d7:10.2,d14:3.1}, B:{d1:14.1,d7:4.4,d14:3.7}}
+  }
+};
+
+// D1~D7 早期流失歸因（見09章節）
+const D1D7 = {
+  oneDayOnly: {
+    "回歸":{A:59.3, B:62.9}, "新角":{A:56.9, B:62.0}, "滾服回歸":{A:50.5, B:48.8}
+  },
+  participation: {
+    "回歸":{A:{payer:2.96, enhance:28.60, consume:86.0, consume_events:239.0}, B:{payer:13.91, enhance:33.21, consume:77.5, consume_events:213.6}},
+    "新角":{A:{payer:10.52, enhance:65.80, consume:73.4, consume_events:372.5}, B:{payer:12.18, enhance:60.95, consume:68.2, consume_events:422.1}},
+    "滾服回歸":{A:{payer:15.28, enhance:73.61, consume:77.8, consume_events:689.1}, B:{payer:19.15, enhance:74.61, consume:81.3, consume_events:680.8}}
+  }
+};
+
+const COLOR_A = "#E8A33D", COLOR_B = "#3DDBD9", COLOR_C = "#C77DFF", INK_DIM = "#93a0c9", LINE = "rgba(255,255,255,.08)";
+
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.color = INK_DIM;
+Chart.defaults.font.size = 12.5;
+
+function fmt(n, d=1){ return Number(n).toLocaleString('en-US',{maximumFractionDigits:d, minimumFractionDigits:0}); }
+function pct(n){ return n.toFixed(1)+'%'; }
+function usd(n){ return '$'+Number(n).toLocaleString('en-US',{maximumFractionDigits:0}); }
+
+/* ---------------- KPI cards ---------------- */
+function deltaSpan(a,b,higherIsBetter=true){
+  const d = b - a;
+  const pctChange = a !== 0 ? (d/a*100) : 0;
+  const up = d >= 0;
+  const good = higherIsBetter ? up : !up;
+  const arrow = up ? '▲' : '▼';
+  return `<div class="delta ${good ? 'up':'down'}">${arrow} ${pctChange>=0?'+':''}${pctChange.toFixed(1)}% vs 4月嘉年華</div>`;
+}
+const d7A = DATA.A.by_type["回歸"].dret["7"], d7B = DATA.B.by_type["回歸"].dret["7"];
+const kpis = [
+  {label:'回流玩家總數', a:DATA.A.returning.total, b:DATA.B.returning.total, f:v=>fmt(v,0), better:null},
+  {label:'回流玩家總付費', a:DATA.A.returning.revenue, b:DATA.B.returning.revenue, f:v=>usd(v), better:true},
+  {label:'回歸玩家 D7 留存率', a:d7A.rate, b:d7B.rate, f:v=>pct(v), better:true,
+    foot:`4月n=${d7A.n_eligible}/${d7A.n_total} · 7月n=${d7B.n_eligible}/${d7B.n_total}（${Math.round(d7B.n_eligible/d7B.n_total*100)}%可驗證）`},
+  {label:'回流玩家付費率', a:DATA.A.returning.payer_rate, b:DATA.B.returning.payer_rate, f:v=>pct(v), better:true},
+];
+document.getElementById('kpiGrid').innerHTML = kpis.map(k=>`
+  <div class="kpi">
+    <div class="label">${k.label}</div>
+    <div class="rows">
+      <div class="row a"><span class="tag">4月嘉年華</span><span class="val">${k.f(k.a)}</span></div>
+      <div class="row b"><span class="tag">7月週年慶</span><span class="val">${k.f(k.b)}</span></div>
+    </div>
+    ${k.better===null? '' : deltaSpan(k.a,k.b,k.better)}
+    ${k.foot? `<div class="foot">${k.foot}</div>` : ''}
+  </div>
+`).join('');
+
+/* ---------------- Composition chart ---------------- */
+const types = ['回歸','滾服回歸','新角'];
+new Chart(document.getElementById('compChart'), {
+  type:'bar',
+  data:{ labels:types, datasets:[
+    {label:'4月嘉年華', data:types.map(t=>DATA.A.by_type[t].count), backgroundColor:COLOR_A, borderRadius:4, maxBarThickness:56},
+    {label:'7月週年慶', data:types.map(t=>DATA.B.by_type[t].count), backgroundColor:COLOR_B, borderRadius:4, maxBarThickness:56},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fmt(c.raw,0)} 人`}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:14}}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>fmt(v,0)}} }
+  }
+});
+
+/* ---------------- Retention curve chart ---------------- */
+const dLevels = ['1','3','5','7','14','21','30'];
+const dLabelMap = {'1':'D1','3':'D3','5':'D5','7':'D7','14':'D14','21':'D21','30':'D30'};
+function buildRetSeries(period, typeKey, exKey){ return dLevels.map(d => RET_EX10[period][typeKey][exKey][d] ? RET_EX10[period][typeKey][exKey][d].rate : null); }
+
+let currentRetType = '回歸';
+let currentRetEx = 'all';
+let retCurveChart = new Chart(document.getElementById('retCurveChart'), {
+  type:'line',
+  data:{ labels: dLevels.map(d=>dLabelMap[d]), datasets:[
+    {label:'4月嘉年華', data:buildRetSeries('A',currentRetType,currentRetEx), borderColor:COLOR_A, backgroundColor:COLOR_A, tension:.3, pointRadius:5, pointBackgroundColor:COLOR_A, borderWidth:2.5, spanGaps:true},
+    {label:'7月週年慶', data:buildRetSeries('B',currentRetType,currentRetEx), borderColor:COLOR_B, backgroundColor:COLOR_B, tension:.3, pointRadius:5, pointBackgroundColor:COLOR_B, borderWidth:2.5, borderDash:[6,5], spanGaps:false},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:false},
+      tooltip:{callbacks:{ label:c=>{
+        const meta = RET_EX10[c.dataset.label==='4月嘉年華'?'A':'B'][currentRetType][currentRetEx][dLevels[c.dataIndex]];
+        if(!meta) return ` ${c.dataset.label}: 尚無資料`;
+        return ` ${c.dataset.label}: ${meta.rate}%（n=${meta.n_eligible}/${meta.n_total}）`;
+      }}}
+    },
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:14}}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+  }
+});
+function renderRetTable(typeKey, exKey){
+  const rows = dLevels.map(d=>{
+    const a = RET_EX10.A[typeKey][exKey][d]; const b = RET_EX10.B[typeKey][exKey][d];
+    return `<tr><td>${dLabelMap[d]}</td>
+      <td class="a">${a?a.rate+'%':'—'}</td><td class="dim">${a?`n=${a.n_eligible}/${a.n_total}`:''}</td>
+      <td class="b">${b?b.rate+'%':'尚無資料'}</td><td class="dim">${b?`n=${b.n_eligible}/${b.n_total}`:'需等待更多天數'}</td></tr>`;
+  }).join('');
+  document.getElementById('retTable').innerHTML = `<thead><tr><th>天數</th><th>4月留存</th><th>覆蓋</th><th>7月留存</th><th>覆蓋</th></tr></thead><tbody>${rows}</tbody>`;
+}
+function updateRetSummaryText(exKey){
+  const txt = exKey === 'all'
+    ? '修正未成熟樣本偏誤後，三類玩家在D7、D14的留存其實相當接近，沒有證據顯示留存明顯惡化——回歸D14：8.1%（4月）vs 7.6%（7月）；新角D14：8.8% vs 8.8%；滾服回歸D14：12.7% vs 10.7%。D30目前也有真實數字了：回歸6.9%、新角3.3%、滾服回歸8.0%（7月），跟4月的5.7%/4.5%/5.5%相比，滾服回歸的長期留存反而略優於4月。D7到D14之間留存率明顯陡降，但深挖後發現這比較像是自然衰退曲線的延續，不是特定事件——詳見09章節。'
+    : '排除「當天卡在10級」（受眾不匹配，非流程卡點）的樣本後，留存率全面提升，尤其新角跟滾服回歸最明顯：新角D7從13.5%升到17.6%，滾服回歸D7從14.6%升到19.3%。回歸玩家因為當天10級的佔比本來就小（僅4.3~5.5%），提升幅度較有限（D7 11.7%→12.3%）。D30排除後同樣更好：新角3.3%→4.2%、滾服回歸8.0%→8.7%、回歸6.9%→7.1%。這代表「真正有嘗試意願」的玩家，留存表現其實比全體平均數字更好。';
+  document.getElementById('retSummaryText').innerHTML = txt;
+}
+renderRetTable(currentRetType, currentRetEx);
+document.getElementById('retTypeSeg').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#retTypeSeg button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  currentRetType = btn.dataset.t;
+  retCurveChart.data.datasets[0].data = buildRetSeries('A', currentRetType, currentRetEx);
+  retCurveChart.data.datasets[1].data = buildRetSeries('B', currentRetType, currentRetEx);
+  retCurveChart.update();
+  renderRetTable(currentRetType, currentRetEx);
+});
+document.getElementById('retExSeg').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#retExSeg button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  currentRetEx = btn.dataset.ex;
+  retCurveChart.data.datasets[0].data = buildRetSeries('A', currentRetType, currentRetEx);
+  retCurveChart.data.datasets[1].data = buildRetSeries('B', currentRetType, currentRetEx);
+  retCurveChart.update();
+  renderRetTable(currentRetType, currentRetEx);
+  updateRetSummaryText(currentRetEx);
+});
+
+/* ---------------- Weekly chart ---------------- */
+let currentWeekType = '回歸';
+let weeklyChart = new Chart(document.getElementById('weeklyChart'), {
+  data:{ labels:['W1','W2','W3'], datasets:[
+    {type:'bar', label:'4月人數', data:['W1','W2','W3'].map(w=>WEEKLY.A[currentWeekType][w].n), backgroundColor:'rgba(232,163,61,.35)', borderRadius:4, maxBarThickness:40, yAxisID:'y'},
+    {type:'bar', label:'7月人數', data:['W1','W2','W3'].map(w=>WEEKLY.B[currentWeekType][w].n), backgroundColor:'rgba(61,219,217,.35)', borderRadius:4, maxBarThickness:40, yAxisID:'y'},
+    {type:'line', label:'4月ARPU', data:['W1','W2','W3'].map(w=>WEEKLY.A[currentWeekType][w].arpu), borderColor:COLOR_A, backgroundColor:COLOR_A, tension:.3, pointRadius:5, yAxisID:'y1'},
+    {type:'line', label:'7月ARPU', data:['W1','W2','W3'].map(w=>WEEKLY.B[currentWeekType][w].arpu), borderColor:COLOR_B, backgroundColor:COLOR_B, tension:.3, pointRadius:5, yAxisID:'y1'},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=> c.dataset.type==='line' ? ` ${c.dataset.label}: $${c.raw}` : ` ${c.dataset.label}: ${fmt(c.raw,0)}人`}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:14}}},
+             y:{position:'left', grid:{color:LINE}, ticks:{callback:v=>fmt(v,0)}, title:{display:true,text:'人數',color:INK_DIM}},
+             y1:{position:'right', grid:{display:false}, ticks:{callback:v=>'$'+v}, title:{display:true,text:'ARPU',color:INK_DIM}} }
+  }
+});
+document.getElementById('weekTypeSeg').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#weekTypeSeg button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  currentWeekType = btn.dataset.t;
+  weeklyChart.data.datasets[0].data = ['W1','W2','W3'].map(w=>WEEKLY.A[currentWeekType][w].n);
+  weeklyChart.data.datasets[1].data = ['W1','W2','W3'].map(w=>WEEKLY.B[currentWeekType][w].n);
+  weeklyChart.data.datasets[2].data = ['W1','W2','W3'].map(w=>WEEKLY.A[currentWeekType][w].arpu);
+  weeklyChart.data.datasets[3].data = ['W1','W2','W3'].map(w=>WEEKLY.B[currentWeekType][w].arpu);
+  weeklyChart.update();
+});
+
+/* ---------------- Payment metric chart ---------------- */
+const metricMeta = {
+  payer_rate:{label:'付費率', fmt:v=>v+'%'}, arpu:{label:'ARPU', fmt:v=>'$'+v.toFixed(2)},
+  arppu:{label:'ARPPU', fmt:v=>'$'+v.toFixed(2)}, revenue:{label:'總付費額', fmt:v=>usd(v)}
+};
+let payChart = new Chart(document.getElementById('payChart'), {
+  type:'bar',
+  data:{ labels:types, datasets:[
+    {label:'4月嘉年華', data:types.map(t=>DATA.A.by_type[t].payer_rate), backgroundColor:COLOR_A, borderRadius:4, maxBarThickness:56},
+    {label:'7月週年慶', data:types.map(t=>DATA.B.by_type[t].payer_rate), backgroundColor:COLOR_B, borderRadius:4, maxBarThickness:56},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${metricMeta.payer_rate.fmt(c.raw)}`}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:14}}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>metricMeta.payer_rate.fmt(v)}} }
+  }
+});
+document.getElementById('metricSeg').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#metricSeg button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const m = btn.dataset.m;
+  payChart.data.datasets[0].data = types.map(t=>DATA.A.by_type[t][m]);
+  payChart.data.datasets[1].data = types.map(t=>DATA.B.by_type[t][m]);
+  payChart.options.scales.y.ticks.callback = v=>metricMeta[m].fmt(v);
+  payChart.options.plugins.tooltip.callbacks.label = c=>` ${c.dataset.label}: ${metricMeta[m].fmt(c.raw)}`;
+  payChart.update();
+});
+
+/* ---------------- Revenue distribution chart ---------------- */
+const revBuckets = Object.keys(DATA.A.rev_dist);
+new Chart(document.getElementById('revDistChart'), {
+  type:'bar',
+  data:{ labels:revBuckets, datasets:[
+    {label:'4月嘉年華', data:revBuckets.map(b=>DATA.A.rev_dist[b]), backgroundColor:COLOR_A, borderRadius:3, maxBarThickness:34},
+    {label:'7月週年慶', data:revBuckets.map(b=>DATA.B.rev_dist[b]), backgroundColor:COLOR_B, borderRadius:3, maxBarThickness:34},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fmt(c.raw,0)} 人`}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:12}}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>fmt(v,0)}} }
+  }
+});
+
+/* ---------------- Dormancy combo chart ---------------- */
+const dormBuckets = Object.keys(DATA.A.away_dist);
+let dormChart = new Chart(document.getElementById('dormChart'), {
+  data:{ labels:dormBuckets, datasets:[
+    {type:'bar', label:'4月人數', data:dormBuckets.map(k=>DATA.A.away_dist[k]), backgroundColor:'rgba(232,163,61,.55)', borderRadius:3, maxBarThickness:40, yAxisID:'y'},
+    {type:'bar', label:'7月人數', data:dormBuckets.map(k=>DATA.B.away_dist[k]), backgroundColor:'rgba(61,219,217,.55)', borderRadius:3, maxBarThickness:40, yAxisID:'y'},
+    {type:'line', label:'4月指標', data:dormBuckets.map(k=>DATA.A.away_active[k]), borderColor:COLOR_A, backgroundColor:COLOR_A, tension:.35, pointRadius:4, yAxisID:'y1'},
+    {type:'line', label:'7月指標', data:dormBuckets.map(k=>DATA.B.away_active[k]), borderColor:COLOR_B, backgroundColor:COLOR_B, tension:.35, pointRadius:4, yAxisID:'y1'},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=> c.dataset.type==='line' ? ` ${c.dataset.label}: ${c.raw}%` : ` ${c.dataset.label}: ${fmt(c.raw,0)} 人`}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:13}}},
+             y:{position:'left', grid:{color:LINE}, ticks:{callback:v=>fmt(v,0)}, title:{display:true,text:'人數',color:INK_DIM}},
+             y1:{position:'right', grid:{display:false}, ticks:{callback:v=>v+'%'}, title:{display:true,text:'%',color:INK_DIM}} }
+  }
+});
+document.getElementById('dormSeg').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#dormSeg button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const key = btn.dataset.m === 'active' ? 'away_active' : 'away_payer';
+  dormChart.data.datasets[2].data = dormBuckets.map(k=>DATA.A[key][k]);
+  dormChart.data.datasets[3].data = dormBuckets.map(k=>DATA.B[key][k]);
+  dormChart.update();
+});
+
+/* ---------------- Concurrent-roll charts (ARPU + payer rate, separate axes) ---------------- */
+new Chart(document.getElementById('concurrentChartArpu'), {
+  type:'bar',
+  data:{ labels:['ARPU'], datasets:[
+    {label:'僅登回舊角', data:[CONCURRENT_ROLL['否'].arpu], backgroundColor:'rgba(147,160,201,.5)', borderRadius:4, maxBarThickness:60},
+    {label:'同時滾服', data:[CONCURRENT_ROLL['是'].arpu], backgroundColor:COLOR_C, borderRadius:4, maxBarThickness:60},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: $${c.raw}`}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:14}}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>'$'+v}, title:{display:true,text:'ARPU (USD)',color:INK_DIM}} }
+  }
+});
+new Chart(document.getElementById('concurrentChartPayer'), {
+  type:'bar',
+  data:{ labels:['付費率'], datasets:[
+    {label:'僅登回舊角', data:[CONCURRENT_ROLL['否'].payer_rate], backgroundColor:'rgba(147,160,201,.5)', borderRadius:4, maxBarThickness:60},
+    {label:'同時滾服', data:[CONCURRENT_ROLL['是'].payer_rate], backgroundColor:COLOR_C, borderRadius:4, maxBarThickness:60},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}%`}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:14}}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>v+'%'}, title:{display:true,text:'付費率',color:INK_DIM}} }
+  }
+});
+
+/* ---------------- D1-D7 one-day-only chart ---------------- */
+new Chart(document.getElementById('oneDayChart'), {
+  type:'bar',
+  data:{ labels:types, datasets:[
+    {label:'4月嘉年華', data:types.map(t=>D1D7.oneDayOnly[t].A), backgroundColor:COLOR_A, borderRadius:4, maxBarThickness:56},
+    {label:'7月週年慶', data:types.map(t=>D1D7.oneDayOnly[t].B), backgroundColor:COLOR_B, borderRadius:4, maxBarThickness:56},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}% 只活躍1天`}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:14}}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>v+'%'}, max:70} }
+  }
+});
+document.getElementById('participationTable').innerHTML = `
+  <thead><tr><th>類型</th><th>區間</th><th>付費率</th><th>強化參與率</th><th>消耗參與率</th><th>消耗事件數</th></tr></thead>
+  <tbody>
+    ${types.map(t=>['A','B'].map(p=>{
+      const s = D1D7.participation[t][p];
+      return `<tr><td>${t}</td><td class="${p.toLowerCase()}">${p==='A'?'4月':'7月'}</td><td>${s.payer}%</td><td>${s.enhance}%</td><td>${s.consume}%</td><td>${fmt(s.consume_events,0)}</td></tr>`;
+    }).join('')).join('')}
+  </tbody>`;
+
+/* ---------------- Level-10 non-fit segment chart ---------------- */
+const level10Metrics = ['D1','D7','D14'];
+new Chart(document.getElementById('level10Chart'), {
+  type:'bar',
+  data:{
+    labels: types.flatMap(t=>level10Metrics.map(m=>`${t}·${m}`)),
+    datasets:[
+      {label:'全部玩家', data: types.flatMap(t=>{
+          const r = LEVEL10.retention_all[t];
+          return [ (r.A.d1+r.B.d1)/2, (r.A.d7+r.B.d7)/2, (r.A.d14+r.B.d14)/2 ];
+        }), backgroundColor:'rgba(147,160,201,.5)', borderRadius:4, maxBarThickness:30},
+      {label:'當天卡在10級', data: types.flatMap(t=>{
+          const r = LEVEL10.retention_level10[t];
+          return [ (r.A.d1+r.B.d1)/2, (r.A.d7+r.B.d7)/2, (r.A.d14+r.B.d14)/2 ];
+        }), backgroundColor:COLOR_BAD_FILL(), borderRadius:4, maxBarThickness:30},
+    ]
+  },
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw.toFixed(1)}%`}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:11}}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>v+'%'}} }
+  }
+});
+function COLOR_BAD_FILL(){ return 'rgba(240,112,122,.6)'; }
+
+/* ---------------- Historical D1/D2 trend chart ---------------- */
+new Chart(document.getElementById('histChart'), {
+  type:'line',
+  data:{ labels:HIST_MONTHS, datasets:[
+    {label:'D1留存', data:HIST_D1, borderColor:COLOR_A, backgroundColor:COLOR_A, tension:.3, pointRadius:HIST_MONTHS.map(m=>HIGHLIGHT_MONTHS.includes(m)?7:1.5), pointBackgroundColor:HIST_MONTHS.map(m=>HIGHLIGHT_MONTHS.includes(m)?COLOR_C:COLOR_A), borderWidth:2},
+    {label:'D2留存', data:HIST_D2, borderColor:COLOR_B, backgroundColor:COLOR_B, tension:.3, pointRadius:HIST_MONTHS.map(m=>HIGHLIGHT_MONTHS.includes(m)?7:1.5), pointBackgroundColor:HIST_MONTHS.map(m=>HIGHLIGHT_MONTHS.includes(m)?COLOR_C:COLOR_B), borderWidth:2},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:true, labels:{color:INK_DIM, font:{family:"'JetBrains Mono',monospace",size:12}}},
+      tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}%${HIGHLIGHT_MONTHS.includes(HIST_MONTHS[c.dataIndex])?'（本次分析區間）':''}`}}
+    },
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:10}, maxRotation:60, minRotation:60, autoSkip:true, maxTicksLimit:18}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>v+'%'}} }
+  }
+});
+
+/* ---------------- Day0 dose-response chart + table ---------------- */
+new Chart(document.getElementById('doseChart'), {
+  type:'bar',
+  data:{ labels:DOSE_PLAYTIME.labels, datasets:[
+    {data:DOSE_PLAYTIME.values, backgroundColor:COLOR_C, borderRadius:4, maxBarThickness:50}
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` 隔天回訪率: ${c.raw}%`}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:13}}, title:{display:true,text:'當天遊玩時長',color:INK_DIM}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>v+'%'}, title:{display:true,text:'隔天回訪率',color:INK_DIM}} }
+  }
+});
+document.getElementById('day0Table').innerHTML = `
+  <thead><tr><th>類型</th><th>區間</th><th>平均場次</th><th>平均時長</th><th>中位數時長</th><th>&lt;5分鐘比例</th></tr></thead>
+  <tbody>
+    ${types.map(t=>['A','B'].map(p=>{
+      const s = DAY0_BY_TYPE[t][p];
+      return `<tr><td>${t}</td><td class="${p.toLowerCase()}">${p==='A'?'4月':'7月'}</td><td>${s.sessions}場</td><td>${s.playtime}分</td><td>${s.median}分</td><td>${s.under5}%</td></tr>`;
+    }).join('')).join('')}
+  </tbody>`;
+
+/* ---------------- Insights ---------------- */
+const insightList = [
+  `這次最重要的方法論修正：<b>7月週年慶的視窗從11天延長到21天</b>，跟4月嘉年華對齊，之前版本因視窗長度不同造成的付費率/留存率低估問題已解決。此版本已與同事的Word報告交叉驗證，composition、總付費、ARPU、逐週拆解、D7/D14留存數字<b class="m">全部吻合</b>。`,
+  `付費力全面提升、留存基本持平：三類玩家總付費、ARPU皆優於4月，且修正未成熟樣本偏誤後，D7/D14留存在兩區間相當接近，<b class="n">沒有證據顯示留存明顯惡化</b>——之前「以留存換付費」的擔憂主要是資料未成熟造成的假象。`,
+  `<b class="c">行為路徑驗證成功</b>：同時滾服的回歸玩家ARPU $5.61、付費率19.4%，明顯優於僅登回舊角的$4.21、12.2%。回歸與滾服本質上是同一群「有回歸資格」的玩家，付費表現差異來自「選擇的行為路徑」而非族群體質。`,
+  `滾服回歸的W1單週付費暴衝至$19,329（ARPU $49.44），是本次最大亮點；付費集中度從64.3%升到75.7%，等長對齊後這個上升趨勢比之前看到的更明顯，值得正視。`,
+  `⚠️ D7到D14之間，三類玩家的留存率都出現明顯陡降（例如回歸從12.5%掉到7.9%，新角從13.5%掉到8.5%），這個現象在4月、7月都存在，不是本次才出現的新問題，但目前還不知道這段期間發生了什麼——這是下一步要深挖的重點。`,
+  `深挖後發現故事跟預期不同：<b class="n">超過一半的人（49~63%）在回來當天登入完就再也沒出現</b>，D1~D7平均活躍天數只有2天。真正的關鍵時刻是「登入當天→隔天」，不是D7~D14。撐過第一天、有回來的人（約27%）狀態健康，戰力持續成長，只是<b class="m">回歸玩家的參與深度明顯比新角/滾服回歸淺</b>（強化參與率29~33% vs 61~76%）。`,
+  `補齊兩個驗證後結論更完整：<b class="n">歷史基準顯示4月/7月的留存率完全正常</b>（近4年D1多在21~37%波動），這是長期存在的水位，不是最近才惡化，急迫性框架應調整。當天體驗細節則發現<b class="m">回歸玩家的當天投入程度全面最低</b>（中位數僅3.6~5.5分鐘，近半數人不到5分鐘就走），且投入時間與隔天回訪呈現清楚的正相關——但這可能是相關而非因果，需要用實驗驗證才能確認介入是否真的有效。`,
+  `再拆一層發現：新角/滾服回歸裡有<b class="n">25~32%的人「當天卡在10級」</b>（新手教學預設起始等級，連跳過教學都沒按），這批人的留存幾乎歸零（D14僅0.6~3.7%）。<b class="m">這不是新手引導卡點，是受眾不匹配</b>——玩了一下發現不喜歡就走，較難靠優化流程解決，如果比例持續偏高，更該檢視導量來源的受眾品質。`,
+  `【8/25資料更新】D14/D21已用登入明細重新驗證，D30首次有真實數字。最大的修正：<b class="n">回歸D21原本只有2.5%，補齊後回到6.9%</b>，跟D14曲線走勢一致——原本看起來的「斷崖式下滑」其實是資料未成熟的假象，不是真的留存驟降。D30數字出來後，滾服回歸的長期留存（8.0%）反而略優於4月同期（5.5%），跟前面「滾服回歸付費力更強」的發現互相印證。`
+];
+document.getElementById('insightGrid').innerHTML = insightList.map(t=>`<div class="insight">${t}</div>`).join('');
+</script>
+</body>
+</html>

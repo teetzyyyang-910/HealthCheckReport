@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S72 vs S70 開服首週新進玩家對比</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" onerror="document.write('<script src=\'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js\'>\x3c/script>')"></script>
+<style>
+  :root{
+    --bg:#0B0F1F; --bg-card:#121830; --bg-card2:#1a2242; --line:rgba(255,255,255,.09);
+    --ink:#EDEAE3; --ink-dim:#93a0c9; --ink-dim2:#5b6289;
+    --a:#E8A33D; --a-soft:rgba(232,163,61,.14);
+    --b:#3DDBD9; --b-soft:rgba(61,219,217,.14);
+    --unpaid:#8B93B8;
+    --good:#6EE7B7; --bad:#F0707A;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; font-size:17px; line-height:1.65; -webkit-font-smoothing:antialiased;}
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+
+  .tide-bg{
+    position:fixed; inset:0; z-index:-1; opacity:.5;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(232,163,61,.10), transparent 60%),
+      radial-gradient(ellipse 900px 600px at 100% 10%, rgba(61,219,217,.10), transparent 60%);
+  }
+
+  header.hero{ padding:88px 0 56px; }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:.14em;
+    color:var(--ink-dim); text-transform:uppercase; margin:0 0 18px; display:flex; gap:10px; align-items:center;
+  }
+  .eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--b);box-shadow:0 0 0 4px var(--b-soft);}
+  h1.title{ font-family:'Fraunces',serif; font-weight:500; font-size:clamp(34px,5vw,58px); line-height:1.1; margin:0 0 22px; letter-spacing:-.01em; }
+  h1.title em{font-style:italic; color:var(--a); font-weight:400;}
+  .sub{ color:var(--ink-dim); font-size:18px; max-width:700px; margin:0 0 34px;}
+  .period-tags{display:flex; gap:14px; flex-wrap:wrap;}
+  .ptag{ display:flex; align-items:center; gap:9px; padding:9px 16px; border-radius:99px; border:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:14px; background:var(--bg-card); }
+  .dot{width:9px;height:9px;border-radius:50%;}
+  .dot.a{background:var(--a);} .dot.b{background:var(--b);}
+
+  section{padding:60px 0;border-top:1px solid var(--line);}
+  .s-head{display:flex; justify-content:space-between; align-items:baseline; gap:20px; margin-bottom:8px; flex-wrap:wrap;}
+  .s-num{font-family:'JetBrains Mono',monospace; color:var(--ink-dim2); font-size:14px;}
+  h2{font-family:'Fraunces',serif; font-weight:500; font-size:clamp(25px,3vw,32px); margin:0 0 6px;}
+  .s-desc{color:var(--ink-dim); max-width:720px; font-size:16px; margin:0 0 24px;}
+
+  .card{background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:24px;}
+  .grid-2{display:grid; grid-template-columns:1.2fr 1fr; gap:16px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  .grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  @media (max-width:860px){.grid-2, .grid-3, .grid-4{grid-template-columns:1fr;}}
+  .chart-box{position:relative; height:320px;}
+  .chart-box.short{height:250px;}
+  .chart-box.tall{height:360px;}
+  .legend-row{display:flex; gap:18px; margin-bottom:16px; flex-wrap:wrap;}
+  .legend-item{display:flex; align-items:center; gap:7px; font-size:14px; color:var(--ink-dim); font-family:'JetBrains Mono',monospace;}
+  .legend-sw{width:11px;height:11px;border-radius:3px;}
+
+  .seg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden;}
+  .seg button{ font-family:'JetBrains Mono',monospace; font-size:14px; padding:8px 16px; background:transparent; color:var(--ink-dim); border:none; cursor:pointer; border-right:1px solid var(--line); }
+  .seg button:last-child{border-right:none;}
+  .seg button.on{background:var(--bg-card2); color:var(--ink);}
+
+  .kpi{ background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:22px 20px; }
+  .kpi .label{font-size:13px; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.05em; margin-bottom:14px;}
+  .kpi .rows{display:flex; flex-direction:column; gap:6px; margin-bottom:10px;}
+  .kpi .row{display:flex; align-items:baseline; justify-content:space-between; gap:10px;}
+  .kpi .row .tag{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-dim2);}
+  .kpi .row .val{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:600;}
+  .kpi .row.a .val{color:var(--a);}
+  .kpi .row.b .val{color:var(--b);}
+  .kpi .delta{ font-family:'JetBrains Mono',monospace; font-size:13px; padding-top:8px; border-top:1px solid var(--line); }
+  .kpi .delta.up{color:var(--good);} .kpi .delta.down{color:var(--bad);}
+
+  table.dtab{width:100%; border-collapse:collapse; font-size:15px;}
+  table.dtab th, table.dtab td{padding:10px 10px; text-align:right; border-bottom:1px solid var(--line);}
+  table.dtab th:first-child, table.dtab td:first-child{text-align:left; color:var(--ink-dim);}
+  table.dtab th{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-dim2); text-transform:uppercase; letter-spacing:.04em;}
+  table.dtab td{font-family:'JetBrains Mono',monospace;}
+  table.dtab td.a{color:var(--a);} table.dtab td.b{color:var(--b);}
+  table.dtab td.dim{color:var(--ink-dim2); font-size:13px;}
+
+  .insights{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media (max-width:780px){.insights{grid-template-columns:1fr;}}
+  .insight{background:var(--bg-card); border:1px solid var(--line); border-left:3px solid var(--b); border-radius:8px; padding:18px 20px; font-size:15.5px; color:var(--ink-dim);}
+  .insight b{color:var(--ink); font-weight:600;}
+  .insight .n{color:var(--a);}
+  .insight .m{color:var(--b);}
+
+  .nextstep-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media (max-width:780px){.nextstep-grid{grid-template-columns:1fr;}}
+  .nextstep{background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:20px 22px;}
+  .nextstep .basis{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--b); text-transform:uppercase;
+    letter-spacing:.05em; margin-bottom:10px; display:inline-block; background:var(--b-soft);
+    padding:5px 10px; border-radius:6px;
+  }
+  .nextstep .rec{font-size:15.5px; color:var(--ink-dim); line-height:1.6;}
+  .nextstep .rec b{color:var(--ink); font-weight:600;}
+  .nextstep .rec::before{content:"→ "; color:var(--a); font-weight:700;}
+
+  footer{padding:36px 0 64px; color:var(--ink-dim2); font-size:13px; font-family:'JetBrains Mono',monospace;}
+
+  .caveat{
+    display:flex; gap:12px; align-items:flex-start;
+    background:var(--a-soft); border:1px solid rgba(232,163,61,.35); border-radius:9px;
+    padding:16px 18px; margin:0 0 24px; font-size:14.5px; color:var(--ink-dim);
+  }
+  .caveat .ic{font-size:16px; line-height:1.4; flex-shrink:0;}
+  .caveat b{color:var(--ink); font-weight:600;}
+  .caveat.good{background:var(--b-soft); border-color:rgba(61,219,217,.35);}
+  .caveat.small{padding:11px 15px; font-size:13px; margin-bottom:0;}
+
+  .appendix-note{
+    font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink-dim2);
+    background:var(--bg-card2); border:1px solid var(--line); border-radius:8px; padding:14px 18px; margin-bottom:24px;
+  }
+</style>
+</head>
+<body>
+<div class="tide-bg"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">S70 vs S72 · 開服首週新進玩家全面對比</p>
+    <h1 class="title">兩個首週，<br>兩種<em>新玩家</em>。</h1>
+    <p class="sub">不限定戰力前100，直接比較兩服「開服/對比首週內創角」的所有新進玩家（已排除創角當天等級低於10級的樣本）——留存、戰力/等級成長、付費表現，看新服開服的熱度到底帶來了什麼不一樣的人。</p>
+    <div class="period-tags">
+      <span class="ptag"><span class="dot a"></span>S72 · 開服首週 2026/08/27–09/02 · 新進玩家465人</span>
+      <span class="ptag"><span class="dot b"></span>S70 · 對比週 2026/06/18–06/24 · 新進玩家438人</span>
+    </div>
+  </div>
+</header>
+
+<section id="overview">
+  <div class="wrap">
+    <div class="s-head"><h2>總覽：關鍵指標對比</h2><span class="s-num">01 — Overview</span></div>
+    <p class="s-desc">以創角日期為第0天，追蹤兩批新進玩家創角後30天內的核心表現。</p>
+    <div class="grid-4" id="overviewKpis"></div>
+    <div class="caveat small" style="margin-top:16px;">
+      <span class="ic">＊</span>
+      <div>已排除「創角當天(D1)等級低於10級」的樣本（S70排除39人、S72排除55人），讓比較更乾淨。S72開服首週是8/27~9/2，D21僅74.0%樣本可判定，<b>D30目前全數尚未滿30天，暫無數字</b>；下方圖表S72的D30會顯示空缺，之後補測會再更新。S70並非開服首週，只是抓取6/18~6/24作為對比窗口，比較時請留意這個背景差異。</div>
+    </div>
+  </div>
+</section>
+
+<section id="retention">
+  <div class="wrap">
+    <div class="s-head"><h2>留存表現：D1~D30</h2><span class="s-num">02 — Retention</span></div>
+    <p class="s-desc">創角後第N天是否仍有登入紀錄。</p>
+    <div class="card">
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>S72（開服首週）</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>S70（對比週）</span>
+      </div>
+      <div class="chart-box tall"><canvas id="retChart"></canvas></div>
+    </div>
+    <div class="grid-2" style="margin-top:16px;">
+      <div class="card">
+        <table class="dtab" id="retTable"></table>
+      </div>
+      <div class="card" style="display:flex; align-items:center;">
+        <p style="font-size:15.5px;color:var(--ink-dim);margin:0;">S72的留存在<b>幾乎每個時間點都略優於S70</b>——D7留存17.4% vs 13.5%，D14為12.5% vs 9.8%。新服開服首週的熱度，似乎真的能拉到比一般週次更黏的新玩家。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="growth">
+  <div class="wrap">
+    <div class="s-head"><h2>戰力／等級成長趨勢</h2><span class="s-num">03 — Growth Trend</span></div>
+    <p class="s-desc">取每個時間點附近最接近的活動快照，計算當時仍在遊玩的玩家戰力/等級中位數。</p>
+    <div class="caveat">
+      <span class="ic">⚠️</span>
+      <div>D14之後樣本量大幅縮小（僅剩50~110人左右），因為多數新進玩家已經流失——這部分數字只反映「還在玩的人」，帶有存活者偏誤，不是全體新進玩家的平均水準，解讀時請留意圖表上標示的n值。</div>
+    </div>
+    <div class="card">
+      <div class="s-head" style="margin-bottom:16px;">
+        <div class="legend-row" style="margin-bottom:0;">
+          <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>S72</span>
+          <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>S70</span>
+        </div>
+        <div class="seg" id="growthMetricSeg">
+          <button data-m="combat" class="on">戰力中位數</button>
+          <button data-m="level">等級中位數</button>
+        </div>
+      </div>
+      <div class="chart-box tall"><canvas id="growthChart"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section id="payment">
+  <div class="wrap">
+    <div class="s-head"><h2>付費表現</h2><span class="s-num">04 — Monetization</span></div>
+    <p class="s-desc">創角後30天內的付費行為。</p>
+    <div class="grid-2">
+      <div class="card">
+        <div class="legend-row">
+          <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>S72</span>
+          <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>S70</span>
+        </div>
+        <div class="chart-box"><canvas id="revDistChart"></canvas></div>
+      </div>
+      <div class="card" style="display:flex; flex-direction:column; justify-content:center; gap:20px;">
+        <div>
+          <div class="label" style="font-size:13px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">Top 20%付費者貢獻</div>
+          <div style="display:flex; align-items:baseline; gap:26px;">
+            <div><span style="font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:600;color:var(--a);">98.1%</span><div style="font-size:12px;color:var(--ink-dim2);font-family:'JetBrains Mono',monospace;">S72</div></div>
+            <div><span style="font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:600;color:var(--b);">94.8%</span><div style="font-size:12px;color:var(--ink-dim2);font-family:'JetBrains Mono',monospace;">S70</div></div>
+          </div>
+        </div>
+        <p style="font-size:14.5px;color:var(--ink-dim); margin:0;">兩服付費都高度集中在少數大額玩家身上，S72又更集中一點。S72最大單筆付費達 <b style="color:var(--ink);">$14,294</b>，S70為 <b style="color:var(--ink);">$6,271</b>。首次付費的時間點也很集中：兩服付費玩家的首筆付費，中位數都落在<b style="color:var(--ink);">創角當天（Day 0）</b>。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="insights">
+  <div class="wrap">
+    <div class="s-head"><h2>關鍵洞察</h2><span class="s-num">05 — Takeaways</span></div>
+    <div class="insights" id="insightGrid"></div>
+  </div>
+</section>
+
+<section id="nextsteps">
+  <div class="wrap">
+    <div class="s-head"><h2>下一步建議</h2><span class="s-num">06 — Next Steps</span></div>
+    <div class="nextstep-grid" id="nextstepGrid"></div>
+  </div>
+</section>
+
+<section id="appendix">
+  <div class="wrap">
+    <div class="s-head"><h2>附錄：戰力前100名玩家付費影響力分析</h2><span class="s-num">A — Top 100 Appendix</span></div>
+    <p class="s-desc">原始報告聚焦在「戰力前100名」這個更小的子集，拆分付費/未付費做深入對比。完整內容摘要如下，供對照參考。</p>
+    <div class="appendix-note">分母說明：戰力前100分析的分母固定是100人（全服最強的100人），跟上方「全部新進玩家」分析的分母（S72=520、S70=477）不同，兩者不能直接比較數字，只能看結構是否一致。</div>
+
+    <div class="grid-2" style="margin-bottom:16px;">
+      <div class="card">
+        <table class="dtab" id="top100Table"></table>
+      </div>
+      <div class="card">
+        <div class="legend-row" style="margin-bottom:8px;">
+          <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>S72</span>
+          <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>S70</span>
+        </div>
+        <div class="chart-box short"><canvas id="payerPieChart"></canvas></div>
+        <p style="font-size:13px;color:var(--ink-dim2); margin:10px 0 0;">全服付費者中，擠進戰力前100的比例。</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="s-head" style="margin-bottom:16px;">
+        <div class="legend-row" style="margin-bottom:0;">
+          <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>有付費</span>
+          <span class="legend-item"><span class="legend-sw" style="background:var(--unpaid)"></span>純未付費</span>
+        </div>
+        <div class="seg" id="top100ServerSeg">
+          <button data-s="S72" class="on">S72</button>
+          <button data-s="S70">S70</button>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-box"><canvas id="top100LevelChart"></canvas></div>
+        <div class="chart-box"><canvas id="top100CombatChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="caveat good">
+      <span class="ic">✓</span>
+      <div><b>核心結論（跨服驗證）：</b>付費是頭部玩家等級/戰力差距的核心驅動因素，兩服的付費組平均戰力都是未付費組的近5倍，且此現象具跨服一致性，不是S72獨有。純未付費頭部玩家的自然成長曲線在兩服幾乎重疊（第7天23.7 vs 24.2），代表遊戲設計的自然成長節奏穩定。額外發現：S70付費/未付費的強化次數差2倍，S72幾乎沒差——「開服資源公平期」可能只存在於開服初期，值得追蹤S72是否會走向同樣分化。</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">資料來源：S72_S70_戰力前100付費分析報告.docx（附錄章節）＋ mf_ingame_roles / etl_ingame_balance_snapshot / etl_ingame_recharge / etl_ingame_login_logout（主體30天新進玩家分析）· 新進玩家以server_id + ingame_first_active_date於首週範圍內篩選 · 留存與戰力快照皆以「創角日期」為第0天 · S70並非開服首週，僅為對比窗口</div>
+</footer>
+
+<script>
+const COLOR_A = "#E8A33D", COLOR_B = "#3DDBD9", COLOR_UNPAID = "#8B93B8", INK_DIM = "#93a0c9", LINE = "rgba(255,255,255,.08)";
+
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.color = INK_DIM;
+Chart.defaults.font.size = 12;
+
+function fmt(n, d=0){ return Number(n).toLocaleString('en-US',{maximumFractionDigits:d, minimumFractionDigits:0}); }
+
+/* ==================== 主體：30天新進玩家全面比較 ==================== */
+const NP30_DAYS = [1,3,5,7,14,21,30];
+const dLabelMap = {1:'D1',3:'D3',5:'D5',7:'D7',14:'D14',21:'D21',30:'D30'};
+
+const NP30_RET = {
+  S72: {1:{rate:31.18,n:465}, 3:{rate:23.44,n:465}, 5:{rate:18.28,n:465}, 7:{rate:17.42,n:465}, 14:{rate:12.47,n:465}, 21:{rate:8.14,n:344}, 30:null},
+  S70: {1:{rate:29.22,n:438}, 3:{rate:22.15,n:438}, 5:{rate:15.53,n:438}, 7:{rate:13.47,n:438}, 14:{rate:9.82,n:438}, 21:{rate:8.22,n:438}, 30:{rate:6.39,n:438}}
+};
+const NP30_COMBAT = {
+  S72: {1:{v:1909,n:465}, 3:{v:2101,n:447}, 5:{v:8182,n:153}, 7:{v:25564,n:119}, 14:{v:16837,n:106}, 21:{v:51299,n:73}, 30:null},
+  S70: {1:{v:2212,n:438}, 3:{v:2524,n:410}, 5:{v:7442,n:136}, 7:{v:9065,n:107}, 14:{v:22018,n:75}, 21:{v:29881,n:64}, 30:{v:30077,n:51}}
+};
+const NP30_LEVEL = {
+  S72: {1:{v:13,n:465}, 3:{v:14,n:447}, 5:{v:22,n:153}, 7:{v:25,n:119}, 14:{v:27,n:106}, 21:{v:36,n:73}, 30:null},
+  S70: {1:{v:13,n:438}, 3:{v:15,n:410}, 5:{v:20,n:136}, 7:{v:23,n:107}, 14:{v:28,n:75}, 21:{v:31,n:64}, 30:{v:34,n:51}}
+};
+const PAYMENT = {
+  S72: {n:465, payer_n:90, payer_rate:19.35, revenue:51786.43, arpu:111.369, arppu:575.4},
+  S70: {n:438, payer_n:84, payer_rate:19.18, revenue:26460.71, arpu:60.413, arppu:315.01}
+};
+const REV_DIST = {
+  labels: ['0-5','5-20','20-50','50-100','100-500','500-1000','1000+'],
+  S72: [40,16,8,8,5,4,9],
+  S70: [47,5,4,7,11,2,8]
+};
+
+/* ---------------- Overview KPI cards ---------------- */
+function deltaSpan(s72,s70,higherIsBetter=true){
+  const d = s72 - s70;
+  const pctChange = s70 !== 0 ? (d/s70*100) : 0;
+  const up = d >= 0;
+  const good = higherIsBetter ? up : !up;
+  const arrow = up ? '▲' : '▼';
+  return `<div class="delta ${good?'up':'down'}">${arrow} ${pctChange>=0?'+':''}${pctChange.toFixed(1)}% (S72 vs S70)</div>`;
+}
+const ovKpis = [
+  {label:'新進玩家人數', a:PAYMENT.S72.n, b:PAYMENT.S70.n, f:v=>fmt(v), better:null},
+  {label:'D7留存率', a:NP30_RET.S72[7].rate, b:NP30_RET.S70[7].rate, f:v=>v+'%', better:true},
+  {label:'30天內付費率', a:PAYMENT.S72.payer_rate, b:PAYMENT.S70.payer_rate, f:v=>v+'%', better:true},
+  {label:'ARPU（30天）', a:PAYMENT.S72.arpu, b:PAYMENT.S70.arpu, f:v=>'$'+v.toFixed(1), better:true},
+];
+document.getElementById('overviewKpis').innerHTML = ovKpis.map(k=>`
+  <div class="kpi">
+    <div class="label">${k.label}</div>
+    <div class="rows">
+      <div class="row a"><span class="tag">S72</span><span class="val">${k.f(k.a)}</span></div>
+      <div class="row b"><span class="tag">S70</span><span class="val">${k.f(k.b)}</span></div>
+    </div>
+    ${k.better===null?'':deltaSpan(k.a,k.b,k.better)}
+  </div>`).join('');
+
+/* ---------------- Retention chart + table ---------------- */
+function retVal(server,d){ const r = NP30_RET[server][d]; return r ? r.rate : null; }
+new Chart(document.getElementById('retChart'), {
+  type:'line',
+  data:{ labels: NP30_DAYS.map(d=>dLabelMap[d]), datasets:[
+    {label:'S72', data: NP30_DAYS.map(d=>retVal('S72',d)), borderColor:COLOR_A, backgroundColor:COLOR_A, tension:.3, pointRadius:5, borderWidth:2.5, spanGaps:false},
+    {label:'S70', data: NP30_DAYS.map(d=>retVal('S70',d)), borderColor:COLOR_B, backgroundColor:COLOR_B, tension:.3, pointRadius:5, borderWidth:2.5, borderDash:[6,4], spanGaps:false},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>{
+      if (c.raw===null) return ` ${c.dataset.label}: 尚未成熟`;
+      const d = NP30_DAYS[c.dataIndex]; const r = NP30_RET[c.dataset.label][d];
+      return ` ${c.dataset.label}: ${r.rate}%（n=${r.n}）`;
+    }}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:13}}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>v+'%'}, title:{display:true,text:'留存率',color:INK_DIM}} }
+  }
+});
+document.getElementById('retTable').innerHTML = `
+  <thead><tr><th>天數</th><th>S72</th><th>覆蓋</th><th>S70</th><th>覆蓋</th></tr></thead>
+  <tbody>${NP30_DAYS.map(d=>{
+    const s72=NP30_RET.S72[d], s70=NP30_RET.S70[d];
+    return `<tr><td>${dLabelMap[d]}</td>
+      <td class="a">${s72?s72.rate+'%':'—'}</td><td class="dim">${s72?`n=${s72.n}/465`:''}</td>
+      <td class="b">${s70?s70.rate+'%':'—'}</td><td class="dim">${s70?`n=${s70.n}/438`:''}</td></tr>`;
+  }).join('')}</tbody>`;
+
+/* ---------------- Growth chart (combat/level toggle) ---------------- */
+let growthChart;
+let currentGrowthMetric = 'combat';
+function buildGrowthChart(metric){
+  const src = metric === 'combat' ? NP30_COMBAT : NP30_LEVEL;
+  const data72 = NP30_DAYS.map(d=> src.S72[d] ? src.S72[d].v : null);
+  const data70 = NP30_DAYS.map(d=> src.S70[d] ? src.S70[d].v : null);
+  return new Chart(document.getElementById('growthChart'), {
+    type:'line',
+    data:{ labels: NP30_DAYS.map(d=>dLabelMap[d]), datasets:[
+      {label:'S72', data:data72, borderColor:COLOR_A, backgroundColor:COLOR_A, tension:.3, pointRadius:5, borderWidth:2.5, spanGaps:false},
+      {label:'S70', data:data70, borderColor:COLOR_B, backgroundColor:COLOR_B, tension:.3, pointRadius:5, borderWidth:2.5, borderDash:[6,4], spanGaps:false},
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>{
+        if (c.raw===null) return ` ${c.dataset.label}: 尚未成熟`;
+        const d = NP30_DAYS[c.dataIndex]; const n = src[c.dataset.label][d].n;
+        return ` ${c.dataset.label}: ${fmt(c.raw)}（n=${n}）`;
+      }}}},
+      scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:13}}},
+               y:{grid:{color:LINE}, title:{display:true, text: metric==='combat'?'戰力中位數':'等級中位數', color:INK_DIM}} }
+    }
+  });
+}
+growthChart = buildGrowthChart(currentGrowthMetric);
+document.getElementById('growthMetricSeg').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#growthMetricSeg button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  currentGrowthMetric = btn.dataset.m;
+  growthChart.destroy();
+  growthChart = buildGrowthChart(currentGrowthMetric);
+});
+
+/* ---------------- Revenue distribution chart ---------------- */
+new Chart(document.getElementById('revDistChart'), {
+  type:'bar',
+  data:{ labels:REV_DIST.labels, datasets:[
+    {label:'S72', data:REV_DIST.S72, backgroundColor:COLOR_A, borderRadius:3, maxBarThickness:32},
+    {label:'S70', data:REV_DIST.S70, backgroundColor:COLOR_B, borderRadius:3, maxBarThickness:32},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}人`}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:11}}, title:{display:true,text:'30天累積付費金額(USD)',color:INK_DIM}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>fmt(v,0)}, title:{display:true,text:'人數',color:INK_DIM}} }
+  }
+});
+
+/* ---------------- Insights ---------------- */
+const insightList = [
+  `<b>新服開服首週真的拉到更黏的新玩家</b>：S72留存在幾乎每個時間點都優於S70——D7留存<b class="n">17.4%</b> vs <b class="m">13.5%</b>，D14為<b class="n">12.5%</b> vs <b class="m">9.8%</b>，差距在D7後持續放大，不是曇花一現的開局效應。`,
+  `<b>付費率幾乎一樣，但客單價差了快一倍</b>：兩服30天內付費率都在19.2~19.4%，但S72的ARPU（$111.4）幾乎是S70（$60.4）的<b class="n">近2倍</b>，ARPPU也高出近8成（$575 vs $315）——新服吸引到的付費者，單體消費力明顯更強。`,
+  `<b>付費高度集中在少數大戶，S72更甚</b>：Top 20%付費者貢獻了S72營收的<b class="n">98.1%</b>、S70的<b class="m">94.8%</b>。S72最大單筆付費達$14,294，是S70最大單筆（$6,271）的2倍多——這波開服吸引到至少一位重量級玩家。`,
+  `<b class="m">⚠️ D14之後的戰力/等級數字要小心解讀</b>：樣本量從創角當天的450+人，掉到D14~D21只剩下73~106人——這是「還在玩的人」的中位數，不是全體新進玩家的真實水準，S72在D7的戰力中位數（25,564）明顯高於S70（9,065），差距比排除低等級樣本前更明顯了，但這個差距有多少是倖存者偏誤造成的，還需要更多資料驗證。`
+];
+document.getElementById('insightGrid').innerHTML = insightList.map(t=>`<div class="insight">${t}</div>`).join('');
+
+/* ---------------- Next steps ---------------- */
+const nextSteps = [
+  {basis:'依據 02 — 留存表現', rec:'S72的留存優勢在D14依然存在，<b>建議排期4~5週後回補D21/D30數據</b>，確認這個優勢能不能延續到滿月，而不是只有前兩週的熱度效應。'},
+  {basis:'依據 04 — 付費表現', rec:'S72的ARPU、ARPPU都明顯優於S70，<b>建議追蹤這批高價值新玩家的次月留存與複購率</b>，確認這是開服活動帶來的一次性消費，還是能延續的長期付費力。'},
+  {basis:'依據 04 — 付費集中度', rec:'兩服付費都高度集中在Top 20%大戶身上（94.8%~98.1%），<b>建議針對中量級付費者（非Top 20%但有付費）設計加碼誘因</b>，避免營收過度依賴極少數玩家。'},
+  {basis:'依據 03 — 戰力成長（存活者偏誤）', rec:'目前D14後的戰力/等級比較樣本數過小，<b>建議之後改用「創角時就固定好的名單」搭配缺失值標記</b>，而不是只看「當時還有資料的人」，才能更準確判斷是否為倖存者偏誤。'},
+];
+document.getElementById('nextstepGrid').innerHTML = nextSteps.map(n=>`
+  <div class="nextstep">
+    <span class="basis">${n.basis}</span>
+    <div class="rec">${n.rec}</div>
+  </div>`).join('');
+
+/* ==================== 附錄：戰力前100分析 ==================== */
+const APPX = {
+  top100: {
+    S72: { total:513, range:"4,761 ~ 297,937", paid:69, unpaid:31, paid_revenue:3245.6, paid_arpu:47.0, payers_in_top100_pct:84 },
+    S70: { total:481, range:"4,962 ~ 211,467", paid:71, unpaid:29, paid_revenue:2690.8, paid_arpu:37.9, payers_in_top100_pct:92 }
+  },
+  levelCurve7d: {
+    S72: { paid:[18.8,20.8,23.1,23.9,25.0,25.8,27.8], unpaid:[14.7,17.0,20.9,21.5,21.1,22.9,23.7] },
+    S70: { paid:[19.9,20.8,22.7,23.9,25.9,26.8,28.5], unpaid:[15.4,18.5,18.3,20.4,21.8,23.5,24.2] }
+  },
+  combatCurve7d: {
+    S72: { paid:[27857,37066,49149,53779,59634,58615,null], unpaid:[4779,6045,10915,11501,12082,13404,null] },
+    S70: { paid:[30738,34597,42120,50908,61543,64655,null], unpaid:[5329,7695,8001,11022,11080,13354,null] }
+  }
+};
+const day7Labels = ["第1天","第2天","第3天","第4天","第5天","第6天","第7天"];
+
+document.getElementById('top100Table').innerHTML = `
+  <thead><tr><th>項目</th><th>S72</th><th>S70</th></tr></thead>
+  <tbody>
+    <tr><td>總玩家數</td><td class="a">${fmt(APPX.top100.S72.total)}</td><td class="b">${fmt(APPX.top100.S70.total)}</td></tr>
+    <tr><td>Top100戰力範圍</td><td class="a">${APPX.top100.S72.range}</td><td class="b">${APPX.top100.S70.range}</td></tr>
+    <tr><td>有付費人數</td><td class="a">${APPX.top100.S72.paid}人</td><td class="b">${APPX.top100.S70.paid}人</td></tr>
+    <tr><td>純未付費人數</td><td class="a">${APPX.top100.S72.unpaid}人</td><td class="b">${APPX.top100.S70.unpaid}人</td></tr>
+    <tr><td>付費組總付費金額</td><td class="a">$${fmt(APPX.top100.S72.paid_revenue,1)}</td><td class="b">$${fmt(APPX.top100.S70.paid_revenue,1)}</td></tr>
+    <tr><td>付費組平均付費金額</td><td class="a">$${fmt(APPX.top100.S72.paid_arpu,1)}</td><td class="b">$${fmt(APPX.top100.S70.paid_arpu,1)}</td></tr>
+  </tbody>`;
+
+new Chart(document.getElementById('payerPieChart'), {
+  type:'bar',
+  data:{ labels:['S72','S70'], datasets:[
+    {data:[APPX.top100.S72.payers_in_top100_pct, APPX.top100.S70.payers_in_top100_pct], backgroundColor:[COLOR_A, COLOR_B], borderRadius:4, maxBarThickness:60},
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.raw}%進入戰力前100`}}},
+    scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:12}}},
+             y:{grid:{color:LINE}, ticks:{callback:v=>v+'%'}, max:100} }
+  }
+});
+
+let top100LevelChart, top100CombatChart;
+function renderTop100Server(server){
+  if (top100LevelChart) top100LevelChart.destroy();
+  if (top100CombatChart) top100CombatChart.destroy();
+  const lv = APPX.levelCurve7d[server], cb = APPX.combatCurve7d[server];
+  top100LevelChart = new Chart(document.getElementById('top100LevelChart'), {
+    type:'line',
+    data:{ labels:day7Labels, datasets:[
+      {label:'有付費', data:lv.paid, borderColor:COLOR_A, backgroundColor:COLOR_A, tension:.3, pointRadius:4, borderWidth:2.5},
+      {label:'純未付費', data:lv.unpaid, borderColor:COLOR_UNPAID, backgroundColor:COLOR_UNPAID, tension:.3, pointRadius:4, borderWidth:2.5},
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}級`}}},
+      scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:11}}},
+               y:{grid:{color:LINE}, title:{display:true,text:'平均等級',color:INK_DIM}} }
+    }
+  });
+  top100CombatChart = new Chart(document.getElementById('top100CombatChart'), {
+    type:'line',
+    data:{ labels:day7Labels, datasets:[
+      {label:'有付費', data:cb.paid, borderColor:COLOR_A, backgroundColor:COLOR_A, tension:.3, pointRadius:4, borderWidth:2.5, spanGaps:false},
+      {label:'純未付費', data:cb.unpaid, borderColor:COLOR_UNPAID, backgroundColor:COLOR_UNPAID, tension:.3, pointRadius:4, borderWidth:2.5, spanGaps:false},
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.raw===null?null:` ${c.dataset.label}: ${fmt(c.raw)}`}}},
+      scales:{ x:{grid:{display:false}, ticks:{color:'#EDEAE3', font:{family:"'Inter',sans-serif", size:11}}},
+               y:{grid:{color:LINE}, title:{display:true,text:'平均戰力',color:INK_DIM}} }
+    }
+  });
+}
+renderTop100Server('S72');
+document.getElementById('top100ServerSeg').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#top100ServerSeg button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderTop100Server(btn.dataset.s);
+});
+</script>
+</body>
+</html>
