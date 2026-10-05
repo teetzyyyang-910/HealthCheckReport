@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSB 營收月度分析 2026-07～09</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f8fafc;--card:#fff;--border:#e2e8f0;--text:#1e293b;--text2:#64748b;--blue:#2563eb;--green:#16a34a;--red:#dc2626;--orange:#d97706;--purple:#7c3aed}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft JhengHei',Arial,sans-serif;background:var(--bg);color:var(--text);padding:24px;max-width:1180px;margin:0 auto}
+h1{font-size:20px;margin-bottom:4px}
+.sub{font-size:12px;color:var(--text2);margin-bottom:18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.kpi .l{font-size:11px;color:var(--text2)}
+.kpi .v{font-size:22px;font-weight:700;margin:2px 0}
+.kpi .d{font-size:11.5px}
+.dn{color:var(--red)}.up{color:var(--green)}.flat{color:var(--text2)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.card h2{font-size:13.5px;margin-bottom:2px}
+.card .note{font-size:11px;color:var(--text2);margin-bottom:8px}
+.cw{position:relative;height:250px}
+.find{background:#fff;border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:10px;padding:12px 16px;margin-bottom:10px;font-size:12.5px;line-height:1.7}
+.find b.t{display:block;font-size:13.5px;margin-bottom:2px}
+.find.r{border-left-color:var(--red)}.find.o{border-left-color:var(--orange)}.find.g{border-left-color:var(--green)}
+table{border-collapse:collapse;width:100%;font-size:12px;margin-top:6px}
+th,td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--text2);font-weight:600;background:#f1f5f9}
+.warn{font-size:11.5px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;line-height:1.7;margin-top:6px}
+</style>
+</head>
+<body>
+<h1>CSB 營收月度分析：2026年7月 vs 8月 vs 9月</h1>
+<div class="sub">資料來源：Metabase etl_ingame_login／etl_ingame_recharge 實際查詢結果（log_date 切日），數字皆為真實查詢值，未經推估。</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="l">9月儲值金額</div><div class="v">376,439</div><div class="d dn">較7月 −54.8%（8月 −28.9%）</div></div>
+  <div class="kpi"><div class="l">9月付費人數</div><div class="v">365</div><div class="d dn">較7月 −7.1%（變動小）</div></div>
+  <div class="kpi"><div class="l">9月 ARPPU</div><div class="v">1,031</div><div class="d dn">較7月 −51.3%（主因）</div></div>
+  <div class="kpi"><div class="l">9月平均每筆金額</div><div class="v">122.7</div><div class="d dn">7月 215.0 → 8月 165.5</div></div>
+  <div class="kpi"><div class="l">9月付費率</div><div class="v">11.9%</div><div class="d flat">7月 14.7% → 8月 9.0%（8月活躍暴增稀釋）</div></div>
+</div>
+
+<div class="find r"><b class="t">① 營收下滑是「客單價掉」，不是「付費人數掉」</b>
+7月→9月營收 −54.8%，其中付費人數只少 7.1%，ARPPU 少了 51.3%。每日訂單量也只降約 17%（平日 128.7→105、週末 113.8→95），營收卻掉一半以上，代表買的人還在、買的次數也差不多，但每筆買得更小。</div>
+<div class="find r"><b class="t">② 下滑幾乎全來自兩個高單價區間（占整體減少額 92%）</b>
+7→9月營收減少 455,939：3000+ 區間減 255,710（占56%，筆數 108→64→51）、1000–2999 區間減 165,390（占36%，筆數 92→88→<b>10</b>，9月幾乎消失）。&lt;100 的小額訂單量大致穩定（3,643→3,261→2,997）。</div>
+<div class="find o"><b class="t">③ 「平日銷量下滑」假設不成立：平日週末同步下滑</b>
+日均儲值平日 28,114→21,435→13,194（−53%）、週末 23,218→14,140→10,773（−54%）；日均筆數平日 −18%、週末 −17%。兩者降幅幾乎一致，不是平日獨有的問題，應從商品與價格帶找原因，而非星期別。</div>
+
+<div class="grid">
+  <div class="card"><h2>月度儲值金額與 ARPPU</h2><div class="note">柱：儲值金額（左軸）；線：ARPPU（右軸）</div><div class="cw"><canvas id="c1"></canvas></div></div>
+  <div class="card"><h2>活躍人數與付費人數</h2><div class="note">8月活躍人數暴增（+74%）但付費人數僅小幅增加，付費率被稀釋</div><div class="cw"><canvas id="c2"></canvas></div></div>
+  <div class="card"><h2>日均儲值：平日 vs 週末</h2><div class="note">兩者同步下滑，無平日獨有的衰退</div><div class="cw"><canvas id="c3"></canvas></div></div>
+  <div class="card"><h2>儲值金額組成：依單筆金額區間</h2><div class="note">高單價區間（1000+）逐月萎縮</div><div class="cw"><canvas id="c4"></canvas></div></div>
+</div>
+
+<div class="card" style="margin-bottom:14px"><h2>7月→9月 營收減少額拆解（依單筆金額區間）</h2><div class="note">總減少 455,939；負值越長代表貢獻越大</div><div class="cw" style="height:210px"><canvas id="c5"></canvas></div></div>
+
+<div class="card" style="margin-bottom:14px"><h2>各金額區間筆數</h2>
+<table>
+<tr><th>單筆金額區間</th><th>7月筆數</th><th>8月筆數</th><th>9月筆數</th><th>7→9月變化</th><th>7月金額</th><th>9月金額</th></tr>
+<tr><td>&lt;100</td><td>3,643</td><td>3,261</td><td>2,997</td><td class="dn">−17.7%</td><td>97,618</td><td>70,112</td></tr>
+<tr><td>100–499</td><td>17</td><td>136</td><td>6</td><td class="dn">−64.7%</td><td>4,940</td><td>1,547</td></tr>
+<tr><td>500–999</td><td>11</td><td>26</td><td>5</td><td class="dn">−54.5%</td><td>6,690</td><td>2,750</td></tr>
+<tr><td>1000–2999</td><td>92</td><td>88</td><td>10</td><td class="dn">−89.1%</td><td>183,130</td><td>17,740</td></tr>
+<tr><td>3000+</td><td>108</td><td>64</td><td>51</td><td class="dn">−52.8%</td><td>540,000</td><td>284,290</td></tr>
+</table></div>
+
+<div class="warn"><b>解讀前請注意</b><br>
+• 金額加總假設 <code>charged_value</code> 為同一幣別；<code>money_type</code> 檢查尚未執行，若混有多種幣別，金額與 ARPPU 需重新換算。<br>
+• <code>log_date</code> 為 UTC+7 切日，台灣時間 00:00～01:00 的紀錄會算到前一天，僅影響月底與週末邊界的少量資料。<br>
+• 8月活躍人數 4,633 較7月 2,666 暴增、9月回落至 3,060，成因未驗證（可能是回流/買量活動），此波動使8月付費率偏低，付費率不宜單獨解讀。<br>
+• 本頁指出「哪個價格帶掉了」，但尚未查到是哪些商品造成，下一步建議以 product_id 拆 1000–2999 與 3000+ 兩個區間的8月 vs 9月差異。</div>
+
+<script>
+const M=['2026-07','2026-08','2026-09'];
+const C={blue:'rgba(37,99,235,.8)',green:'rgba(22,163,74,.8)',red:'rgba(220,38,38,.8)',orange:'rgba(217,119,6,.8)',purple:'rgba(124,58,237,.8)',gray:'rgba(100,116,139,.6)'};
+const fm=v=>Number(v).toLocaleString();
+new Chart(document.getElementById('c1'),{data:{labels:M,datasets:[
+ {type:'bar',label:'儲值金額',data:[832377.62,591526.19,376438.7],backgroundColor:C.blue,yAxisID:'y'},
+ {type:'line',label:'ARPPU',data:[2118,1412,1031],borderColor:C.red,backgroundColor:C.red,yAxisID:'y1',tension:.2}]},
+ options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:'儲值金額'},beginAtZero:true},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'ARPPU'},beginAtZero:true}}}});
+new Chart(document.getElementById('c2'),{type:'bar',data:{labels:M,datasets:[
+ {label:'活躍人數(MAU)',data:[2666,4633,3060],backgroundColor:C.gray},
+ {label:'付費人數',data:[393,419,365],backgroundColor:C.green}]},
+ options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true}}}});
+new Chart(document.getElementById('c3'),{type:'bar',data:{labels:M,datasets:[
+ {label:'平日日均儲值',data:[28114,21435,13194],backgroundColor:C.blue},
+ {label:'週末日均儲值',data:[23218,14140,10773],backgroundColor:C.orange}]},
+ options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true}}}});
+const tiers=[['<100',[97617.62,81339.19,70111.7],C.gray],['100–499',[4940,35026,1547],C.purple],['500–999',[6690,15408,2750],C.orange],['1000–2999',[183130,141753,17740],C.green],['3000+',[540000,318000,284290],C.blue]];
+new Chart(document.getElementById('c4'),{type:'bar',data:{labels:M,datasets:tiers.map(t=>({label:t[0],data:t[1],backgroundColor:t[2]}))},
+ options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}}}});
+new Chart(document.getElementById('c5'),{type:'bar',data:{labels:['3000+','1000–2999','<100','500–999','100–499'],datasets:[{label:'7→9月 營收變化',data:[-255710,-165390,-27505.92,-3940,-3393],backgroundColor:C.red}]},
+ options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fm(c.parsed.x)}}},scales:{x:{title:{display:true,text:'營收變化'}}}}});
+</script>
+</body>
+</html>
