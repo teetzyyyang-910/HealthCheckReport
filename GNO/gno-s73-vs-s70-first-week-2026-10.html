@@ -114,6 +114,15 @@
   ul.plain{margin:0; padding-left:20px; color:var(--ink-dim); font-size:15px;}
   ul.plain li{margin-bottom:8px;} ul.plain b{color:var(--ink); font-weight:600;}
   footer{padding:34px 0 60px; color:var(--ink-dim2); font-size:12.5px; font-family:'JetBrains Mono',monospace; line-height:1.7; border-top:1px solid var(--line);}
+
+  .nextstep-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media (max-width:780px){.nextstep-grid{grid-template-columns:1fr;}}
+  .nextstep{background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:20px 22px;}
+  .nextstep .basis{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--b); letter-spacing:.04em; margin-bottom:10px; display:inline-block; background:var(--b-soft); padding:5px 10px; border-radius:6px;}
+  .nextstep .basis.go{color:var(--a); background:var(--a-soft);}
+  .nextstep .basis.data{color:var(--c); background:rgba(199,125,255,.14);}
+  .nextstep .rec{font-size:15.5px; color:var(--ink-dim); line-height:1.65;}
+  .nextstep .rec b{color:var(--ink); font-weight:600;}
 </style>
 </head>
 <body>
@@ -121,7 +130,7 @@
 
 <nav class="top"><div class="wrap">
   <a href="#summary">重點摘要</a><a href="#newplayers">新玩家規模與留存</a><a href="#newpay">新玩家付費</a>
-  <a href="#revenue">營收來源</a><a href="#twoweeks">兩週走勢</a><a href="#hoppers">轉服花費轉移</a><a href="#notes">引用須知</a>
+  <a href="#revenue">營收來源</a><a href="#twoweeks">兩週走勢</a><a href="#hoppers">轉服花費轉移</a><a href="#progress">前期進程診斷</a><a href="#notes">引用須知</a>
 </div></nav>
 
 <header class="hero"><div class="wrap">
@@ -136,13 +145,14 @@
 
 <section id="summary" style="border-top:none; padding-top:20px;"><div class="wrap">
   <div class="s-head"><h2>重點摘要</h2><span class="s-num">01 — Summary</span></div>
-  <div class="callout good" style="margin:0 0 16px;"><span class="ic">↻</span><div><b>10/12 更新：</b>D7 已對全部 577 人成熟、新增 D14（9/24–9/27 創角者）；7 日付費涵蓋全部 577 人（上一版僅計 492 人）；新增第 2 週（第 8–14 天）付費，檢視沉寂後回歸的大戶是否持續消費。金額為美元（先前版本曾誤用本地幣別，已於 10/6 更正）。</div></div>
+  <div class="callout good" style="margin:0 0 16px;"><span class="ic">↻</span><div><b>10/12 更新：</b>D7 已對全部 577 人成熟、新增 D14（9/24–9/27 創角者）；7 日付費涵蓋全部 577 人（上一版僅計 492 人）；新增第 2 週（第 8–14 天）付費，檢視沉寂後回歸的大戶是否持續消費。另新增第 07 節「前期進程診斷」（三服留存趨勢、等級與戰力曲線、第一天遊玩與升級速度），並附解讀與建議。金額為美元（先前版本曾誤用本地幣別，已於 10/6 更正）。</div></div>
   <div class="summary" style="margin-bottom:18px;">
     <ul>
       <li><b class="lead">新玩家更多，D1留存更好：</b>全新帳號450人，是S70（168人）的2.7倍；D1留存較高（43.8% vs 32.7%），D3、D7、D14 與S70相當或略高（27.8% vs 26.2%、20.9% vs 16.1%、14.4% vs 11.9%），差距未達顯著。</li>
       <li><b class="lead">新玩家付費與S70相近，沒有優勢：</b>付費率16.2% vs 17.9%；人均付費$4.90 vs $9.88，S70的數字被單筆$567拉高，扣除前3名後兩邊幾乎相同（$2.84 vs $2.35）。</li>
       <li><b class="lead">S73多出的營收，來自少數沉寂後回歸的老帳號，而且第2週仍在花：</b>S73前7天營收$6,426，比S70（$3,542）多$2,884；其中33個沉寂後回歸的老帳號貢獻$3,042（47%），前3個帳號就占45%，這些帳號創角前28天幾乎沒花錢（合計$21）。第2週這33個帳號仍花了$1,729（第1週的57%），S70同類為$0。扣除這一類，S73其餘類型第1週合計$3,384，與S70（$3,484）相當。</li>
       <li><b class="lead">持續活躍的轉服玩家是花費轉移：</b>舊服日均花費第1週由$112降到$22（−80%），第2週回升到$51，但新服花費降到$21，新舊合計比轉服前低36%；S70同類在扣除單筆$1,116後持平。樣本小，宜視為方向。</li>
+      <li><b class="lead">前期進程：第一天玩得更久，但升級速度沒變：</b>S73 全新帳號第一天總時長中位數 32 分（S70 22 分），玩滿 60 分鐘以上的占 30%（S70 24%）；但同樣的遊玩時間下，結束時的等級三個伺服器完全相同，留存也由第一天玩多久決定。流失集中在玩不到 30 分鐘且停在 12 級以下的 37%（D3 留存 5–16%）。詳見第 07 節。</li>
     </ul>
   </div>
   <div class="grid-4" id="kpis"></div>
@@ -180,11 +190,12 @@
 
 <section id="newpay"><div class="wrap">
   <div class="s-head"><h2>新玩家：付費表現</h2><span class="s-num">03 — New-Account Monetization</span></div>
-  <p class="s-desc">只看全新帳號：付費率相近，人均付費 S73 較低。但 S70 的 ARPU 被單筆 $567 撐高，扣除前 3 名後兩邊幾乎相同（$2.84 vs $2.35）。</p>
+  <p class="s-desc">只看全新帳號：付費率相近，人均付費 S73 較低。但 S70 的 ARPU 被單筆 $567 撐高，扣除前 3 名後兩邊幾乎相同（$2.84 vs $2.35）。。14 日累計的付費轉換也相近（19.1% vs 19.6%），第 2 週只各自多出約 2 個百分點的新付費者</p>
   <div class="grid-2">
     <div class="card">
       <h3 class="card-title">全新帳號付費指標（創角後7日）</h3>
       <div class="tbl-scroll"><table class="dtab" id="newPayTable"></table></div>
+      <p class="card-note">* 14 日累計：創角後第 1–14 天內有付費的比例。S73 僅計 9/24–9/28 創角者（n=371），S70 為全部 168 人。</p>
     </div>
     <div class="card">
       <h3 class="card-title">扣除大戶後的 ARPU（全新帳號）</h3>
@@ -291,8 +302,130 @@
   <div class="callout"><span class="ic">!</span><div><b>解讀：</b>S73 這群人的舊服日均花費第 1 週由 $112 降到 $22（−80%），第 2 週回升到 $51（轉服前的 45%），但新服花費降到 $21，新舊合計比轉服前低 36%，屬於花費轉移而非新增。S70 同類第 2 週舊服花費大幅回升，但來自單筆 $1,116，扣除後新舊合計與轉服前持平（+3%）。第 2 週兩邊的付費者都只有 3～5 人，宜視為方向。基準期包含 S72 開服期間（8/27 起），這些人也可能是從上一個新服轉到最新的新服，這一點尚未驗證。</div></div>
 </div></section>
 
+<section id="progress"><div class="wrap">
+  <div class="s-head"><h2>前期進程診斷：S70 → S72 → S73</h2><span class="s-num">07 — Early Progression</span></div>
+  <p class="s-desc">進程調整（新手歷程優化、前期經驗道具調整）的目標是讓前期更順、提升次日留存。這一節用三個伺服器的全新帳號，檢視留存、等級與戰力成長，以及第一天的遊玩時間與升級速度，判斷改動「有沒有動到」，以及流失發生在哪裡。</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3 class="card-title">留存趨勢：S70 → S72 → S73</h3>
+      <div class="seg" id="progRetSeg" role="group" aria-label="留存口徑">
+        <button data-v="new" class="on">全新帳號</button><button data-v="existing">既有帳號</button>
+      </div>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>S70</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--c)"></span>S72</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>S73</span>
+      </div>
+      <div class="chart-box short"><canvas id="progRetChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3 class="card-title">明細（括號為人數）</h3>
+      <div class="tbl-scroll"><table class="dtab" id="progRetTable"></table></div>
+      <p class="card-note" id="progRetNote"></p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <h3 class="card-title">等級與戰力成長曲線（全新帳號中位數）</h3>
+    <div class="seg" id="curveSeg" role="group" aria-label="指標">
+      <button data-v="level" class="on">等級</button><button data-v="power">戰力</button>
+    </div>
+    <div class="legend-row">
+      <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>S70</span>
+      <span class="legend-item"><span class="legend-sw" style="background:var(--c)"></span>S72</span>
+      <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>S73</span>
+    </div>
+    <div class="grid-2" style="grid-template-columns:1.2fr 1fr; align-items:start;">
+      <div class="chart-box"><canvas id="curveChart"></canvas></div>
+      <div class="tbl-scroll"><table class="dtab" id="curveTable"></table></div>
+    </div>
+    <p class="card-note" id="curveNote"></p>
+  </div>
+
+  <div class="s-head" style="margin-top:36px;"><h3 class="card-title" style="font-size:21px;">第一天的遊玩與升級速度</h3></div>
+  <p class="s-desc">以登入登出紀錄還原創角當天（D0）的每一場遊玩：總時長、第一場時長，以及一天結束時的等級。</p>
+  <div class="grid-2">
+    <div class="card">
+      <h3 class="card-title">創角當天遊玩（全新帳號，當天有遊玩紀錄者）</h3>
+      <div class="tbl-scroll"><table class="dtab" id="d0Table"></table></div>
+      <p class="card-note"><b style="color:var(--ink);">「第一場」</b>：創角當天依登入時間排序的第一筆有效登入登出紀錄，時長為該場在線時間；「第一天總時長」則是創角當天所有場次加總。<br>
+      <b style="color:var(--ink);">清理規則</b>：只計創角當天與次日；0 秒或負值的紀錄、同一登入時間重複出現的列（保留時長最長的一筆）都已清除，所以「第一場」是第一筆實際有玩的紀錄，不是資料表的第一列。<br>
+      <b style="color:var(--ink);">解讀提醒</b>：斷線重連會把一場切成好幾場（例如十幾分鐘內連續登入數次），因此第一場偏短不一定代表玩家很快離開，例如 S72 的第一場中位數只有 8 分鐘、總時長卻有 26 分鐘。解讀以「第一天總時長」為主，第一場僅作輔助。</p>
+    </div>
+    <div class="card">
+      <h3 class="card-title">同樣的遊玩時間，一天結束時的等級（中位數）</h3>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>S70</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--c)"></span>S72</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>S73</span>
+      </div>
+      <div class="chart-box short"><canvas id="lvlTimeChart"></canvas></div>
+      <p class="card-note">同樣玩多久，等級就一樣高：升級速度在三個伺服器沒有差別。大約要玩滿 60 分鐘才會到 15 級以上。</p>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="card">
+      <h3 class="card-title">第一天玩多久 → D3 留存</h3>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>S70</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--c)"></span>S72</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>S73</span>
+      </div>
+      <div class="chart-box short"><canvas id="d3TimeChart"></canvas></div>
+      <p class="card-note">各區間人數只有 29–125 人，伺服器之間的差異無法區分；重點是三個伺服器的關係一樣：玩越久，留得越多。</p>
+    </div>
+    <div class="card" style="display:flex; flex-direction:column; gap:14px; justify-content:center;">
+      <div class="stat"><div class="n"><span class="a">37%</span></div><div class="d">S73 第一天玩不到 30 分鐘、且停在 12 級以下的比例（148／402 人）</div></div>
+      <div class="stat"><div class="n"><span class="a">5%</span><span class="s">／</span><span class="a">16%</span></div><div class="d">這群人的 D3 留存（不到 10 分鐘 n=56；10–30 分鐘 n=92），D7 分別只有 2% 與 11%</div></div>
+      <div class="stat"><div class="n"><span class="b">59%</span><span class="s">／</span><span class="b">45%</span></div><div class="d">第一天玩滿 60 分鐘以上且到 15 級以上（n=97）的 D3／D7 留存</div></div>
+    </div>
+  </div>
+
+  <h3 class="card-title" style="margin:32px 0 12px;">解讀</h3>
+  <div class="insights">
+    <div class="insight"><b>改動確實動到的是「第一天的遊玩時間」</b>：S73 第一天總時長中位數 <b class="n">32 分</b>（S70 22 分），玩滿 60 分鐘以上占 30%（S70 24%），全新帳號 D1 領先 11 pt。S72 的第一場反而更短（中位數 8 分），卻已有 D1 提升，比較像是次日召回機制本身見效（推測）。</div>
+    <div class="insight"><b>沒有動到的是「升級速度」</b>：同樣的遊玩時間，一天結束時的等級在三個伺服器完全相同（30–60 分鐘一律 14 級、60 分鐘以上一律 17 級）。S73 多玩的時間沒有換成更多等級；D1、D3 的等級與戰力也和 S70 幾乎一樣。</div>
+    <div class="insight"><b>留存取決於第一天玩多久，三服關係一樣</b>：D3 留存從不到 10 分鐘的約 9%，隨遊玩時間上升到 60 分鐘以上的 55–68%。S73 整體 D1 較好，主要是玩滿一小時的人變多，並不是同樣遊玩時間下留得更久。</div>
+    <div class="insight"><b>流失集中在第一個小時</b>：37% 的新玩家玩不到 30 分鐘就停在 12 級以下，D3 留存只有 5–16%；而 9/24–9/27 創角的全新帳號裡，58% 在第 3 天前就不再出現，這些人 71% 前 14 天從未超過 14 級。</div>
+    <div class="insight"><b>S72 → S73 沒有可偵測的額外效果</b>：全新帳號 D1 +2.9、D3 −0.5、D7 +2.0、D14 +1.8 pt，都無法與零區分。S70 → S72 的 D1 提升（+8 pt）最大。以目前的樣本只能偵測大差距，不代表沒有效果。</div>
+    <div class="insight"><b>既有帳號的改善比全新帳號大得多</b>：D3 由 24.2% → 39.4% → 47.2%，全新帳號則是 26.2% → 28.3% → 27.8%。既有帳號的組成也在變（S73 沉寂後回歸的比例較高），不一定是進程調整的效果。</div>
+  </div>
+
+  <h3 class="card-title" style="margin:32px 0 6px;">建議：新服哪些值得持續調整</h3>
+  <p class="s-desc" style="margin-bottom:16px;">依證據強度分成三類：值得持續調整、先維持現狀、先補資料再決定。評估調整成效時，看全新帳號的 D3／D7／D14、第一天玩滿 60 分鐘的比例與 14 日累計付費轉換，而不是總營收。</p>
+  <div class="nextstep-grid">
+    <div class="nextstep">
+      <span class="basis go">持續調整 · 優先 1</span>
+      <div class="rec"><b>前期升級節奏：把 15 級提前。</b>這是三個伺服器都還沒動到的槓桿：同樣遊玩時間下的等級完全相同，要玩滿約 60 分鐘才到 15 級，而玩滿一小時的人 D3 留存約 55–68%。建議測試把前期經驗調高，讓玩家約 30 分鐘內到 15 級；調整前先跟設計端確認過去的經驗調整涵蓋了哪些等級。看 D3、D7 與第一天玩滿 60 分鐘的比例。</div>
+    </div>
+    <div class="nextstep">
+      <span class="basis go">持續調整 · 優先 2</span>
+      <div class="rec"><b>第一個 30 分鐘的目標與獎勵。</b>S73 有 37% 的新玩家第一天玩不到 30 分鐘且停在 12 級以下，D3 留存只有 5–16%。可在 20–30 分鐘處加入看得見的里程碑或獎勵（假設，待驗證）。看這一群人的 D3 與他們第一天的遊玩時間。</div>
+    </div>
+    <div class="nextstep">
+      <span class="basis go">持續調整 · 優先 3</span>
+      <div class="rec"><b>第 2、3 天的接續目標。</b>D1 提升約 11 pt，D3 卻沒有跟上（全新帳號 D1→D3 保留比例 S73 63%、S70 80%）。次日回來的玩家需要有事可做，建議調整第 2、3 天的內容與獎勵。看全新帳號的 D3、D7。</div>
+    </div>
+    <div class="nextstep">
+      <span class="basis">先維持現狀</span>
+      <div class="rec"><b>次日召回與第一天遊玩時間。</b>這是目前唯一看得到效果的地方（D1 +11 pt，第一天總時長中位數 22 → 32 分）。建議先維持，不要在沒有對照的情況下再疊加同類的前期改動：S72 → S73 在全新帳號上看不到可偵測的額外效果。</div>
+    </div>
+    <div class="nextstep">
+      <span class="basis">先維持現狀 · 留意集中度</span>
+      <div class="rec"><b>既有帳號（回歸／轉服）的承接。</b>這群人的留存明顯較好（D3 47.2% vs 24.2%），沉寂後回歸的大戶第 2 週仍有消費。建議維持，但營收集中在少數帳號（前 3 個帳號占第 1 週營收 45%），不宜當成穩定的營收來源。</div>
+    </div>
+    <div class="nextstep">
+      <span class="basis data">先補資料再決定</span>
+      <div class="rec"><b>付費轉換與第一場的流失步驟。</b>全新帳號 14 日累計付費轉換兩服相近（19.1% vs 19.6%），付費者金額中位數只有 $0.99，但目前沒有商品層級資料，看不出該調整哪個禮包；也缺新手引導步驟日誌，看不出玩家在第一場的哪一步離開。建議先取得這兩份資料，再決定是否調整。</div>
+    </div>
+  </div>
+  <div class="callout good" style="margin-top:16px;"><span class="ic">✓</span><div><b>怎麼驗證：</b>要確認某項調整有效，需要同一個伺服器內隨機分組（玩得久的人本來就比較想玩，單看前後比較會混進時間、買量與活動）。偵測 D3 +5 pt 約需每組 1,200 人（+8 pt 約 480 人），S73 首週全新帳號只有 450 人，要靠多服累積，或鎖定較大的差距。</div></div>
+  <div class="callout"><span class="ic">!</span><div><b>這一節的限制：</b>S72 全新帳號只有 159 人；D5 以後的等級與戰力曲線只含仍有活動的玩家（D14 僅剩 30–59 人），不能當成進程調整的效果；第一天各遊玩時間區間每組只有 29–125 人；等級取自每場結束時的紀錄（推定）；場次資料有雜訊（29% 為 0 秒、含重複登入，已清除），另有 34 個角色在第一天與次日沒有場次。以上皆為相關性，不是因果。</div></div>
+</div></section>
+
 <section id="insights"><div class="wrap">
-  <div class="s-head"><h2>關鍵洞察</h2><span class="s-num">07 — Takeaways</span></div>
+  <div class="s-head"><h2>關鍵洞察</h2><span class="s-num">08 — Takeaways</span></div>
   <div class="insights">
     <div class="insight"><b>S73 開服吸引的全新玩家更多</b>：全新帳號 <b class="n">450</b> 人，是 S70（168）的 2.7 倍，全新帳號占比 78%（S70 為 56%）。</div>
     <div class="insight"><b>全新玩家的優勢在 D1</b>：D1 <b class="n">43.8%</b> vs <b class="m">32.7%</b>；D3、D7、D14 略高（+1.6、+4.8、+2.5 pt）但未達顯著，不宜寫成全面領先。</div>
@@ -300,26 +433,30 @@
     <div class="insight"><b>多出的營收來自沉寂後回歸的老帳號，且第 2 週仍在花</b>：S73 比 S70 多 $2,884，其中沉寂後回歸貢獻 <b class="n">+$2,984</b>；這 33 個帳號第 2 週又花了 $1,729。但只有 10 位付費者，前 3 個帳號占 S73 總營收 45%。</div>
     <div class="insight"><b>既有帳號在 S73 的留存明顯更好</b>：D1 到 D14 都領先 S70 約 10～23 pt（D3 <b class="n">47.2%</b> vs <b class="m">24.2%</b>），S73 的整體留存優勢主要來自這一群。</div>
     <div class="insight"><b>持續活躍的轉服玩家是花費轉移</b>：舊服日均花費第 1 週 −80%，第 2 週回升但新服下降，新舊合計比轉服前低 36%；S70 同類（扣除單筆大額後）持平。</div>
+    <div class="insight"><b>前期進程：玩得更久，但升級速度沒變</b>：S73 第一天總時長中位數 32 分（S70 22 分），但同樣遊玩時間下的等級三服完全相同，進程調整提高了遊玩時間，並沒有加快升級。</div>
+    <div class="insight"><b>流失集中在第一個小時</b>：37% 的新玩家玩不到 30 分鐘且停在 12 級以下，D3 留存僅 5–16%；玩滿一小時且到 15 級以上的，D3 留存 59%、D7 45%。</div>
   </div>
   <h3 class="card-title" style="margin:28px 0 10px;">後續觀察建議</h3>
   <ul class="plain">
-    <li><b>評估新服成效，改看全新帳號</b>的 D14/D21 留存與付費轉換，而不是總營收。</li>
+    <li><b>評估新服成效，改看全新帳號</b>的 D14/D21 留存與付費轉換，而不是總營收。目前已有全新帳號的 D14 留存與 14 日累計付費轉換；D21 預計 10/15 之後補上。</li>
     <li><b>持續追蹤沉寂後回歸大戶</b>第 3 週以後的消費：第 2 週仍有第 1 週的 57%，但付費者只剩 4 位。</li>
     <li>9/28、9/29 創角者的 D14 與第 2 週窗口將在 10/13 前後走完，D21 約在 10/15 之後，屆時再更新。</li>
+    <li><b>新服調整的優先順序</b>：持續調整前期升級節奏、第一個 30 分鐘的目標、第 2–3 天的接續；先維持次日召回與既有帳號的承接；補齊付費商品與新手引導步驟的資料後，再決定是否調整付費轉換（詳見第 07 節）。</li>
   </ul>
 </div></section>
 
 <section id="notes"><div class="wrap">
-  <div class="s-head"><h2>引用須知與口徑說明</h2><span class="s-num">08 — Notes</span></div>
+  <div class="s-head"><h2>引用須知與口徑說明</h2><span class="s-num">09 — Notes</span></div>
   <ul class="plain">
     <li><b>金額口徑</b>：全部為美元，取自 std_ingame_role_recharge_daily 的 ingame_total_recharged_value_usd（統一換算）。</li>
     <li><b>名單</b>：mf_ingame_roles 中 server_id 為 S73 / S70，ingame_first_active_date 落在首週創角日，且創角次日等級&gt;10。S73 為 9/24–9/29（577人，全新 450、既有 127），S70 為 6/18–6/23（300人，全新 168、既有 132）。</li>
     <li><b>全新帳號</b>：帳號名下所有伺服器中最早的創角日，不早於該服開服日。既有帳號則包含沉寂後回歸，以及本來就活躍、只是轉去新服的玩家。</li>
-    <li><b>付費窗口</b>：第 1 週＝創角日起含當天共 <b>7 個日曆日</b>，S73 全部 577 人皆已走完；第 2 週＝第 8–14 個日曆日，S73 只計 9/24–9/28 創角者（492 人，其中全新 371），9/29 創角者（85 人）要到 10/13 後才完整。</li>
+    <li><b>付費窗口</b>：第 1 週＝創角日起含當天共 <b>7 個日曆日</b>，S73 全部 577 人皆已走完；第 2 週＝第 8–14 個日曆日，S73 只計 9/24–9/28 創角者（492 人，其中全新 371），9/29 創角者（85 人）要到 10/13 後才完整。全新帳號的 14 日累計付費轉換同樣只計這 492 人中的 371 位全新帳號。</li>
     <li><b>留存</b>：以創角後第 N 天是否有登入紀錄判斷，當天（資料未載完）一律視為尚未成熟。D1、D3、D7 為全部 577 人；D14 只計 9/24–9/27 創角者（全部 384、全新 278、既有 106）。S70 的 D14 為全部 300 人，若只取創角日期相同的前 4 天（6/18–6/21），S70 全新帳號 D14 為 8.4%（n=131），差距會更大，但兩種比較在目前樣本下都不顯著。</li>
     <li><b>樣本大小</b>：S73 全新帳號付費者 73 位、S70 為 30 位；沉寂後回歸付費者 10 位（第 2 週 4 位）；持續活躍且有舊服付費基準者 S73 為 20 人、S70 為 28 人，第 2 週付費者各 3～5 人。結論宜視為方向，而非精確倍數。</li>
     <li><b>回歸判定</b>：創角前最後一次登入距創角日超過 14 天（沿用前面回歸分析的門檻）；登入只回溯 180 天，7 個帳號同時出現在兩服名單，已分開計算。</li>
-    <li><b>更新紀錄（10/12）</b>：D7 補齊至全部 577 人（上一版僅 384 人）、新增 D14；7 日付費涵蓋全部 577 人（上一版僅計窗口已走完的 492 人，營收由 $6,069 更新為 $6,426）；新增第 2 週付費與轉服玩家第 2 週的花費轉移；留存的「未成熟」判斷改為當天一律視為尚未成熟。名單與帳號分類與上一版完全相同，上一版的 7 日付費逐人核對無差異。</li>
+    <li><b>前期進程診斷口徑（第 07 節）</b>：S70／S72／S73 首 6 天創角、創角次日等級&gt;10 的全新帳號（168／159／450 人）；S72 的全新判定同樣以帳號名下最早創角日不早於 8/27 為準。等級與戰力曲線取自 etl_ingame_balance_snapshot（D 日附近最接近的快照），中位數只含有快照者。第一天遊玩取自 etl_ingame_login_logout：只計創角當天與次日、清除 0 秒紀錄與同一登入的重複列後，每場結束時的等級與時長；第一天遊玩分析涵蓋 743／777 個角色。「第一場」指創角當天依登入時間排序的第一筆有效登入登出紀錄（定義與清理規則見第 07 節表格註解）。</li>
+    <li><b>更新紀錄（10/12）</b>：D7 補齊至全部 577 人（上一版僅 384 人）、新增 D14；7 日付費涵蓋全部 577 人（上一版僅計窗口已走完的 492 人，營收由 $6,069 更新為 $6,426）；新增第 2 週付費與轉服玩家第 2 週的花費轉移；留存的「未成熟」判斷改為當天一律視為尚未成熟。名單與帳號分類與上一版完全相同，上一版的 7 日付費逐人核對無差異。同日再新增第 07 節「前期進程診斷」。</li>
     <li><b>更正紀錄（金額，10/6）</b>：更早的版本誤把 etl_ingame_recharge 的 money_value（本地幣別，TWD／MYR／USD／HKD 混合）當作美元，營收被高估約 8 倍；例如 S73 前 7 天營收原寫 $48,328，美元重算後為 $6,069（492 人），原寫的單一大戶 $32,172 實為 $1,217。已據此改寫營收來源、集中度與花費轉移的結論。</li>
     <li><b>更正紀錄（名單與留存，10/6）</b>：最早版本的名單為 498 人，因等級篩選需要創角後 1–2 天的快照，9/30 查詢時 9/29 創角者的快照尚未產出而被誤排除，已修正為 577 人；當時的 D3（21.6%）也因把當天資料視為完整而被低估。</li>
   </ul>
@@ -360,6 +497,7 @@ function bindSeg(id,cb){
   });
 }
 const NP73=D.NP73, NP70=D.NP70;
+const CONV14={"S73": {"n": 371, "k": 71, "rate": 19.14, "arpu": 9.17}, "S70": {"n": 168, "k": 33, "rate": 19.64, "arpu": 13.17}};
 
 /* ---------- KPI cards (new accounts) ---------- */
 const dRate=(NP73.rate-NP70.rate).toFixed(1).replace('-','−');
@@ -422,7 +560,9 @@ document.getElementById('newPayTable').innerHTML=`
 <tr><td>ARPPU</td><td class="a">$${NP73.arppu.toFixed(2)}</td><td class="b">$${NP70.arppu.toFixed(2)}</td></tr>
 <tr><td>付費者金額中位數</td><td class="a">$${NP73.med.toFixed(2)}</td><td class="b">$${NP70.med.toFixed(2)}</td></tr>
 <tr><td>最大單人（占營收）</td><td class="a">${money(NP73.mx)}（${NP73.mxs.toFixed(1)}%）</td><td class="b">${money(NP70.mx)}（${NP70.mxs.toFixed(1)}%）</td></tr>
-<tr><td>7日總營收</td><td class="a">${money(NP73.rev)}</td><td class="b">${money(NP70.rev)}</td></tr></tbody>`;
+<tr><td>7日總營收</td><td class="a">${money(NP73.rev)}</td><td class="b">${money(NP70.rev)}</td></tr>
+<tr><td>14日累計付費率*</td><td class="a">${CONV14.S73.rate.toFixed(1)}%（${CONV14.S73.k}人）</td><td class="b">${CONV14.S70.rate.toFixed(1)}%（${CONV14.S70.k}人）</td></tr>
+<tr><td>14日累計 ARPU*</td><td class="a">$${CONV14.S73.arpu.toFixed(2)}</td><td class="b">$${CONV14.S70.arpu.toFixed(2)}</td></tr></tbody>`;
 new Chart(document.getElementById('newArpuChart'),{
   type:'bar',
   data:{labels:['不扣','扣除 Top 1','扣除 Top 3'], datasets:[
@@ -524,6 +664,84 @@ function drawHop(v){
   document.getElementById('hopNote').textContent=HOPNOTES[v];
 }
 drawHop('w1'); bindSeg('hopSeg',drawHop);
+/* ================= 第07節：前期進程診斷 ================= */
+const PG = {"RET3": {"new": {"S70": {"v": [32.7, 26.2, 16.1, 11.9], "n": [168, 168, 168, 168]}, "S72": {"v": [40.9, 28.3, 18.9, 12.6], "n": [159, 159, 159, 159]}, "S73": {"v": [43.8, 27.8, 20.9, 14.4], "n": [450, 450, 450, 278]}}, "existing": {"S70": {"v": [32.6, 24.2, 17.4, 12.9], "n": [132, 132, 132, 132]}, "S72": {"v": [41.3, 39.4, 26.6, 20.2], "n": [109, 109, 109, 109]}, "S73": {"v": [52.8, 47.2, 29.1, 22.6], "n": [127, 127, 127, 106]}}}, "CURVE": {"level": {"S70": {"v": [13.0, 14.0, 20.0, 23.0, 28.0], "n": [168, 161, 57, 47, 33]}, "S72": {"v": [14.0, 15.0, 21.0, 25.0, 30.0], "n": [159, 153, 64, 44, 30]}, "S73": {"v": [13.0, 15.0, 22.0, 24.0, 32.0], "n": [450, 438, 180, 155, 59]}}, "power": {"S70": {"v": [2396.5, 2723.0, 6122.0, 7896.0, 12847.0], "n": [168, 161, 57, 47, 33]}, "S72": {"v": [2371.0, 2676.0, 6379.0, 21185.5, 29176.5], "n": [159, 153, 64, 44, 30]}, "S73": {"v": [2496.0, 2973.0, 11145.5, 15533.0, 42320.0], "n": [450, 438, 180, 155, 59]}}}, "D0": {"S70": {"roles": 168, "active": 153, "med_total": 22.4, "med_first": 11.5, "first_lt5": 24, "ge60": 24, "lt10": 21, "lvl_med": 13.0, "ge15": 37}, "S72": {"roles": 159, "active": 148, "med_total": 26.1, "med_first": 8.0, "first_lt5": 35, "ge60": 25, "lt10": 24, "lvl_med": 14.0, "ge15": 44}, "S73": {"roles": 450, "active": 402, "med_total": 32.0, "med_first": 14.0, "first_lt5": 22, "ge60": 30, "lt10": 17, "lvl_med": 13.0, "ge15": 36}}, "EQ": {"lvl": {"S70": {"v": [11.0, 12.0, 14.0, 17.0], "n": [32, 55, 29, 37]}, "S72": {"v": [12.0, 12.0, 14.0, 17.0], "n": [35, 45, 31, 37]}, "S73": {"v": [11.0, 12.0, 14.0, 17.0], "n": [69, 125, 89, 119]}}, "d3": {"S70": {"v": [9.4, 18.2, 37.9, 54.1], "n": [32, 55, 29, 37]}, "S72": {"v": [8.6, 20.0, 19.4, 67.6], "n": [35, 45, 31, 37]}, "S73": {"v": [8.7, 15.2, 25.8, 55.5], "n": [69, 125, 89, 119]}}}, "TB": ["<10分", "10–30分", "30–60分", "60分+"], "G": {"act": 402, "a1": 56, "a2": 92, "a_share": 37, "a1_d3": 5.4, "a1_d7": 1.8, "a2_d3": 16.3, "a2_d7": 10.9, "b": 97, "b_d3": 58.8, "b_d7": 45.4}};
+const SC = {S70:B, S72:C, S73:A};
+const SRV = ['S70','S72','S73'];
+const mut = t => `<span style="color:var(--ink-dim2);font-size:11px;"> (${t})</span>`;
+
+/* ---- 留存趨勢 ---- */
+const PRETNOTE = {
+  new:'全新帳號：D1 從 S70 的 32.7% 升到 S72 的 40.9%、S73 的 43.8%；D3 以後只有小幅、逐步的改善，S72 到 S73 之間沒有可偵測的差異。S73 的 D14 只計 9/24–9/27 創角者（n=278）。',
+  existing:'既有帳號：D3 由 24.2% → 39.4% → 47.2%，改善幅度遠大於全新帳號；但既有帳號的組成也在變（S73 沉寂後回歸的比例較高），不一定是進程調整的效果。S73 的 D14 只計 9/24–9/27 創角者（n=106）。'
+};
+let progRetChart;
+function drawProgRet(v){
+  const d=PG.RET3[v]; if(progRetChart) progRetChart.destroy();
+  progRetChart=new Chart(document.getElementById('progRetChart'),{
+    type:'bar',
+    data:{labels:['D1','D3','D7','D14'], datasets:SRV.map(s=>({label:s, data:d[s].v, backgroundColor:SC[s], borderRadius:3, maxBarThickness:26, n:d[s].n}))},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}%（n=${c.dataset.n[c.dataIndex]}）`}}},
+      scales:baseScales('留存率',x=>x+'%')}
+  });
+  document.getElementById('progRetTable').innerHTML=`
+    <thead><tr><th>伺服器</th><th>D1</th><th>D3</th><th>D7</th><th>D14</th></tr></thead><tbody>`+
+    SRV.map(s=>`<tr><td style="color:${SC[s]}">${s}</td>`+d[s].v.map((x,i)=>`<td>${x.toFixed(1)}%${mut(d[s].n[i])}</td>`).join('')+'</tr>').join('')+'</tbody>';
+  document.getElementById('progRetNote').textContent=PRETNOTE[v];
+}
+drawProgRet('new'); bindSeg('progRetSeg',drawProgRet);
+
+/* ---- 等級與戰力曲線 ---- */
+const CURVENOTE='全新帳號、有快照者的中位數（括號為人數）。D1、D3 幾乎所有玩家都有資料，三個伺服器幾乎一致；D5 以後只剩仍有活動的玩家（D14 僅 30–59 人），S72、S73 的戰力較高，但這是存活者，不能直接視為進程調整的效果。';
+let curveChart;
+function drawCurve(v){
+  const d=PG.CURVE[v]; if(curveChart) curveChart.destroy();
+  const isL=(v==='level');
+  curveChart=new Chart(document.getElementById('curveChart'),{
+    type:'line',
+    data:{labels:['D1','D3','D5','D7','D14'], datasets:SRV.map(s=>({label:s, data:d[s].v, borderColor:SC[s], backgroundColor:SC[s], tension:.25, pointRadius:5, borderWidth:2.5, n:d[s].n}))},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${isL?fmt(c.raw)+'級':fmt(c.raw)}（n=${c.dataset.n[c.dataIndex]}）`}}},
+      scales:baseScales(isL?'等級中位數':'戰力中位數',x=>fmt(x))}
+  });
+  document.getElementById('curveTable').innerHTML=`
+    <thead><tr><th>伺服器</th><th>D1</th><th>D3</th><th>D5</th><th>D7</th><th>D14</th></tr></thead><tbody>`+
+    SRV.map(s=>`<tr><td style="color:${SC[s]}">${s}</td>`+d[s].v.map((x,i)=>`<td>${fmt(x)}${mut(d[s].n[i])}</td>`).join('')+'</tr>').join('')+'</tbody>';
+  document.getElementById('curveNote').textContent=CURVENOTE;
+}
+drawCurve('level'); bindSeg('curveSeg',drawCurve);
+
+/* ---- 第一天遊玩 ---- */
+const D0T=PG.D0;
+const d0rows=[
+  ['全新帳號人數／第一天有遊玩紀錄', s=>`${D0T[s].roles}／${D0T[s].active}`],
+  ['第一天總時長（中位數）', s=>`${D0T[s].med_total.toFixed(1)} 分`],
+  ['第一場時長（中位數）', s=>`${D0T[s].med_first.toFixed(1)} 分`],
+  ['第一場不到 5 分鐘', s=>`${D0T[s].first_lt5}%`],
+  ['第一天總時長不到 10 分鐘', s=>`${D0T[s].lt10}%`],
+  ['第一天玩滿 60 分鐘以上', s=>`${D0T[s].ge60}%`],
+  ['一天結束時等級（中位數）', s=>`${D0T[s].lvl_med.toFixed(0)} 級`],
+  ['一天結束時 15 級以上', s=>`${D0T[s].ge15}%`],
+];
+document.getElementById('d0Table').innerHTML=`<thead><tr><th>指標</th>`+SRV.map(s=>`<th style="color:${SC[s]}">${s}</th>`).join('')+`</tr></thead><tbody>`+
+  d0rows.map(r=>`<tr><td>${r[0]}</td>`+SRV.map(s=>`<td>${r[1](s)}</td>`).join('')+'</tr>').join('')+'</tbody>';
+
+new Chart(document.getElementById('lvlTimeChart'),{
+  type:'bar',
+  data:{labels:PG.TB, datasets:SRV.map(s=>({label:s, data:PG.EQ.lvl[s].v, backgroundColor:SC[s], borderRadius:3, maxBarThickness:30, n:PG.EQ.lvl[s].n}))},
+  options:{responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, valueLabels:{fmt:v=>String(v)}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw} 級（n=${c.dataset.n[c.dataIndex]}）`}}},
+    scales:baseScales('一天結束時等級（中位數）',x=>x)}
+});
+new Chart(document.getElementById('d3TimeChart'),{
+  type:'bar',
+  data:{labels:PG.TB, datasets:SRV.map(s=>({label:s, data:PG.EQ.d3[s].v, backgroundColor:SC[s], borderRadius:3, maxBarThickness:30, n:PG.EQ.d3[s].n}))},
+  options:{responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, valueLabels:{fmt:v=>v.toFixed(0)+'%'}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}%（n=${c.dataset.n[c.dataIndex]}）`}}},
+    scales:baseScales('D3 留存率',x=>x+'%')}
+});
+
 </script>
 </body>
 </html>
