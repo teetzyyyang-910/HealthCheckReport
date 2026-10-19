@@ -130,7 +130,7 @@
 
 <nav class="top"><div class="wrap">
   <a href="#summary">重點摘要</a><a href="#newplayers">新玩家規模與留存</a><a href="#newpay">新玩家付費</a>
-  <a href="#revenue">營收來源</a><a href="#threeweeks">三週走勢</a><a href="#hoppers">轉服花費轉移</a><a href="#progress">前期進程診斷</a><a href="#notes">引用須知</a>
+  <a href="#revenue">營收來源</a><a href="#threeweeks">三週走勢</a><a href="#hoppers">轉服花費轉移</a><a href="#progress">前期進程診斷</a><a href="#cultivation">養成與流量</a><a href="#notes">引用須知</a>
 </div></nav>
 
 <header class="hero"><div class="wrap">
@@ -177,15 +177,12 @@
       <div class="seg" id="retSeg" role="group" aria-label="留存口徑">
         <button data-v="new" class="on">全新帳號</button><button data-v="existing">既有帳號</button><button data-v="all">全部（等級&gt;10）</button>
       </div>
-      <div class="legend-row">
-        <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>S73</span>
-        <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>S70</span>
-      </div>
+      <div class="legend-row"><span class="legend-item"><span class="legend-sw" style="background:var(--grey)"></span>S69</span><span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>S70</span><span class="legend-item"><span class="legend-sw" style="background:var(--c)"></span>S72</span><span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>S73</span></div>
       <div class="chart-box short"><canvas id="retChart"></canvas></div>
       <p class="card-note" id="retNote"></p>
     </div>
   </div>
-  <div class="callout good"><span class="ic">✓</span><div><b>怎麼讀：</b>全新帳號只有 D1 的差距明確（+11.0 pt）；D3、D7、D14、D21 都略高於 S70（+1.6、+4.8、+1.9、+1.6 pt），但以目前的樣本無法與 S70 區分，不宜寫成全面領先。既有帳號則是 S73 從 D1 到 D21 都領先 S70 約 6～23 pt（例如 D3 47.2% vs 24.2%、D21 18.9% vs 9.8%），是 S73 留存優勢的主要來源。D21 只計 9/24–9/27 創角者。</div></div>
+  <div class="callout good"><span class="ic">✓</span><div><b>怎麼讀：</b>全新帳號只有 D1 的差距明確（+11.0 pt）；D3、D7、D14、D21 都略高於 S70（+1.6、+4.8、+1.9、+1.6 pt），但以目前的樣本無法與 S70 區分，不宜寫成全面領先。既有帳號則是 S73 從 D1 到 D21 都領先 S70 約 6～23 pt（例如 D3 47.2% vs 24.2%、D21 18.9% vs 9.8%），是 S73 留存優勢的主要來源。D21 只計 9/24–9/27 創角者。S72 的全新帳號 D1 與 S73 接近，S69 的留存明顯偏低，只當參考基準。</div></div>
 </div></section>
 
 <section id="newpay"><div class="wrap">
@@ -283,6 +280,21 @@
   </div>
   <div class="callout good"><span class="ic">✓</span><div><b>沉寂後回歸的老帳號第 3 週仍在花：</b>這 33 個帳號第 2 週花了 $1,729（第 1 週的 57%）、第 3 週花了 $2,153（第 1 週的 71%），但第 3 週付費者只有 3 位，其中一位就占 $1,580（73%）；三位大戶第 3 週分別為 $1,580、$64、$509（第 1 週 $1,217、$1,026、$627）。S70 同類第 2、3 週為 $0。營收仍高度集中，是否持續要看第 4 週以後。</div></div>
   <div class="callout"><span class="ic">!</span><div><b>全新帳號的第 2、3 週：</b>付費率相近（第 2 週 5.1% vs 6.0%、第 3 週 3.8% vs 4.2%），S73 的營收較高（第 2 週 $1,555 vs $553、第 3 週 $1,021 vs $291），但各週都有單筆大額（第 2 週 $606 占 39%、第 3 週 $414 占 41%）。扣除前 3 名後，21 日累計人均付費 S73 為 $6.63、S70 為 $3.64、S72 為 $2.68，S73 的後期付費較好，但第 3 週付費者只有 14 對 7 位，宜視為方向。</div></div>
+
+  <div class="card" style="margin-top:16px;">
+    <h3 class="card-title">全新帳號逐週營收（四服並排）</h3>
+    <div class="seg" id="wk4Seg" role="group" aria-label="指標">
+      <button data-v="rev" class="on">營收合計</button><button data-v="arpu">每位全新帳號平均</button>
+    </div>
+    <div class="legend-row">
+      <span class="legend-item"><span class="legend-sw" style="background:var(--grey)"></span>S69</span>
+      <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>S70</span>
+      <span class="legend-item"><span class="legend-sw" style="background:var(--c)"></span>S72</span>
+      <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>S73</span>
+    </div>
+    <div class="chart-box"><canvas id="wk4Chart"></canvas></div>
+    <p class="card-note">S73 為 9/24–9/28 創角者（n=371），其餘為全部全新帳號（S69 509、S70 168、S72 159）。S69 第 2、3 週營收有 80%、77% 來自單一帳號；S70 第 2、3 週疑受祈福活動影響；S72 三週營收相對平穩；S73 第 1 週最分散（單一最大占 19%）。滑過長條可看人數、付費人數與單一帳號占比。</p>
+  </div>
 </div></section>
 
 <section id="hoppers"><div class="wrap">
@@ -433,8 +445,54 @@
   <div class="callout"><span class="ic">!</span><div><b>這一節的限制：</b>S72 全新帳號只有 159 人；D5 以後的等級與戰力曲線只含仍有活動的玩家（D14 僅剩 30–96 人、D21 僅剩 24–44 人），不能當成進程調整的效果；第一天各遊玩時間區間每組只有 29–125 人；等級取自每場結束時的紀錄（推定）；場次資料有雜訊（29% 為 0 秒、含重複登入，已清除），另有 34 個角色在第一天與次日沒有場次。以上皆為相關性，不是因果。</div></div>
 </div></section>
 
+<section id="cultivation"><div class="wrap">
+  <div class="s-head"><h2>養成參與與流量組成</h2><span class="s-num">08 — Cultivation &amp; Acquisition</span></div>
+  <p class="s-desc">研發設計重點之一是「引導前期玩家了解養成」。這一節用創角後 8 天的強化紀錄，比較四個伺服器的全新帳號做了多少養成，並把自然與投放流量拆開，確認前面的留存與付費差異有沒有被流量組成影響。</p>
+  <div class="grid-2">
+    <div class="card">
+      <h3 class="card-title">前 8 天的強化（養成）參與</h3>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-sw" style="background:var(--grey)"></span>S69</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--b)"></span>S70</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--c)"></span>S72</span>
+        <span class="legend-item"><span class="legend-sw" style="background:var(--a)"></span>S73</span>
+      </div>
+      <div class="chart-box short"><canvas id="enhChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3 class="card-title">明細</h3>
+      <div class="tbl-scroll"><table class="dtab" id="enhTable"></table></div>
+      <p class="card-note">強化取自強化紀錄，創角當天起算 8 天內的次數。S70、S69 的高參與比例，有一部分可能來自舊新手教學的引導步驟（推測，AppsFlyer 事件顯示 S70 的舊教學有點裝備、點武器的步驟）。</p>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="card">
+      <h3 class="card-title">前 8 天強化次數 → 留存（四服合併）</h3>
+      <div class="chart-box short"><canvas id="doseChart"></canvas></div>
+      <p class="card-note">各區間人數：0 次 310、1–2 次 154、3–6 次 340、7–15 次 135、16 次以上 347。這是相關性：玩得久的人本來就做得多。</p>
+    </div>
+    <div class="card">
+      <h3 class="card-title">全新帳號的流量組成</h3>
+      <div class="chart-box short"><canvas id="mixChart"></canvas></div>
+      <p class="card-note">自然／投放取自歸因欄位 is_paid_install；未歸因是歸因表查無資料的帳號（S69 較多，約 16%）。</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px;">
+    <h3 class="card-title">自然 vs 投放：留存與 7 日付費</h3>
+    <div class="tbl-scroll"><table class="dtab" id="srcTable"></table></div>
+    <p class="card-note">D21 括號為可判定人數（S72、S73 部分創角者的 D21 尚未成熟）。S73 的 D21 只計 9/24–9/27 創角者。</p>
+  </div>
+  <h3 class="card-title" style="margin:28px 0 12px;">解讀</h3>
+  <div class="insights">
+    <div class="insight"><b>養成起步：S73 最少，但玩進去的人最深。</b>創角當天做過強化的比例 S70 80% → S72 68% → S73 62%，前 8 天從未強化 12% → 28% → 31%。但第一天玩滿 30 分鐘的人，平均強化次數 S73 最高（49.4 次，S70 34.6、S72 37.5）。新流程對提早離開的玩家，帶進養成的比例少了。</div>
+    <div class="insight"><b>強化次數與留存的關聯很強。</b>四服合併，前 8 天強化 16 次以上的玩家 D7 留存 51%、D14 35%；從未強化的 D7 只有 0.6%。S73 有 31% 的新玩家前 8 天從未強化，是最需要處理的缺口。</div>
+    <div class="insight"><b>S73 的流量組成明顯不同。</b>投放帳號占 60%（S69 23%、S70 30%、S72 23%）。S73 投放帳號的 D14 13.0%、7 日付費率 13.3%，低於自然流量的 15.2%、21.1%，把整體數字往下拉。同樣只看自然流量，S73 的 D14 是 15.2%，S70 11.3%。</div>
+  </div>
+  <div class="callout" style="margin-top:16px;"><span class="ic">!</span><div><b>限制：</b>強化次數是行為量，不等於「理解了養成」；各強化次數區間與來源分組的人數差異大，S70、S72 的投放帳號只有 37–50 人，數字僅供方向；來源只涵蓋有歸因的帳號；以上皆為相關性，不是因果。</div></div>
+</div></section>
+
 <section id="insights"><div class="wrap">
-  <div class="s-head"><h2>關鍵洞察</h2><span class="s-num">08 — Takeaways</span></div>
+  <div class="s-head"><h2>關鍵洞察</h2><span class="s-num">09 — Takeaways</span></div>
   <div class="insights">
     <div class="insight"><b>S73 開服吸引的全新玩家更多</b>：全新帳號 <b class="n">450</b> 人，是 S70（168）的 2.7 倍，全新帳號占比 78%（S70 為 56%）。</div>
     <div class="insight"><b>全新玩家的優勢在 D1</b>：D1 <b class="n">43.8%</b> vs <b class="m">32.7%</b>；D3、D7、D14、D21 略高（+1.6、+4.8、+1.9、+1.6 pt）但未達顯著，不宜寫成全面領先。</div>
@@ -455,7 +513,7 @@
 </div></section>
 
 <section id="notes"><div class="wrap">
-  <div class="s-head"><h2>引用須知與口徑說明</h2><span class="s-num">09 — Notes</span></div>
+  <div class="s-head"><h2>引用須知與口徑說明</h2><span class="s-num">10 — Notes</span></div>
   <ul class="plain">
     <li><b>金額口徑</b>：全部為美元，取自 std_ingame_role_recharge_daily 的 ingame_total_recharged_value_usd（統一換算）。</li>
     <li><b>名單</b>：mf_ingame_roles 中 server_id 為 S73 / S70，ingame_first_active_date 落在首週創角日，且創角次日等級&gt;10。S73 為 9/24–9/29（577人，全新 450、既有 127），S70 為 6/18–6/23（300人，全新 168、既有 132）。</li>
@@ -467,6 +525,7 @@
     <li><b>前期進程診斷口徑（第 07 節）</b>：S70／S72／S73 首 6 天創角、創角次日等級&gt;10 的全新帳號（168／159／450 人）；S72 的全新判定同樣以帳號名下最早創角日不早於 8/27 為準。等級與戰力曲線取自 etl_ingame_balance_snapshot（D 日附近最接近的快照），中位數只含有快照者。第一天遊玩取自 etl_ingame_login_logout：只計創角當天與次日、清除 0 秒紀錄與同一登入的重複列後，每場結束時的等級與時長；第一天遊玩分析涵蓋 743／777 個角色。「第一場」指創角當天依登入時間排序的第一筆有效登入登出紀錄（定義與清理規則見第 07 節表格註解）。</li>
     <li><b>更新紀錄（10/19）</b>：資料更新至 10/18。D14 補齊至全部 577 人（全新 450）、新增 D21（9/24–9/27 創角者）；第 2 週付費對全部 577 人成熟，新增第 3 週付費與轉服玩家第 3 週的花費轉移；全新帳號付費表新增 S72 與 14、21 日累計；等級與戰力曲線延伸到 D21。名單與帳號分類和上一版相同，第 1 週與第 2 週（原窗口完整者）付費逐人核對無差異。</li>
     <li><b>S69 對照組（10/19 新增）</b>：S69（5/21 開服）、5/21–5/26 創角、創角次日等級&gt;10 的全新帳號 509 人，定義與 S73 相同；全新帳號判定為帳號最早創角日不早於 5/21。S69 不納入既有帳號類型與營收組成拆解。S70 的付費受「祈福」活動影響的判斷，來自整服每日付費人數的變化，活動實際起訖日期待研發確認。</li>
+    <li><b>養成與流量口徑（第 08 節，10/19 新增）</b>：強化次數取自強化紀錄，創角當天起算 8 天內；成功與否以 status=1 推定；流量來源取 mf_users 的 is_paid_install（1＝投放、0＝自然，查無資料為未歸因）。第 05 節新增全新帳號逐週營收四服並排圖，第 02 節的組成與留存圖也已加入 S69、S72。</li>
     <li><b>更新紀錄（10/12）</b>：D7 補齊至全部 577 人（上一版僅 384 人）、新增 D14；7 日付費涵蓋全部 577 人（上一版僅計窗口已走完的 492 人，營收由 $6,069 更新為 $6,426）；新增第 2 週付費與轉服玩家第 2 週的花費轉移；留存的「未成熟」判斷改為當天一律視為尚未成熟。名單與帳號分類與上一版完全相同，上一版的 7 日付費逐人核對無差異。同日再新增第 07 節「前期進程診斷」。</li>
     <li><b>更正紀錄（金額，10/6）</b>：更早的版本誤把 etl_ingame_recharge 的 money_value（本地幣別，TWD／MYR／USD／HKD 混合）當作美元，營收被高估約 8 倍；例如 S73 前 7 天營收原寫 $48,328，美元重算後為 $6,069（492 人），原寫的單一大戶 $32,172 實為 $1,217。已據此改寫營收來源、集中度與花費轉移的結論。</li>
     <li><b>更正紀錄（名單與留存，10/6）</b>：最早版本的名單為 498 人，因等級篩選需要創角後 1–2 天的快照，9/30 查詢時 9/29 創角者的快照尚未產出而被誤排除，已修正為 577 人；當時的 D3（21.6%）也因把當天資料視為完整而被低估。</li>
@@ -525,18 +584,21 @@ document.getElementById('kpis').innerHTML=KPIS.map(k=>`
     <div class="delta ${k.cls}">${k.delta}</div></div>`).join('');
 
 /* ---------- composition ---------- */
+const ABC = {"COMP": {"S69": [509, 80], "S70": [168, 132], "S72": [159, 109], "S73": [450, 127]}, "RET4": {"new": {"S69": {"v": [17.9, 12.8, 10.8, 6.7, 4.3], "n": [509, 509, 509, 509, 509]}, "S70": {"v": [32.7, 26.2, 16.1, 11.9, 11.3], "n": [168, 168, 168, 168, 168]}, "S72": {"v": [40.9, 28.3, 18.9, 12.6, 6.9], "n": [159, 159, 159, 159, 130]}, "S73": {"v": [43.8, 27.8, 20.9, 13.8, 12.9], "n": [450, 450, 450, 450, 278]}}, "existing": {"S69": {"v": [45.0, 45.0, 28.7, 18.8, 13.8], "n": [80, 80, 80, 80, 80]}, "S70": {"v": [32.6, 24.2, 17.4, 12.9, 9.8], "n": [132, 132, 132, 132, 132]}, "S72": {"v": [41.3, 39.4, 26.6, 20.2, 16.2], "n": [109, 109, 109, 109, 105]}, "S73": {"v": [52.8, 47.2, 29.1, 18.9, 18.9], "n": [127, 127, 127, 127, 106]}}, "all": {"S69": {"v": [21.6, 17.1, 13.2, 8.3, 5.6], "n": [589, 589, 589, 589, 589]}, "S70": {"v": [32.7, 25.3, 16.7, 12.3, 10.7], "n": [300, 300, 300, 300, 300]}, "S72": {"v": [41.0, 32.8, 22.0, 15.7, 11.1], "n": [268, 268, 268, 268, 235]}, "S73": {"v": [45.8, 32.1, 22.7, 14.9, 14.6], "n": [577, 577, 577, 577, 384]}}}};
+const COMPS=['S69','S70','S72','S73'], COMPCOL={S69:GREY,S70:B,S72:C,S73:A};
+const compTot=s=>ABC.COMP[s][0]+ABC.COMP[s][1];
 new Chart(document.getElementById('compChart'),{
   type:'bar',
-  data:{labels:['S73（577）','S70（300）'], datasets:[
-    {label:'全新帳號', data:[78.0,56.0], backgroundColor:A, borderRadius:3, counts:[450,168]},
-    {label:'既有帳號', data:[22.0,44.0], backgroundColor:GREY, borderRadius:3, counts:[127,132]},
+  data:{labels:COMPS.map(s=>`${s}（${compTot(s)}）`), datasets:[
+    {label:'全新帳號', data:COMPS.map(s=>+(ABC.COMP[s][0]/compTot(s)*100).toFixed(1)), backgroundColor:A, borderRadius:3, counts:COMPS.map(s=>ABC.COMP[s][0])},
+    {label:'既有帳號', data:COMPS.map(s=>+(ABC.COMP[s][1]/compTot(s)*100).toFixed(1)), backgroundColor:GREY, borderRadius:3, counts:COMPS.map(s=>ABC.COMP[s][1])},
   ]},
   options:{indexAxis:'y', responsive:true, maintainAspectRatio:false,
     plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}%（${c.dataset.counts[c.dataIndex]}人）`}}},
     scales:{x:{stacked:true,max:100,grid:{color:LINE},ticks:{callback:v=>v+'%'}}, y:{stacked:true,grid:{display:false},ticks:{color:INK,font:{family:"'Inter',sans-serif",size:13}}}}}
 });
 
-/* ---------- retention ---------- */
+/* ---------- retention（四服） ---------- */
 const RETNOTE={
   new:'全新帳號：D1 差距明確；D3、D7、D14、D21 略高但未達顯著。S73 的 D21 只計 9/24–9/27 創角者（n=278）。',
   existing:'既有帳號（滾服/回歸）：S73 從 D1 到 D21 都高於 S70 同類，是整體留存優勢的主要來源。D21 S73 n=106。',
@@ -544,19 +606,16 @@ const RETNOTE={
 };
 let retChart;
 function drawRet(v){
-  const d=D.RET[v]; if(retChart) retChart.destroy();
+  const d=ABC.RET4[v]; if(retChart) retChart.destroy();
   retChart=new Chart(document.getElementById('retChart'),{
     type:'bar',
-    data:{labels:['D1','D3','D7','D14','D21'], datasets:[
-      {label:'S73', data:d.S73, backgroundColor:A, borderRadius:3, maxBarThickness:40, n:d.nA},
-      {label:'S70', data:d.S70, backgroundColor:B, borderRadius:3, maxBarThickness:40, n:d.nB},
-    ]},
+    data:{labels:['D1','D3','D7','D14','D21'], datasets:COMPS.map(s=>({label:s, data:d[s].v, backgroundColor:COMPCOL[s], borderRadius:3, maxBarThickness:22, n:d[s].n}))},
     options:{responsive:true, maintainAspectRatio:false,
-      plugins:{legend:{display:false}, valueLabels:{fmt:x=>x.toFixed(1)+'%'},
+      plugins:{legend:{display:false},
         tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}%（n=${c.dataset.n[c.dataIndex]}）`}}},
       scales:baseScales('留存率',x=>x+'%')}
   });
-  document.getElementById('retNote').textContent=RETNOTE[v];
+  document.getElementById('retNote').textContent=RETNOTE[v]+' S69、S72 為參考基準；S69 留存明顯偏低。';
 }
 drawRet('new'); bindSeg('retSeg',drawRet);
 
@@ -757,6 +816,66 @@ new Chart(document.getElementById('d3TimeChart'),{
     scales:baseScales('D3 留存率',x=>x+'%')}
 });
 
+
+/* ================= 補充B：全新帳號逐週營收（四服） ================= */
+const WK4 = {"S69": {"n": 509, "rev": [3547, 5861, 5578], "arpu": [6.97, 11.52, 10.96], "p": [50, 21, 12], "top": [40.0, 80.0, 77.0]}, "S70": {"n": 168, "rev": [1659, 553, 291], "arpu": [9.88, 3.29, 1.73], "p": [30, 10, 7], "top": [34.0, 53.0, 37.0]}, "S72": {"n": 159, "rev": [643, 676, 680], "arpu": [4.04, 4.25, 4.28], "p": [35, 12, 10], "top": [44.0, 35.0, 29.0]}, "S73": {"n": 371, "rev": [1848, 1555, 1021], "arpu": [4.98, 4.19, 2.75], "p": [64, 19, 14], "top": [19.0, 39.0, 41.0]}};
+const W4S=['S69','S70','S72','S73'], W4COL={S69:GREY,S70:B,S72:C,S73:A};
+let wk4Chart;
+function drawWk4(v){
+  if(wk4Chart) wk4Chart.destroy();
+  const isA=(v==='arpu');
+  wk4Chart=new Chart(document.getElementById('wk4Chart'),{
+    type:'bar',
+    data:{labels:['第1週','第2週','第3週'], datasets:W4S.map(s=>({label:s, data:isA?WK4[s].arpu:WK4[s].rev, backgroundColor:W4COL[s], borderRadius:3, maxBarThickness:30, w:WK4[s]}))},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        valueLabels:{fmt:x=>isA?'$'+x.toFixed(2):(x>=1000?'$'+(x/1000).toFixed(1)+'k':'$'+Math.round(x))},
+        tooltip:{callbacks:{label:c=>{const w=c.dataset.w,i=c.dataIndex; return ` ${c.dataset.label}: ${isA?'$'+c.raw.toFixed(2):'$'+fmt(c.raw)}（n=${w.n}；付費 ${w.p[i]} 人；單一最大占 ${w.top[i]}%）`;}}}},
+      scales:baseScales(isA?'每位全新帳號平均 (USD)':'全新帳號營收 (USD)',x=>'$'+fmt(x))}
+  });
+}
+drawWk4('rev'); bindSeg('wk4Seg',drawWk4);
+
+/* ================= 補充C：養成參與與流量組成 ================= */
+const CU = {"ENH": {"S69": {"n": 509, "d0": 79.0, "d1": 13.0, "any": 79.0, "never": 21.0, "mean": 14.0, "n30": 106, "mean30": 42.2, "doers_med": 4.0}, "S70": {"n": 168, "d0": 80.0, "d1": 24.0, "any": 88.0, "never": 12.0, "mean": 21.7, "n30": 66, "mean30": 34.6, "doers_med": 11.0}, "S72": {"n": 159, "d0": 68.0, "d1": 30.0, "any": 72.0, "never": 28.0, "mean": 20.2, "n30": 68, "mean30": 37.5, "doers_med": 10.0}, "S73": {"n": 450, "d0": 62.0, "d1": 31.0, "any": 69.0, "never": 31.0, "mean": 29.1, "n30": 208, "mean30": 49.4, "doers_med": 14.0}}, "DOSE": {"b": ["0次", "1–2次", "3–6次", "7–15次", "16次+"], "d3": [2.6, 5.2, 4.7, 20.7, 63.1], "d7": [0.6, 3.9, 2.1, 10.4, 51.0], "d14": [0.6, 2.6, 0.6, 5.2, 34.9], "n": [310, 154, 340, 135, 347]}, "MIX": {"S69": {"自然": 62.0, "投放": 23.0, "未知": 16.0, "n": 509}, "S70": {"自然": 68.0, "投放": 30.0, "未知": 2.0, "n": 168}, "S72": {"自然": 70.0, "投放": 23.0, "未知": 6.0, "n": 159}, "S73": {"自然": 38.0, "投放": 60.0, "未知": 2.0, "n": 450}}, "SRC": {"S69": {"自然": {"n": 314, "d1": 18.8, "d7": 10.8, "d14": 7.3, "d21": 5.4, "n21": 314, "pr": 10.5, "arpu": 8.72}, "投放": {"n": 115, "d1": 26.1, "d7": 17.4, "d14": 8.7, "d21": 4.3, "n21": 115, "pr": 13.9, "arpu": 7.03}}, "S70": {"自然": {"n": 115, "d1": 33.0, "d7": 13.9, "d14": 11.3, "d21": 11.3, "n21": 115, "pr": 20.0, "arpu": 9.48}, "投放": {"n": 50, "d1": 30.0, "d7": 18.0, "d14": 14.0, "d21": 12.0, "n21": 50, "pr": 12.0, "arpu": 11.36}}, "S72": {"自然": {"n": 112, "d1": 40.2, "d7": 20.5, "d14": 12.5, "d21": 6.7, "n21": 89, "pr": 20.5, "arpu": 5.05}, "投放": {"n": 37, "d1": 48.6, "d7": 18.9, "d14": 16.2, "d21": 9.7, "n21": 31, "pr": 27.0, "arpu": 1.2}}, "S73": {"自然": {"n": 171, "d1": 46.8, "d7": 22.2, "d14": 15.2, "d21": 17.8, "n21": 101, "pr": 21.1, "arpu": 3.24}, "投放": {"n": 270, "d1": 42.2, "d7": 20.4, "d14": 13.0, "d21": 10.0, "n21": 170, "pr": 13.3, "arpu": 6.1}}}};
+const CS=['S69','S70','S72','S73'], CCOL={S69:GREY,S70:B,S72:C,S73:A};
+new Chart(document.getElementById('enhChart'),{
+  type:'bar',
+  data:{labels:['創角當天做過強化','前8天任一次強化','前8天從未強化'], datasets:CS.map(s=>({label:s, data:[CU.ENH[s].d0,CU.ENH[s].any,CU.ENH[s].never], backgroundColor:CCOL[s], borderRadius:3, maxBarThickness:30, n:CU.ENH[s].n}))},
+  options:{responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, valueLabels:{fmt:x=>x.toFixed(0)+'%'}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}%（n=${c.dataset.n}）`}}},
+    scales:baseScales('占全新帳號比例',x=>x+'%')}
+});
+const erow=(label,f)=>`<tr><td>${label}</td>`+CS.map(s=>`<td>${f(s)}</td>`).join('')+'</tr>';
+document.getElementById('enhTable').innerHTML=`<thead><tr><th>指標</th>`+CS.map(s=>`<th style="color:${CCOL[s]}">${s}</th>`).join('')+`</tr></thead><tbody>`+
+  erow('全新帳號人數',s=>CU.ENH[s].n)+erow('創角當天做過強化',s=>CU.ENH[s].d0+'%')+erow('次日（D1）做過強化',s=>CU.ENH[s].d1+'%')+
+  erow('前8天任一次強化',s=>CU.ENH[s].any+'%')+erow('前8天從未強化',s=>CU.ENH[s].never+'%')+
+  erow('平均強化次數（全部）',s=>CU.ENH[s].mean.toFixed(1))+erow('做過強化者的中位次數',s=>CU.ENH[s].doers_med)+
+  erow('第一天玩滿30分鐘者的平均次數',s=>CU.ENH[s].mean30.toFixed(1)+`<span style="color:var(--ink-dim2);font-size:11px;"> (${CU.ENH[s].n30})</span>`)+'</tbody>';
+new Chart(document.getElementById('doseChart'),{
+  type:'bar',
+  data:{labels:CU.DOSE.b, datasets:[
+    {label:'D3 留存', data:CU.DOSE.d3, backgroundColor:B, borderRadius:3, maxBarThickness:34, n:CU.DOSE.n},
+    {label:'D7 留存', data:CU.DOSE.d7, backgroundColor:A, borderRadius:3, maxBarThickness:34, n:CU.DOSE.n},
+    {label:'D14 留存', data:CU.DOSE.d14, backgroundColor:C, borderRadius:3, maxBarThickness:34, n:CU.DOSE.n}]},
+  options:{responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:true, labels:{color:INK_DIM, boxWidth:11, font:{family:"'JetBrains Mono',monospace",size:12}}}, valueLabels:{fmt:x=>x.toFixed(0)+'%'},
+      tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}%（該區間 ${c.dataset.n[c.dataIndex]} 人）`}}},
+    scales:baseScales('留存率',x=>x+'%')}
+});
+new Chart(document.getElementById('mixChart'),{
+  type:'bar',
+  data:{labels:CS.map(s=>`${s}（${CU.MIX[s].n}）`), datasets:[
+    {label:'自然', data:CS.map(s=>CU.MIX[s]['自然']), backgroundColor:B, borderRadius:3},
+    {label:'投放', data:CS.map(s=>CU.MIX[s]['投放']), backgroundColor:A, borderRadius:3},
+    {label:'未歸因', data:CS.map(s=>CU.MIX[s]['未知']), backgroundColor:GREY, borderRadius:3}]},
+  options:{indexAxis:'y', responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:true, labels:{color:INK_DIM, boxWidth:11, font:{family:"'Inter',sans-serif",size:12.5}}}, tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}%`}}},
+    scales:{x:{stacked:true,max:100,grid:{color:LINE},ticks:{callback:v=>v+'%'}}, y:{stacked:true,grid:{display:false},ticks:{color:INK,font:{family:"'Inter',sans-serif",size:13}}}}}
+});
+const srows=[];
+CS.forEach(s=>['自然','投放'].forEach(g=>{const x=CU.SRC[s][g]; srows.push(`<tr><td style="color:${CCOL[s]}">${s}</td><td>${g}</td><td>${x.n}</td><td>${x.d1.toFixed(1)}%</td><td>${x.d7.toFixed(1)}%</td><td>${x.d14.toFixed(1)}%</td><td>${x.d21.toFixed(1)}%${mut(x.n21)}</td><td>${x.pr.toFixed(1)}%</td><td>$${x.arpu.toFixed(2)}</td></tr>`);}));
+document.getElementById('srcTable').innerHTML=`<thead><tr><th>伺服器</th><th>來源</th><th>人數</th><th>D1</th><th>D7</th><th>D14</th><th>D21</th><th>7日付費率</th><th>7日人均付費</th></tr></thead><tbody>`+srows.join('')+'</tbody>';
 </script>
 </body>
 </html>
