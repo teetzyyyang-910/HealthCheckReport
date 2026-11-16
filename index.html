@@ -193,6 +193,15 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
       <div class="game-sub">天上碑M</div>
       <span class="badge badge-live">● 已上線</span>
     </div>
+    <div class="game-card active" onclick="toggleGame('CSBM2')" id="card-CSBM2">
+      <div class="game-icon">
+        <img src="./assets/csbm2_icon.jpg" alt="CSBM2"
+             onerror="this.style.display='none';this.parentNode.innerHTML='CSBM2'">
+      </div>
+      <div class="game-name">CSBM2</div>
+      <div class="game-sub">天上碑M2</div>
+      <span class="badge badge-live">● 已上線</span>
+    </div>
     <div class="game-card active" onclick="toggleGame('COS')" id="card-COS">
       <div class="game-icon">
         <img src="./assets/cos_icon.png" alt="COS"
@@ -246,6 +255,11 @@ const GAMES = {
   MTG: {
     reports: [
       { date: '2026/07/01', label: '台港澳星馬精英市場戰情室 v4', url: './MS/dashboard.html' }
+    ]
+  },
+  CSBM2: {
+    reports: [
+      { date: '2026/11/13～11/14', label: '천상비 M2（CBT）新手前 30 分鐘綜合評估', url: './CSBM2/csbm2-cbt-newbie-30min-2026-11.html' }
     ]
   },
   COS: {
