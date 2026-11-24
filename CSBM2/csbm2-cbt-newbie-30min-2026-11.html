@@ -210,7 +210,17 @@ nav.jump a:hover,nav.jump a.on{background:var(--accent);border-color:var(--accen
 <p>逐日紀錄見 <code>runs/20261122_195052_爪_生活製作精煉/daily_log.md</code>；問題細節見附錄 A #44–#56。</p>
 <h2 data-sec="drop">5. 掛機、養成與經濟</h2>
 <div class="callout callout-orange"><p><b>結論</b>：銅錢穩定（強化前每小時約 2.5 萬、強化後約 4.6 萬），但<b>掉落沒有讓角色變強</b>、<b>打寶金幣一直是 0</b>、<b>背包約一天就滿，滿了會卡死</b>。前期缺銅錢，強化後一天約 100 萬，後期可能過剩。</p></div>
-<div class="cards cols-4"><div class="card" style="--accent-c:var(--sev-normal)"><div class="card-t">掉落少又偏</div><div class="card-b">每隻約 0.2–0.5%；綠林寨 78% 是披風</div><div class="card-f"><span class="chip chip-o">看不到用途</span></div></div><div class="card" style="--accent-c:var(--sev-normal)"><div class="card-t">好裝備不會穿</div><div class="card-b">Auto 不換裝也不提醒；劍背包 12 件更好的沒穿</div><div class="card-f"><span class="chip chip-o">#26</span></div></div><div class="card" style="--accent-c:var(--sev-serious)"><div class="card-t">打寶金幣 0</div><div class="card-b">35 小時、3.5 萬隻；百科寫「依機率 1–10」</div><div class="card-f"><span class="chip chip-r">需研發確認</span></div></div><div class="card" style="--accent-c:var(--sev-serious)"><div class="card-t">+7 起失敗＝裝備消失</div><div class="card-b">破壞 15%～95%；保護券只到 +10</div><div class="card-f"><span class="chip chip-r">+7 以上未實測</span></div></div></div>
+<div class="cards cols-4"><div class="card" style="--accent-c:var(--sev-normal)"><div class="card-t">掉落少又偏</div><div class="card-b">每隻約 0.2–0.5%（約 20 小時、2.9 萬隻、99 件）；綠林寨一帶 78% 是披風（約 18 小時、2.5 萬隻、91 件裡 71 件；少林寺幾乎沒有披風）</div><div class="card-f"><span class="chip chip-o">看不到用途</span></div></div><div class="card" style="--accent-c:var(--sev-normal)"><div class="card-t">好裝備不會穿</div><div class="card-b">Auto 不換裝也不提醒；劍背包 12 件更好的沒穿</div><div class="card-f"><span class="chip chip-o">#26</span></div></div><div class="card" style="--accent-c:var(--sev-serious)"><div class="card-t">打寶金幣 0</div><div class="card-b">35 小時、3.5 萬隻；百科寫「依機率 1–10」</div><div class="card-f"><span class="chip chip-r">需研發確認</span></div></div><div class="card" style="--accent-c:var(--sev-serious)"><div class="card-t">+7 起失敗＝裝備消失</div><div class="card-b">破壞 15%～95%；保護券只到 +10</div><div class="card-f"><span class="chip chip-r">+7 以上未實測</span></div></div></div>
+<p><b>掉落率的樣本</b>（<code>.one</code> 1.14.32，一般 Auto，擊殺數用狩獵圖鑑前後相減）：</p>
+<div class="tbl"><table><thead><tr><th>日期</th><th>角色、地點</th><th>時間</th><th>擊殺</th><th>裝備</th><th>每隻掉落率</th></tr></thead><tbody>
+<tr class=""><td>11/19</td><td>四職業，綠林寨</td><td>各 2 小時，共 8 小時</td><td>10,979</td><td>44</td><td>0.40%</td></tr>
+<tr class=""><td>11/20</td><td>爪，黃河下游</td><td>1.5 小時</td><td>約 1,990</td><td>8</td><td>0.40%</td></tr>
+<tr class=""><td>11/20</td><td>爪，黃河下游（有記錄）</td><td>4 小時</td><td>約 5,400</td><td>27</td><td>0.50%</td></tr>
+<tr class=""><td>11/20</td><td>爪，黃河下游（沒記錄，用銅錢推算擊殺）</td><td>4.4 小時</td><td>約 6,200</td><td>12</td><td>0.19%</td></tr>
+<tr class=""><td>11/21</td><td>爪，少林寺 거각록（戴／卸武器）</td><td>各 62 分</td><td>約 4,000</td><td>8</td><td>0.25%／0.15%</td></tr>
+<tr class=""><td><b>合計</b></td><td></td><td><b>約 20 小時</b></td><td><b>約 2.9 萬</b></td><td><b>99</b></td><td><b>約 0.34%</b></td></tr>
+</tbody></table></div>
+<p>披風 78% 只算綠林寨一帶（前四列，約 18 小時、2.5 萬隻，91 件裡 71 件）；11/21 少林寺掛 8 小時約 49 件，幾乎沒有披風，掉什麼部位跟地圖或怪物有關。</p>
 <figure class="diagram"><svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="天上碑 M2 貨幣循環">
 <title>天上碑 M2 貨幣循環</title>
 <desc>野外掛機產出銅錢、名聲（丹田）、裝備與打寶金幣；銅錢花在養成與持續支出，丹田在修練場換成屬性，裝備穿上、分解或上交易所換金幣；戰力提升後殺怪更快，收入增加，形成循環。</desc>
@@ -349,13 +359,14 @@ nav.jump a:hover,nav.jump a.on{background:var(--accent);border-color:var(--accen
 <div class="callout callout-orange"><p><b>新手武器是隨機的，不是職業差異</b>：名稱與種類由職業決定，但<span class="key">品質（下級(하급) 54／中級(중급) 57／上級(상급) 60）、命中（-2～+5）、追加詞條</span>每次都不同。換上新手武器戰力不會變（戰力(공력합계)不計裝備）；實際作用攻擊 37–42，受熟練上限限制。<b>命中負值是系列的取捨設計</b>，只是遊戲沒說明。</p></div>
 <p>上圖取代原本的雷達圖：只放四職業都有實測的項目（原雷達圖的「前期成長」「新手友善度」在 <code>.one</code> 重測不成立、「PvP 潛力」是推測）。原始數據見附錄 C。相剋實測方法、PK 細節見 <a class="chip chip-b" href="#tab-apx">附錄 K-6 →</a>。</p>
 <h2 data-sec="ops">7. 付費與營運</h2>
-<div class="cards cols-3"><div class="card" style="--accent-c:var(--sev-normal)"><div class="card-t">活動入口是空的</div><div class="card-b">活動頁空白；季票只顯示「Error Message(6)」</div><div class="card-f"><span class="chip chip-o">看起來像系統壞掉</span></div></div><div class="card" style="--accent-c:var(--sev-serious)"><div class="card-t">最高等級極難抽</div><div class="card-b">幻影術龍鱗器 0.088%（平均約 270 萬韓元）；沒看到保底</div><div class="card-f"><span class="chip chip-r">付費深度很深</span></div></div><div class="card" style="--accent-c:var(--sev-normal)"><div class="card-t">交易所要會員才能賣</div><div class="card-b">免費玩家刷到的裝備換不到錢</div><div class="card-f"><span class="chip chip-o">免費玩家的痛點</span></div></div></div>
+<div class="cards cols-3"><div class="card" style="--accent-c:var(--sev-normal)"><div class="card-t">活動入口是空的</div><div class="card-b">活動頁空白；季票只顯示「Error Message(6)」</div><div class="card-f"><span class="chip chip-o">看起來像系統壞掉</span></div></div><div class="card" style="--accent-c:var(--sev-serious)"><div class="card-t">最高等級極難抽</div><div class="card-b">幻影術龍鱗器 0.088%（平均約 270 萬韓元，約 2,000 美元）；沒看到保底</div><div class="card-f"><span class="chip chip-r">付費深度很深</span></div></div><div class="card" style="--accent-c:var(--sev-normal)"><div class="card-t">交易所要會員才能賣</div><div class="card-b">免費玩家刷到的裝備換不到錢</div><div class="card-f"><span class="chip chip-o">免費玩家的痛點</span></div></div></div>
 <div class="tbl"><table><thead><tr><th>等級</th><th>幻影術</th><th>八卦</th></tr></thead><tbody>
-<tr class=""><td>龍鱗器</td><td>0.088%</td><td>0.5%</td></tr>
-<tr class=""><td>奇緣</td><td>0.55%</td><td>4.5%</td></tr>
-<tr class=""><td>準奇緣</td><td>19.2%</td><td>15%</td></tr>
-<tr class=""><td>一般</td><td>80.15%</td><td>80%</td></tr>
+<tr class=""><td>龍鱗器</td><td>0.088%（平均約 1,136 抽，約 270 萬韓元≈2,000 美元）</td><td>0.5%（平均約 200 抽，約 48 萬韓元≈355 美元）</td></tr>
+<tr class=""><td>奇緣</td><td>0.55%（平均約 182 抽，約 44 萬韓元≈323 美元）</td><td>4.5%（平均約 22 抽，約 5.3 萬韓元≈40 美元）</td></tr>
+<tr class=""><td>準奇緣</td><td>19.2%（平均約 5 抽，約 1.25 萬韓元≈9 美元）</td><td>15%（平均約 7 抽，約 1.6 萬韓元≈12 美元）</td></tr>
+<tr class=""><td>一般</td><td>80.15%（平均約 1.2 抽，約 3,000 韓元≈2.2 美元）</td><td>80%（平均約 1.2 抽，約 3,000 韓元≈2.2 美元）</td></tr>
 </tbody></table></div>
+<p>1 抽 120 金幣，約 2,400 韓元（約 1.8 美元）；會員 9,900 韓元約 7.3 美元。匯率以 1 美元 ≈ 1,350 韓元計（2026 年 11 月上旬約 1,340–1,365）。</p>
 <div class="callout callout-orange"><p><b>金幣不足時不會帶去儲值</b>：確認窗沒寫價格與餘額，按下去只閃一行「재화 부족」。建議寫「需要 120 金幣／目前 0」，不足時按鈕直接開儲值頁。</p></div>
 <h3 data-sec="segments">分群遊玩路線</h3>
 <p><b>錢買不到名號進度</b>：名號只看基本屬性，四種玩家都被「時間＋丹田」卡住；錢買的是戰鬥力和方便。</p>
@@ -363,7 +374,7 @@ nav.jump a:hover,nav.jump a.on{background:var(--accent);border-color:var(--accen
 <tr class=""><td>不花錢</td><td>0</td><td>主線推到 135 → 裝備全部 +6 → 野外掛機，丹田 &gt; 300 回木人；四維券只在修練場用</td><td>交易所不能賣、金幣 0</td></tr>
 <tr class=""><td>小R</td><td>1–3 萬</td><td>＋會員 9,900：委託 5 件、地城 +30 分、交易所能賣；抽卡優先八卦</td><td>抽卡運氣</td></tr>
 <tr class=""><td>中R</td><td>10–30 萬</td><td>會員＋每月 40–120 抽集中八卦；保護券強化 +7～+10</td><td>+7 起破壞風險</td></tr>
-<tr class=""><td>大R</td><td>100 萬以上</td><td>追龍鱗器（八卦平均約 48 萬、幻影術約 270 萬）；組幫派搶修練場</td><td>0.088% 機率</td></tr>
+<tr class=""><td>大R</td><td>100 萬以上</td><td>追龍鱗器（八卦平均約 48 萬≈355 美元、幻影術約 270 萬≈2,000 美元）；組幫派搶修練場</td><td>0.088% 機率</td></tr>
 </tbody></table></div>
 <p><b>會員「天上之境」（9,900 韓元／30 天）</b>：委託 3→5 件、地城 +30 分、交易所能賣、遠端商店與倉庫、免費復原 +2、特殊地城每週 +1 與地城內自動、會員商店（用銅錢買）。不加戰力。</p>
 <div class="cards cols-2"><div class="card" style="--accent-c:var(--sev-normal)"><div class="card-t">不花錢玩家的痛點</div><div class="card-b">交易所要會員才能賣：刷到的裝備換不到錢，打寶金幣實測 0。一代玩家最在意「掛機刷裝備」（63.6%）</div><div class="card-f"><span class="chip chip-o">考慮每週免費上架 N 件</span></div></div><div class="card" style="--accent-c:var(--ok)"><div class="card-t">會員值得但沒說清楚</div><div class="card-b">會員頁只跳購買視窗、沒列功能；把委託 +2、地城 +30 分、交易所販售、遠端商店、復原 +2 列出來，小R 轉換會更好</div><div class="card-f"><span class="chip chip-g">低成本改善</span></div></div></div>
@@ -1247,7 +1258,7 @@ nav.jump a:hover,nav.jump a.on{background:var(--accent);border-color:var(--accen
 </tbody></table></div></details>
 <h3 data-sec="k7">K-7 付費與營運</h3>
 <h4>營運・轉蛋・交易（⑧，只看不買）</h4>
-<div class="cards cols-3"><div class="card" style="--accent-c:var(--sev-normal)"><div class="card-t">活動入口是空的</div><div class="card-b">活動(이벤트)頁完全空白；季票(시즌패스)跳出「[1003] 현재 이용할 수 없습니다」和只寫「Error Message(6)」的彈窗。福利只放在郵件（11 連抽選擇箱 ×3、1 抽選擇箱 ×200、銅錢(동전) 50 萬），剩約 1 天，沒有提醒</div><div class="card-f"><span class="chip chip-o">看起來像系統壞掉</span></div></div><div class="card" style="--accent-c:var(--sev-serious)"><div class="card-t">最高等級極難抽</div><div class="card-b">1 抽 120 金幣(금화)（約 2,400 韓元）、11 抽 1,200 金幣(금화)。幻影術(환영술) 龍鱗器(용린기)合計 <span class="key">0.088%</span>（平均約 1,136 抽、約 270 萬韓元），八卦(팔괘) 龍鱗器(용린기) 0.5%；累積獎勵到 80 抽，沒看到保底</div><div class="card-f"><span class="chip chip-r">付費深度很深</span></div></div><div class="card" style="--accent-c:var(--muted)"><div class="card-t">交易所(거래소)：名聲 500 開放、CBT 是空的</div><div class="card-b">用金幣(금화)交易；同時上架 30 件、約 3 天；登錄時先收手續費（取消不退）、成交再扣販賣手續費，精確費率指南寫「確認中」；歸屬道具與狂殺者不能用。CBT 所有商品販賣列表都是 0。<span class="key">實際上架被擋：「멤버십 가입 후 이용 가능합니다」，販賣要先買會員</span>（畫面與指南都沒提）；購買只能用付費金幣，<b>打寶金幣(파밍 금화)不能用於交易所</b>；打寶金幣靠打怪依機率掉落（每次 1–10），但掛機約 35 小時以上、擊殺 3.5 萬隻以上仍是 0；上限指南寫 5,000、遊戲顯示 3,000</div><div class="card-f"><span class="chip chip-o">免費玩家無法交易</span></div></div></div>
+<div class="cards cols-3"><div class="card" style="--accent-c:var(--sev-normal)"><div class="card-t">活動入口是空的</div><div class="card-b">活動(이벤트)頁完全空白；季票(시즌패스)跳出「[1003] 현재 이용할 수 없습니다」和只寫「Error Message(6)」的彈窗。福利只放在郵件（11 連抽選擇箱 ×3、1 抽選擇箱 ×200、銅錢(동전) 50 萬），剩約 1 天，沒有提醒</div><div class="card-f"><span class="chip chip-o">看起來像系統壞掉</span></div></div><div class="card" style="--accent-c:var(--sev-serious)"><div class="card-t">最高等級極難抽</div><div class="card-b">1 抽 120 金幣(금화)（約 2,400 韓元）、11 抽 1,200 金幣(금화)。幻影術(환영술) 龍鱗器(용린기)合計 <span class="key">0.088%</span>（平均約 1,136 抽、約 270 萬韓元≈2,000 美元），八卦(팔괘) 龍鱗器(용린기) 0.5%（平均約 200 抽、約 48 萬韓元≈355 美元）；累積獎勵到 80 抽，沒看到保底</div><div class="card-f"><span class="chip chip-r">付費深度很深</span></div></div><div class="card" style="--accent-c:var(--muted)"><div class="card-t">交易所(거래소)：名聲 500 開放、CBT 是空的</div><div class="card-b">用金幣(금화)交易；同時上架 30 件、約 3 天；登錄時先收手續費（取消不退）、成交再扣販賣手續費，精確費率指南寫「確認中」；歸屬道具與狂殺者不能用。CBT 所有商品販賣列表都是 0。<span class="key">實際上架被擋：「멤버십 가입 후 이용 가능합니다」，販賣要先買會員</span>（畫面與指南都沒提）；購買只能用付費金幣，<b>打寶金幣(파밍 금화)不能用於交易所</b>；打寶金幣靠打怪依機率掉落（每次 1–10），但掛機約 35 小時以上、擊殺 3.5 萬隻以上仍是 0；上限指南寫 5,000、遊戲顯示 3,000</div><div class="card-f"><span class="chip chip-o">免費玩家無法交易</span></div></div></div>
 <div class="tbl"><table><thead><tr><th>等級</th><th>幻影術(환영술) 合計</th><th>八卦(팔괘) 合計</th></tr></thead><tbody>
 <tr class=""><td>龍鱗器(용린기)</td><td>0.088%（8 種 × 0.011%）</td><td>0.5%（32 種 × 0.0156%）</td></tr>
 <tr class=""><td>奇緣(기연)</td><td>0.55%</td><td>4.5%</td></tr>
@@ -1263,7 +1274,7 @@ nav.jump a:hover,nav.jump a.on{background:var(--accent);border-color:var(--accen
 <tr class=""><td>不花錢</td><td>0</td><td>主線推到 135 → 裝備全部 +6（不碰 +7）→ 野外掛機賺名聲、銅錢，丹田 &gt; 300 回洛陽城木人；四維券只在修練場用；銅錢多了開付費修練場</td><td>交易所不能賣、金幣 0；抽卡只靠每日地城券</td></tr>
 <tr class=""><td>小R</td><td>1–3 萬</td><td>＋會員 9,900：委託 5 件、地城 +30 分、交易所能賣（裝備換金幣）、遠端商店、免費復原 +2；抽卡優先八卦（奇緣 4.5% vs 幻影術 0.55%）</td><td>抽卡運氣</td></tr>
 <tr class=""><td>中R</td><td>10–30 萬</td><td>會員＋每月 40–120 抽，集中八卦；保護券強化 +7～+10；每天 1–2 小時付費修練場</td><td>+7 起破壞風險</td></tr>
-<tr class=""><td>大R</td><td>100 萬以上</td><td>追龍鱗器（八卦平均約 48 萬韓元、幻影術約 270 萬）；+10 以上；組幫派搶修練場管理權</td><td>0.088% 機率</td></tr>
+<tr class=""><td>大R</td><td>100 萬以上</td><td>追龍鱗器（八卦平均約 48 萬韓元≈355 美元、幻影術約 270 萬≈2,000 美元）；+10 以上；組幫派搶修練場管理權</td><td>0.088% 機率</td></tr>
 </tbody></table></div>
 <div class="cards cols-3"><div class="card" style="--accent-c:var(--info)"><div class="card-t">每天必做（05:00 重置）</div><div class="card-b">每日地城 3×30 分（<b>免費玩家唯一穩定的召喚券來源</b>）、無限之塔 5 次、聲望委託 3 件（主線 135 開）、輔助任務 3 件、每日成就；生活氣力 620 約夠伐木 37 分</div><div class="card-f"><span class="chip chip-k">遊戲沒有每日清單引導</span></div></div></div>
 <h4>對照一代核心玩家：他們最在意什麼</h4>
